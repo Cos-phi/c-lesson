@@ -10,7 +10,19 @@ int main() {
     int answer3 = 0;
 
     // write something here.
-
+    printf("%s\n",input);
+    int i = 0;
+    while (1){
+        switch(input[i]){
+            case 32: 
+                printf("space\n");
+                break;
+            default:
+                printf("%d\n",input[i]);
+        }
+        if (input[i] == 0) break;
+        i++;
+    }
 
     // verity result.
     assert(answer1 == 123);
