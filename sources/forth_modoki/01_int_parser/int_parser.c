@@ -10,19 +10,16 @@ int main() {
     int answer3 = 0;
 
     // write something here.
-    printf("%s\n",input);
+    printf("input is %s\n",input);
     int answers[3] = {0,0,0};
-    int j = 0;
+    int ans_n = 0;
     for (int i=0;;i++){
         if (input[i] == 0) break;
-        if (input[i] == 32 && input[i-1] != 32) {
-            j++;
-            printf("space!\n");
-        }
+        if (input[i] == 32 && input[i-1] != 32) ans_n++;
         if (input[i] == 32) continue;
-        answers[j] *= 10;
-        answers[j] += input[i]-48; 
-        printf("%d:%d\n",j,answers[j]);
+        answers[ans_n] *= 10;
+        answers[ans_n] += input[i]-48;
+        printf("answer%d:%d\n",ans_n+1,answers[ans_n]);
     }
     answer1 = answers[0];
     answer2 = answers[1];
