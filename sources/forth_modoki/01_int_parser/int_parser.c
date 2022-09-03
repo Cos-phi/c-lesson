@@ -11,18 +11,22 @@ int main() {
 
     // write something here.
     printf("%s\n",input);
-    int i = 0;
-    while (1){
-        switch(input[i]){
-            case 32: 
-                printf("space\n");
-                break;
-            default:
-                printf("%d\n",input[i]);
-        }
+    int answers[3] = {0,0,0};
+    int j = 0;
+    for (int i=0;;i++){
         if (input[i] == 0) break;
-        i++;
+        if (input[i] == 32 && input[i-1] != 32) {
+            j++;
+            printf("space!\n");
+        }
+        if (input[i] == 32) continue;
+        answers[j] *= 10;
+        answers[j] += input[i]-48; 
+        printf("%d:%d\n",j,answers[j]);
     }
+    answer1 = answers[0];
+    answer2 = answers[1];
+    answer3 = answers[2];
 
     // verity result.
     assert(answer1 == 123);
