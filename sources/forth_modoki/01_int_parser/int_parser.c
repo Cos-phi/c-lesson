@@ -14,11 +14,11 @@ int main() {
     int answers[3] = {0,0,0};
     int ans_n = 0;
     for (int i=0;;i++){
-        if (input[i] == 0) break;
-        if (input[i] == 32 && input[i-1] != 32) ans_n++;
-        if (input[i] == 32) continue;
+        if (input[i] == '\0') break;
+        if (input[i] == ' ' && input[i-1] != ' ') ans_n++;
+        if (input[i] == ' ') continue;
         answers[ans_n] *= 10;
-        answers[ans_n] += input[i]-48;
+        answers[ans_n] += input[i]-'0';
         printf("answer%d:%d\n",ans_n+1,answers[ans_n]);
     }
     answer1 = answers[0];
