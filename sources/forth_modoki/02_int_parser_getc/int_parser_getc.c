@@ -5,21 +5,21 @@
 cc cl_getc.c int_parser_getc.c
 */
 
-enum jikutype {
+enum tokentype {
     NUMBER = 0,
     SPACE  = 1
 };
 
-enum jikutype to_jikutype(char c){
+enum tokentype to_tokentype(char c){
     if (c == ' ') return SPACE;
     else return NUMBER;
 }
 
-char parse_one(char c, int *out_val, enum jikutype *out_type) {
-    *out_type = to_jikutype(c);
+char parse_one(char c, int *out_val, enum tokentype *out_type) {
+    *out_type = to_tokentype(c);
     int cur_val= 0;
     do{
-        enum jikutype cur_type = to_jikutype(c);
+        enum tokentype cur_type = to_tokentype(c);
         if (*out_type != cur_type) break;
         cur_val = cur_val*10 + c - '0';
     }while((c = cl_getc()) != EOF);
@@ -39,29 +39,18 @@ int main() {
     int space = 0;
     int answer2 = 0;
 
-    // write something here.
-
-    // sample for cl_getc() usage.
-    //int c;
-    //while((c = cl_getc()) != EOF) {
-    //    printf("%c\n",c );
-    //}
+    cl_getc_set_src("123   456");
 
     char c = cl_getc();
-    enum jikutype out_type;
-
+    enum tokentype out_type;
 
     c = parse_one(c,&answer1,&out_type);
-    printf("parse_one\n");
-    printf("c is %c, out_val is %d, out_type is %d\n\n",c,answer1,out_type);
-
+    printf("parse_one\nc is %c, out_val is %d, out_type is %d\n\n",c,answer1,out_type);
     c = parse_one(c,&space,&out_type);
-    printf("parse_one\n");
-    printf("c is %c, out_val is %c, out_type is %d\n\n",c,space,out_type);
-
+    printf("parse_one\nc is %c, out_val is %c, out_type is %d\n\n",c,space,out_type);
     c = parse_one(c,&answer2,&out_type);
-    printf("parse_one\n");
-    printf("c is %c, out_val is %d, out_type is %d\n\n",c,answer2,out_type);
+    printf("parse_one\nc is %c, out_val is %d, out_type is %d\n\n",c,answer2,out_type);
+
 
 
     // verity result.
