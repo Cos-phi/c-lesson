@@ -10,25 +10,23 @@ enum jikutype {
     SPACE  = 1
 };
 
+enum jikutype to_jikutype(char c){
+    if (c == ' ') return SPACE;
+    else return NUMBER;
+}
+
 char parse_one(char c, int *out_val, enum jikutype *out_type) {
-    if (c == ' ') *out_type= SPACE;
-    else *out_type= NUMBER;
-    
-    int out_val_tmp = 0;
+    *out_type = to_jikutype(c);
+    int tmp_out_val= 0;
     do{
-        enum jikutype out_type_tmp;
-        if (c == ' '){
-            out_type_tmp = SPACE;
-        }else{
-            out_type_tmp = NUMBER;
-            out_val_tmp *= 10;
-            out_val_tmp += c - '0';
-        }
-        if (*out_type != out_type_tmp) break;
+        enum jikutype tmp_out_type = to_jikutype(c);
+        if (*out_type != tmp_out_type) break;
+        tmp_out_val *= 10;
+        tmp_out_val += c - '0';
     }while((c = cl_getc()) != EOF);
 
     if (*out_type == NUMBER ) {
-        *out_val = out_val_tmp;
+        *out_val = tmp_out_val;
     }else{
         *out_val = ' ';
     }
