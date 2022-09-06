@@ -17,16 +17,15 @@ enum jikutype to_jikutype(char c){
 
 char parse_one(char c, int *out_val, enum jikutype *out_type) {
     *out_type = to_jikutype(c);
-    int tmp_out_val= 0;
+    int cur_val= 0;
     do{
-        enum jikutype tmp_out_type = to_jikutype(c);
-        if (*out_type != tmp_out_type) break;
-        tmp_out_val *= 10;
-        tmp_out_val += c - '0';
+        enum jikutype cur_type = to_jikutype(c);
+        if (*out_type != cur_type) break;
+        cur_val = cur_val*10 + c - '0';
     }while((c = cl_getc()) != EOF);
 
     if (*out_type == NUMBER ) {
-        *out_val = tmp_out_val;
+        *out_val = cur_val;
     }else{
         *out_val = ' ';
     }
