@@ -4,6 +4,7 @@
 /*
 cc cl_getc.c int_parser_getc.c
 */
+void cl_getc_set_src();
 
 enum tokentype {
     NUMBER = 0,
@@ -39,7 +40,7 @@ int main() {
     int space = 0;
     int answer2 = 0;
 
-    cl_getc_set_src("123   456");
+    cl_getc_set_src("123 456");
 
     char c = cl_getc();
     enum tokentype out_type;

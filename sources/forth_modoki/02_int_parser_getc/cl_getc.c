@@ -14,5 +14,5 @@ int cl_getc() {
 
 void cl_getc_set_src(char* str) {
     input = str;
-    int pos = 0;
+    pos = 0;
 }
