@@ -26,11 +26,34 @@ void test_parse_one_123() {
     cl_getc_set_src("123");
 
     // run test
-    c = parse_one('S',&answer1,&out_type);
+    c = parse_one(c,&answer1,&out_type);
 
     // verity result.
     assert(c == EOF);
     assert(answer1 == 123);
+    assert(out_type == NUMBER);
+    printf("OK\n");
+}
+
+void test_parse_one_123_456() {
+    // initialize
+    int answer1 = 0;
+    int space = 0;
+    int answer2 = 0;
+    char c = 'S'; 
+    enum tokentype out_type;
+    cl_getc_set_src("123 456");
+
+    // run test
+    c = parse_one(c,&answer1,&out_type);
+    c = parse_one(c,&space,&out_type);
+    c = parse_one(c,&answer2,&out_type);
+
+    // verity result.
+    assert(c == EOF);
+    assert(answer1 == 123);
+    assert(space == ' ');
+    assert(answer2 == 456);
     assert(out_type == NUMBER);
     printf("OK\n");
 }
@@ -44,6 +67,7 @@ int main() {
     enum tokentype out_type;
 
     test_parse_one_123();
+    test_parse_one_123_456();
 
     cl_getc_set_src("123 456");
 
