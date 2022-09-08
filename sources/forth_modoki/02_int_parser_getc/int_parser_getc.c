@@ -14,22 +14,25 @@ void cl_getc_set_src();
 char parse_one(char c, int *out_val, enum tokentype *out_type); 
 void test_parse_one_123(); 
 enum tokentype to_tokentype(char c);
+char print_ans(char c, int *cur_val, enum tokentype *cur_type);
 
 
 void test_parse_one_123() {
     int answer1 = 0;
     int space = 0;
     int answer2 = 0;
-
-    char* test_num = "123";
-    printf("test parse one %s\n",test_num);
-    cl_getc_set_src(test_num);
+    cl_getc_set_src("123");
 
     char c = cl_getc();
     enum tokentype out_type;
     c = parse_one(c,&answer1,&out_type);
-    c = parse_one(c,&space,&out_type);
-    c = parse_one(c,&answer2,&out_type);
+
+    // verity result.
+    assert(c == EOF);
+    assert(answer1 == 123);
+    assert(out_type == NUMBER);
+
+    printf("OK\n");
 
 }
 
@@ -43,9 +46,15 @@ int main() {
     cl_getc_set_src("123 456");
     char c = cl_getc();
     enum tokentype out_type;
+
     c = parse_one(c,&answer1,&out_type);
+    //print_ans(c,&answer1,&out_type);
+
     c = parse_one(c,&space,&out_type);
+    //print_ans(c,&space,&out_type);
+
     c = parse_one(c,&answer2,&out_type);
+    //print_ans(c,&answer2,&out_type);
 
     // verity result.
     assert(answer1 == 123);
@@ -82,7 +91,5 @@ char parse_one(char c, int *out_val, enum tokentype *out_type) {
     }else{
         *out_val = ' ';
     }
-    printf("parse_one: ");
-    print_ans(c,out_val,out_type);
     return c;
 }
