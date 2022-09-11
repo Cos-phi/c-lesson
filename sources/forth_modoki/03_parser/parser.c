@@ -28,13 +28,59 @@ struct Token {
 
 #define NAME_SIZE 256
 
+enum LexicalType to_lexicaltype(char ch){
+    if (ch >= '0' && ch <= '9') return NUMBER;
+    else if (ch == ' ') return SPACE;
+    else if (ch >= 'A' && ch <= 'z') return EXECUTABLE_NAME;
+    else if (ch == '/') return LITERAL_NAME;
+    else if (ch == '{') return OPEN_CURLY;
+    else if (ch == '}') return CLOSE_CURLY; 
+    else if (ch == EOF) return END_OF_FILE;
+    else return UNKNOWN;
+}
+
 int parse_one(int prev_ch, struct Token *out_token) {
-    /****
-     * 
-     * TODO: Implement here!
-     * 
-    ****/
-    out_token->ltype = UNKNOWN;
+    if(prev_ch == EOF) prev_ch = cl_getc();
+    struct Token prev_token;
+    struct Token cur_token;
+    prev_token.ltype = to_lexicaltype(prev_ch);
+    cur_token.u.name = (char *)malloc(sizeof(char)*NAME_SIZE);
+    do{
+        cur_token.ltype = to_lexicaltype(prev_ch);
+        if(prev_token.ltype == EXECUTABLE_NAME && cur_token.ltype == EXECUTABLE_NAME){
+            cur_token.ltype = prev_token.ltype;
+            cur_token.u.name[strlen(cur_token.u.name)] = prev_ch;
+        }else if(prev_token.ltype == LITERAL_NAME && cur_token.ltype == EXECUTABLE_NAME){
+            cur_token.ltype = prev_token.ltype;
+            cur_token.u.name[strlen(cur_token.u.name)] = prev_ch;
+        }else if(prev_token.ltype == EXECUTABLE_NAME && cur_token.ltype == NUMBER){
+            cur_token.ltype = prev_token.ltype;
+            cur_token.u.name[strlen(cur_token.u.name)] = prev_ch;
+        }else if(prev_token.ltype == NUMBER && cur_token.ltype == EXECUTABLE_NAME){
+            cur_token.ltype = prev_token.ltype;
+            cur_token.u.name[strlen(cur_token.u.name)] = prev_ch;
+        }else if(prev_token.ltype == NUMBER && cur_token.ltype == NUMBER){
+            cur_token.u.number = prev_token.u.number*10 + prev_ch - '0';
+        }else if(prev_token.ltype == END_OF_FILE && cur_token.ltype == NUMBER){
+            cur_token.u.number = prev_ch - '0';
+        }else if(prev_token.ltype == SPACE){
+            cur_token.u.onechar = prev_ch;
+        }else if(prev_token.ltype == OPEN_CURLY){
+            cur_token.u.onechar = prev_ch;
+        }else if(prev_token.ltype == CLOSE_CURLY){
+            cur_token.u.onechar = prev_ch;
+        }else if(prev_token.ltype == END_OF_FILE){
+            cur_token.u.onechar = prev_ch;
+            break;
+        }else{
+            cur_token.ltype = UNKNOWN;
+        }
+        prev_token = cur_token;
+    }while((prev_ch = cl_getc()) != EOF);
+
+    *out_token = cur_token;
+
+    //out_token->ltype = UNKNOWN;
     return EOF;
 }
 
