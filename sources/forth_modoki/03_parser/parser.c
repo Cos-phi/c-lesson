@@ -41,47 +41,65 @@ enum LexicalType to_lexicaltype(char ch){
 
 int parse_one(int prev_ch, struct Token *out_token) {
     if(prev_ch == EOF) prev_ch = cl_getc();
-    struct Token prev_token;
-    struct Token cur_token;
-    prev_token.ltype = to_lexicaltype(prev_ch);
-    cur_token.u.name = (char *)malloc(sizeof(char)*NAME_SIZE);
-    do{
-        cur_token.ltype = to_lexicaltype(prev_ch);
-        if(prev_token.ltype == EXECUTABLE_NAME && cur_token.ltype == EXECUTABLE_NAME){
-            cur_token.ltype = prev_token.ltype;
-            cur_token.u.name[strlen(cur_token.u.name)] = prev_ch;
-        }else if(prev_token.ltype == LITERAL_NAME && cur_token.ltype == EXECUTABLE_NAME){
-            cur_token.ltype = prev_token.ltype;
-            cur_token.u.name[strlen(cur_token.u.name)] = prev_ch;
-        }else if(prev_token.ltype == EXECUTABLE_NAME && cur_token.ltype == NUMBER){
-            cur_token.ltype = prev_token.ltype;
-            cur_token.u.name[strlen(cur_token.u.name)] = prev_ch;
-        }else if(prev_token.ltype == NUMBER && cur_token.ltype == EXECUTABLE_NAME){
-            cur_token.ltype = prev_token.ltype;
-            cur_token.u.name[strlen(cur_token.u.name)] = prev_ch;
-        }else if(prev_token.ltype == NUMBER && cur_token.ltype == NUMBER){
-            cur_token.u.number = prev_token.u.number*10 + prev_ch - '0';
-        }else if(prev_token.ltype == END_OF_FILE && cur_token.ltype == NUMBER){
-            cur_token.u.number = prev_ch - '0';
-        }else if(prev_token.ltype == SPACE){
-            cur_token.u.onechar = prev_ch;
-        }else if(prev_token.ltype == OPEN_CURLY){
-            cur_token.u.onechar = prev_ch;
-        }else if(prev_token.ltype == CLOSE_CURLY){
-            cur_token.u.onechar = prev_ch;
-        }else if(prev_token.ltype == END_OF_FILE){
-            cur_token.u.onechar = prev_ch;
-            break;
-        }else{
-            cur_token.ltype = UNKNOWN;
-        }
-        prev_token = cur_token;
-    }while((prev_ch = cl_getc()) != EOF);
+    char *cur_name = (char *)malloc(sizeof(char)*NAME_SIZE);
+    int cur_number = 0;
+    //out_token->u.name = (char *)malloc(sizeof(char)*NAME_SIZE);
+    //out_token->u.number = 0;
 
-    *out_token = cur_token;
+    for( int i = 0; i < NAME_SIZE; i++ ){
+        cur_name[i] = '\0';
+    }
 
-    //out_token->ltype = UNKNOWN;
-    return EOF;
+    enum LexicalType ltype = to_lexicaltype(prev_ch);
+    switch( ltype ){
+
+        case EXECUTABLE_NAME:
+            do {
+                ltype =  to_lexicaltype(prev_ch);
+                if( ltype == EXECUTABLE_NAME || ltype == NUMBER){
+                    cur_name[strlen(cur_name)] = prev_ch;
+                }else{
+                    break;
+                }
+            } while((prev_ch = cl_getc()) != EOF);
+            out_token->ltype = EXECUTABLE_NAME;
+            out_token->u.name = cur_name;
+            return prev_ch;
+
+        case LITERAL_NAME:
+            do {
+                ltype =  to_lexicaltype(prev_ch);
+                if( ltype == LITERAL_NAME){
+                    continue;
+                }else if( ltype == EXECUTABLE_NAME || ltype == NUMBER){
+                    cur_name[strlen(cur_name)] = prev_ch;
+                }else{
+                    break;
+                }
+            } while((prev_ch = cl_getc()) != EOF);
+            out_token->ltype = LITERAL_NAME;
+            out_token->u.name = cur_name;
+            return prev_ch;
+
+        case NUMBER:
+            do {
+                ltype =  to_lexicaltype(prev_ch);
+                if( ltype == NUMBER){
+                    cur_number *= 10;
+                    cur_number += prev_ch - '0';
+                }else{
+                    break;
+                }
+            } while((prev_ch = cl_getc()) != EOF);
+            out_token->ltype = NUMBER;
+            out_token->u.number = cur_number;
+            return prev_ch;
+
+        default:
+            out_token->ltype = ltype;
+            out_token->u.onechar = prev_ch;
+            return cl_getc();
+    }
 }
 
 
