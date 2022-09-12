@@ -55,6 +55,7 @@ int parse_one(int prev_ch, struct Token *out_token) {
                     break;
                 }
             } while((prev_ch = cl_getc()) != EOF);
+            out_token->u.name[pos] = '\0';
             return prev_ch;
 
         case LITERAL_NAME:
@@ -70,6 +71,7 @@ int parse_one(int prev_ch, struct Token *out_token) {
                     break;
                 }
             } while((prev_ch = cl_getc()) != EOF);
+            out_token->u.name[pos] = '\0';
             return prev_ch;
 
         case NUMBER:
