@@ -46,18 +46,14 @@ int parse_one(int prev_ch, struct Token *out_token) {
     //out_token->u.name = (char *)malloc(sizeof(char)*NAME_SIZE);
     //out_token->u.number = 0;
 
-    for( int i = 0; i < NAME_SIZE; i++ ){
-        cur_name[i] = '\0';
-    }
-
     enum LexicalType ltype = to_lexicaltype(prev_ch);
+    int pos = 0;
     switch( ltype ){
-
         case EXECUTABLE_NAME:
             do {
                 ltype =  to_lexicaltype(prev_ch);
                 if( ltype == EXECUTABLE_NAME || ltype == NUMBER){
-                    cur_name[strlen(cur_name)] = prev_ch;
+                    cur_name[pos++] = prev_ch;
                 }else{
                     break;
                 }
@@ -72,7 +68,7 @@ int parse_one(int prev_ch, struct Token *out_token) {
                 if( ltype == LITERAL_NAME){
                     continue;
                 }else if( ltype == EXECUTABLE_NAME || ltype == NUMBER){
-                    cur_name[strlen(cur_name)] = prev_ch;
+                    cur_name[pos++] = prev_ch;
                 }else{
                     break;
                 }
