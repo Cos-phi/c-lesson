@@ -41,8 +41,8 @@ enum LexicalType to_lexicaltype(char ch){
 
 int parse_one(int prev_ch, struct Token *out_token) {
     if(prev_ch == EOF) prev_ch = cl_getc();
-    char *cur_name = (char *)malloc(sizeof(char)*NAME_SIZE);
     int cur_number = 0;
+    char *cur_name;
     //out_token->u.name = (char *)malloc(sizeof(char)*NAME_SIZE);
     //out_token->u.number = 0;
 
@@ -50,6 +50,7 @@ int parse_one(int prev_ch, struct Token *out_token) {
     int pos = 0;
     switch( ltype ){
         case EXECUTABLE_NAME:
+            cur_name = (char *)malloc(sizeof(char)*NAME_SIZE);
             do {
                 ltype =  to_lexicaltype(prev_ch);
                 if( ltype == EXECUTABLE_NAME || ltype == NUMBER){
@@ -63,6 +64,7 @@ int parse_one(int prev_ch, struct Token *out_token) {
             return prev_ch;
 
         case LITERAL_NAME:
+            cur_name = (char *)malloc(sizeof(char)*NAME_SIZE);
             do {
                 ltype =  to_lexicaltype(prev_ch);
                 if( ltype == LITERAL_NAME){
