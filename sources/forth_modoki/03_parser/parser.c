@@ -41,56 +41,49 @@ enum LexicalType to_lexicaltype(char ch){
 
 int parse_one(int prev_ch, struct Token *out_token) {
     if(prev_ch == EOF) prev_ch = cl_getc();
-    int cur_number = 0;
-    char *cur_name;
-    //out_token->u.name = (char *)malloc(sizeof(char)*NAME_SIZE);
-    //out_token->u.number = 0;
-
     enum LexicalType ltype = to_lexicaltype(prev_ch);
     int pos = 0;
     switch( ltype ){
         case EXECUTABLE_NAME:
-            cur_name = (char *)malloc(sizeof(char)*NAME_SIZE);
+            out_token->ltype = EXECUTABLE_NAME;
+            out_token->u.name = (char *)malloc(sizeof(char)*NAME_SIZE);
             do {
                 ltype =  to_lexicaltype(prev_ch);
                 if( ltype == EXECUTABLE_NAME || ltype == NUMBER){
-                    cur_name[pos++] = prev_ch;
+                    out_token->u.name[pos++] = prev_ch;
                 }else{
                     break;
                 }
             } while((prev_ch = cl_getc()) != EOF);
-            out_token->ltype = EXECUTABLE_NAME;
-            out_token->u.name = cur_name;
             return prev_ch;
 
         case LITERAL_NAME:
-            cur_name = (char *)malloc(sizeof(char)*NAME_SIZE);
+            out_token->ltype = LITERAL_NAME;
+            out_token->u.name = (char *)malloc(sizeof(char)*NAME_SIZE);
             do {
                 ltype =  to_lexicaltype(prev_ch);
                 if( ltype == LITERAL_NAME){
                     continue;
                 }else if( ltype == EXECUTABLE_NAME || ltype == NUMBER){
-                    cur_name[pos++] = prev_ch;
+                    out_token->u.name[pos++] = prev_ch;
                 }else{
                     break;
                 }
             } while((prev_ch = cl_getc()) != EOF);
-            out_token->ltype = LITERAL_NAME;
-            out_token->u.name = cur_name;
             return prev_ch;
 
         case NUMBER:
+            out_token->ltype = NUMBER;
+            out_token->u.number = 0;
             do {
                 ltype =  to_lexicaltype(prev_ch);
                 if( ltype == NUMBER){
-                    cur_number *= 10;
-                    cur_number += prev_ch - '0';
+                    out_token->u.number *= 10;
+                    out_token->u.number += prev_ch - '0';
                 }else{
                     break;
                 }
             } while((prev_ch = cl_getc()) != EOF);
-            out_token->ltype = NUMBER;
-            out_token->u.number = cur_number;
             return prev_ch;
 
         default:
