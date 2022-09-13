@@ -181,7 +181,7 @@ static void test_parse_one_executable_name(){
 
     assert(ch == EOF);
     assert(token.ltype == expect_type);
-    assert(!strcmp(expect_name,token.u.name));
+    assert(0 == strcmp(expect_name,token.u.name));
 }
 
 static void test_parse_one_literal_name(){
@@ -197,7 +197,7 @@ static void test_parse_one_literal_name(){
 
     assert(ch == EOF);
     assert(token.ltype == expect_type);
-    assert(!strcmp(expect_name,token.u.name));
+    assert(0 == strcmp(expect_name,token.u.name));
 }
 
 static void test_parse_one_open_curly(){
