@@ -31,7 +31,8 @@ struct Token {
 static char stack[NAME_SIZE*STACK_SIZE];
 static int cur_stack_pos = 0;
 static int stack_pos_array[STACK_SIZE];
-static int stack_pos_array_pos = 0;
+static enum LexicalType stack_ltype_array[STACK_SIZE];
+static int stack_index = 0;
 
 void stack_push(struct Token *input_token) {
     char* input_str;
@@ -46,22 +47,29 @@ void stack_push(struct Token *input_token) {
         stack[cur_stack_pos++] = input_str[input_pos++];
     }
 
-    stack_pos_array_pos++;
-    stack_pos_array[stack_pos_array_pos] = cur_stack_pos;
+    stack_index++;
+    stack_pos_array[stack_index] = cur_stack_pos;
+    stack_ltype_array[stack_index] = input_token->ltype;
+
 }
 
 void stack_pop(struct Token *out_token) {
-    int end_pos = stack_pos_array[stack_pos_array_pos];
-    stack_pos_array_pos--;
-    int start_pos = stack_pos_array[stack_pos_array_pos];
-    char pop_str[NAME_SIZE];
+    out_token->ltype = stack_ltype_array[stack_index];
+    
+    int end_pos = stack_pos_array[stack_index];
+    int start_pos = stack_pos_array[--stack_index];
     int i = 0;
+    char pop_str[NAME_SIZE];
     while(start_pos != end_pos){
         pop_str[i++] = stack[start_pos++];
     }
     pop_str[i] = '\0';
-    out_token->u.name = pop_str;
-    //とりあえずnameで返してますけれど‥‥これだとLexicalTlTypeの情報が失われてますわねね
+
+    if (NUMBER == out_token->ltype){
+        out_token->u.number = (int)(*pop_str);
+    }else if (LITERAL_NAME == out_token->ltype) {
+        out_token->u.name = pop_str;
+    }
 }
 
 static void unit_tests() {
@@ -88,5 +96,8 @@ int main() {
 
     stack_pop(&out_token);
     printf("outname %s\n",out_token.u.name);
+
+    stack_pop(&out_token);
+    printf("outname %d\n",out_token.u.number);
 } 
 
