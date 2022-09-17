@@ -27,7 +27,6 @@ struct Token {
 #define NAME_SIZE 256
 #define STACK_SIZE 1024
 
-//static char stack = (char *)malloc(sizeof(char)*NAME_SIZE*STACK_SIZE);
 static char stack[NAME_SIZE*STACK_SIZE];
 static int cur_stack_pos = 0;
 static int stack_pos_array[STACK_SIZE];
@@ -72,15 +71,62 @@ void stack_pop(struct Token *out_token) {
     }
 }
 
-static void unit_tests() {
+int isequal_token(struct Token *token1, struct Token *token2) {
+    if (token1->ltype != token2->ltype){
+        return 0;
+    }else{
+        switch(token1->ltype) {
+            case NUMBER:
+                if (token1->u.number == token2->u.number) return 1;
+                else return 0;
+            case LITERAL_NAME:
+                if (token1->u.name == token2->u.name) return 1;
+                else return 0;
+        }
+    }
+}
 
+static void test_isequal_tokens_are_equal(){
+    struct Token input_1;
+    input_1.ltype = LITERAL_NAME;
+    input_1.u.name = "abc";
+    struct Token input_2;
+    input_2.ltype = LITERAL_NAME;
+    input_2.u.name = "abc";
+    int expect = 1;
+
+    int result = isequal_token(&input_1,&input_2);
+    
+    assert (expect == result);
+}
+static void test_one_pop(){
+    struct Token input = {UNKNOWN, {0}};
+    struct Token expect = {UNKNOWN, {0}};
+    
+    stack_pop(&input);
+    assert (1 == isequal_token(&expect,&input));
+}
+static void test_one_push(){}
+static void test_one_push_one_pop(){}
+static void test_two_push_two_pop(){}
+
+static void unit_tests() {
+    test_isequal_tokens_are_equal();
+//    test_one_pop();
+//    test_one_push();
+//    test_one_push_one_pop();
+//    test_two_push_two_pop();
 }
 
 int main() {
+    unit_tests();
     struct Token token;
+
+
     token.ltype = NUMBER;
     token.u.number = 12;
     stack_push(&token);
+    // ここでSegmentation faultになりますの。unit_testsをコメントアウトすると動くのですけれど....
 
     token.ltype = LITERAL_NAME;
     token.u.name = "abc";
@@ -98,6 +144,6 @@ int main() {
     printf("outname %s\n",out_token.u.name);
 
     stack_pop(&out_token);
-    printf("outname %d\n",out_token.u.number);
+    printf("outnum %d\n",out_token.u.number);
 } 
 
