@@ -34,7 +34,8 @@ static enum LexicalType stack_ltype_array[STACK_SIZE];
 static int stack_index = 0;
 
 void stack_push(struct Token *input_token) {
-    char* input_str;
+    char *input_str;
+    input_str = (char*)malloc(NAME_SIZE);
     if (NUMBER == input_token->ltype){
         sprintf(input_str,"%d",input_token->u.number);
     }else if (LITERAL_NAME == input_token->ltype) {
@@ -80,7 +81,7 @@ int isequal_token(struct Token *token1, struct Token *token2) {
                 if (token1->u.number == token2->u.number) return 1;
                 else return 0;
             case LITERAL_NAME:
-                if (token1->u.name == token2->u.name) return 1;
+                if (0 == strcmp(token1->u.name, token2->u.name)) return 1;
                 else return 0;
         }
     }
@@ -126,7 +127,6 @@ int main() {
     token.ltype = NUMBER;
     token.u.number = 12;
     stack_push(&token);
-    // ここでSegmentation faultになりますの。unit_testsをコメントアウトすると動くのですけれど....
 
     token.ltype = LITERAL_NAME;
     token.u.name = "abc";
