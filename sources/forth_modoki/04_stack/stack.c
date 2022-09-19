@@ -35,10 +35,11 @@ static enum LexicalType stack_ltype_array[STACK_SIZE];
 static int stack_index = 0;
 
 void stack_push(struct Token *input_token) {
-    char *input_str;
+    char* input_str;
     input_str = (char*)malloc(NAME_SIZE);
     if (NUMBER == input_token->ltype){
-        sprintf(input_str,"%d",input_token->u.number);
+        //sprintf(input_str,"%d",input_token->u.number);
+        int2str(input_token->u.number,input_str);
     }else if (LITERAL_NAME == input_token->ltype) {
         input_str = input_token->u.name;
     }
@@ -56,6 +57,7 @@ void stack_push(struct Token *input_token) {
 
 void stack_pop(struct Token *out_token) {
     if(0 == stack_index){
+        printf("stackindex is 0\n");
         struct Token out_token = {UNKNOWN, {0}};
         return;
     }
@@ -89,6 +91,8 @@ int isequal_token(struct Token *token1, struct Token *token2) {
             case LITERAL_NAME:
                 if (0 == strcmp(token1->u.name, token2->u.name)) return 1;
                 else return 0;
+            default:
+                return 1;
         }
     }
 }
@@ -108,11 +112,10 @@ static void test_isequal_tokens_are_equal(){
 }
 static void test_one_pop(){
     struct Token expect = {UNKNOWN, {0}};
-
     struct Token output = {UNKNOWN, {0}};
     stack_pop(&output);
 
-//    assert (1 == isequal_token(&expect,&output));
+    assert (1 == isequal_token(&expect,&output));
 }
 static void test_one_push(){}
 static void test_one_push_one_pop(){}

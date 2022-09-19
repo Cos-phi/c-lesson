@@ -1,21 +1,24 @@
-#include "stack.c"
+#include "stack.h"
+#include <stdio.h>
 #include <math.h>
+#include <string.h>
+#include <assert.h>
 
 int str2int(char* str){
     //int num = (int)*str;
     int num = 0;
     int i = 0;
-    int plusminus = 1;
+    int sign = 1;
     if ( '-' == str[0] ){
         i++;
-        plusminus = -1;
+        sign = -1;
     }
     while ( i < strlen(str) ){
         num *= 10;
         num += str[i] - '0';
         i++;
     }
-    return num*plusminus;
+    return num*sign;
 }
 
 void int2str(int num, char* out_str){
