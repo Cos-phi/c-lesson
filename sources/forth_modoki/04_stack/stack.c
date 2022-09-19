@@ -1,3 +1,4 @@
+#include "stack.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -54,6 +55,11 @@ void stack_push(struct Token *input_token) {
 }
 
 void stack_pop(struct Token *out_token) {
+    if(0 == stack_index){
+        struct Token out_token = {UNKNOWN, {0}};
+        return;
+    }
+
     out_token->ltype = stack_ltype_array[stack_index];
     
     int end_pos = stack_pos_array[stack_index];
@@ -66,7 +72,7 @@ void stack_pop(struct Token *out_token) {
     pop_str[i] = '\0';
 
     if (NUMBER == out_token->ltype){
-        out_token->u.number = (int)(*pop_str);
+        out_token->u.number = str2int(pop_str);
     }else if (LITERAL_NAME == out_token->ltype) {
         out_token->u.name = pop_str;
     }
@@ -101,11 +107,12 @@ static void test_isequal_tokens_are_equal(){
     assert (expect == result);
 }
 static void test_one_pop(){
-    struct Token input = {UNKNOWN, {0}};
     struct Token expect = {UNKNOWN, {0}};
-    
-    stack_pop(&input);
-    assert (1 == isequal_token(&expect,&input));
+
+    struct Token output = {UNKNOWN, {0}};
+    stack_pop(&output);
+
+//    assert (1 == isequal_token(&expect,&output));
 }
 static void test_one_push(){}
 static void test_one_push_one_pop(){}
@@ -113,7 +120,7 @@ static void test_two_push_two_pop(){}
 
 static void unit_tests() {
     test_isequal_tokens_are_equal();
-//    test_one_pop();
+    test_one_pop();
 //    test_one_push();
 //    test_one_push_one_pop();
 //    test_two_push_two_pop();

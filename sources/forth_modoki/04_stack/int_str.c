@@ -1,7 +1,22 @@
-#include<stdio.h>
-#include<string.h>
-#include<assert.h>
-#include<math.h>
+#include "stack.c"
+#include <math.h>
+
+int str2int(char* str){
+    //int num = (int)*str;
+    int num = 0;
+    int i = 0;
+    int plusminus = 1;
+    if ( '-' == str[0] ){
+        i++;
+        plusminus = -1;
+    }
+    while ( i < strlen(str) ){
+        num *= 10;
+        num += str[i] - '0';
+        i++;
+    }
+    return num*plusminus;
+}
 
 void int2str(int num, char* out_str){
     int cur_pos = 0;
@@ -23,7 +38,34 @@ void int2str(int num, char* out_str){
 }
 
 
-void test_int2str_123(){
+static void test_str2int_123(){
+    char* input = "123";
+    int expect = 123;
+
+    int result = str2int(input);
+    
+    assert(expect == result);
+}
+
+static void test_str2int_0(){
+    char* input = "0";
+    int expect = 0;
+
+    int result = str2int(input);
+    
+    assert(expect == result);
+}
+
+static void test_str2int_minus42(){
+    char* input = "-42";
+    int expect = -42;
+
+    int result = str2int(input);
+    
+    assert(expect == result);
+}
+
+static void test_int2str_123(){
     int input = 123;
     char* expect = "123";
 
@@ -34,7 +76,7 @@ void test_int2str_123(){
     assert(0 == strcmp(expect, out_str));
 }
 
-void test_int2str_0(){
+static void test_int2str_0(){
     int input = 0;
     char* expect = "0";
 
@@ -45,7 +87,7 @@ void test_int2str_0(){
     assert(0 == strcmp(expect, out_str));
 }
 
-void test_int2str_minus42(){
+static void test_int2str_minus42(){
     int input = -42;
     char* expect = "-42";
 
@@ -56,8 +98,17 @@ void test_int2str_minus42(){
     assert(0 == strcmp(expect, out_str));
 }
 
-void main(){
+static void unit_tests_intstr(){
     test_int2str_123();
     test_int2str_0();
     test_int2str_minus42();
+    test_str2int_123();
+    test_str2int_0();
+    test_str2int_minus42();
 }
+/**
+void main(){
+    unit_tests_intstr();
+}
+
+**/
