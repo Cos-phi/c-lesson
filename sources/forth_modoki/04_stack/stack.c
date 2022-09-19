@@ -70,14 +70,17 @@ void stack_pop(struct Token *out_token) {
         pop_str[i++] = stack[start_pos++];
     }
     pop_str[i] = '\0';
-    printf("out.token.ltype is %d\n",out_token->ltype);
 
     if (NUMBER == out_token->ltype){
         out_token->u.number = str2int(pop_str);
-        printf(" number pop_str:%d\n",out_token->u.number);
     }else if (LITERAL_NAME == out_token->ltype) {
-        out_token->u.name = pop_str;
-        printf(" literalname pop_str:%s\n",out_token->u.name);
+        out_token->u.name = (char*)malloc(NAME_SIZE);
+        int j = 0;
+        do{
+            out_token->u.name[j] = pop_str[j];
+            j++;
+        }while('\0' != pop_str[j]);
+
     }
 }
 
@@ -172,11 +175,7 @@ static void test_two_push_two_pop(){
     stack_push(&input1);
     stack_push(&input2);
     stack_pop(&output1);
-    //この時点ではちゃんとoutput1はexpect1と同じ状態なのですけれど
-    printf("ltype:%d, name:%s \n",output1.ltype,output1.u.name);
     stack_pop(&output2);
-    //ここではoutput1.name = 1142 になっちゃいますの
-    printf("ltype:%d, name:%s \n",output1.ltype,output1.u.name);
 
     assert (1 == isequal_token(&expect1,&output1));
     assert (1 == isequal_token(&expect2,&output2));
@@ -192,31 +191,8 @@ static void unit_tests() {
     test_two_push_two_pop();
 }
 
+
 int main() {
     unit_tests();
-    struct Token token;
-
-
-    token.ltype = NUMBER;
-    token.u.number = 12;
-    stack_push(&token);
-
-    token.ltype = LITERAL_NAME;
-    token.u.name = "abc";
-    stack_push(&token);
-
-    token.ltype = LITERAL_NAME;
-    token.u.name = "ABC";
-    stack_push(&token);
-    
-    struct Token out_token;
-    stack_pop(&out_token);
-    printf("outname %s\n",out_token.u.name);
-
-    stack_pop(&out_token);
-    printf("outname %s\n",out_token.u.name);
-
-    stack_pop(&out_token);
-    printf("outnum %d\n",out_token.u.number);
 } 
 
