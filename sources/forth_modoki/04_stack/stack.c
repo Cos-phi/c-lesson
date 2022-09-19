@@ -38,7 +38,6 @@ void stack_push(struct Token *input_token) {
     char* input_str;
     input_str = (char*)malloc(NAME_SIZE);
     if (NUMBER == input_token->ltype){
-        //sprintf(input_str,"%d",input_token->u.number);
         int2str(input_token->u.number,input_str);
     }else if (LITERAL_NAME == input_token->ltype) {
         input_str = input_token->u.name;
@@ -52,12 +51,10 @@ void stack_push(struct Token *input_token) {
     stack_index++;
     stack_pos_array[stack_index] = cur_stack_pos;
     stack_ltype_array[stack_index] = input_token->ltype;
-
 }
 
 void stack_pop(struct Token *out_token) {
     if(0 == stack_index){
-        printf("stackindex is 0\n");
         struct Token out_token = {UNKNOWN, {0}};
         return;
     }
@@ -65,18 +62,22 @@ void stack_pop(struct Token *out_token) {
     out_token->ltype = stack_ltype_array[stack_index];
     
     int end_pos = stack_pos_array[stack_index];
-    int start_pos = stack_pos_array[--stack_index];
+    stack_index--;
+    int start_pos = stack_pos_array[stack_index];
     int i = 0;
     char pop_str[NAME_SIZE];
     while(start_pos != end_pos){
         pop_str[i++] = stack[start_pos++];
     }
     pop_str[i] = '\0';
+    printf("out.token.ltype is %d\n",out_token->ltype);
 
     if (NUMBER == out_token->ltype){
         out_token->u.number = str2int(pop_str);
+        printf(" number pop_str:%d\n",out_token->u.number);
     }else if (LITERAL_NAME == out_token->ltype) {
         out_token->u.name = pop_str;
+        printf(" literalname pop_str:%s\n",out_token->u.name);
     }
 }
 
@@ -97,6 +98,13 @@ int isequal_token(struct Token *token1, struct Token *token2) {
     }
 }
 
+void reset_stack(){
+    cur_stack_pos = 0;
+    stack_index = 0;
+}
+
+
+
 static void test_isequal_tokens_are_equal(){
     struct Token input_1;
     input_1.ltype = LITERAL_NAME;
@@ -110,23 +118,78 @@ static void test_isequal_tokens_are_equal(){
     
     assert (expect == result);
 }
+
 static void test_one_pop(){
     struct Token expect = {UNKNOWN, {0}};
     struct Token output = {UNKNOWN, {0}};
+
+    reset_stack();
     stack_pop(&output);
 
     assert (1 == isequal_token(&expect,&output));
 }
-static void test_one_push(){}
-static void test_one_push_one_pop(){}
-static void test_two_push_two_pop(){}
+
+static void test_one_push(){
+    struct Token input; input.ltype = NUMBER; input.u.number = 42;
+    char* expect = "42";
+
+    reset_stack();
+    stack_push(&input);
+    
+    assert (0 == strcmp(expect,stack));
+}
+
+static void test_one_push_name(){
+    struct Token input; input.ltype = LITERAL_NAME; input.u.name = "abc";
+    char* expect = "abc";
+
+    reset_stack();
+    stack_push(&input);
+    
+    assert (0 == strcmp(expect,stack));
+}
+
+static void test_one_push_one_pop(){
+    struct Token input;  input.ltype  = NUMBER; input.u.number  = 123;
+    struct Token expect; expect.ltype = NUMBER; expect.u.number = 123;
+    struct Token output;
+
+    reset_stack();
+    stack_push(&input);
+    stack_pop(&output);
+
+    assert (1 == isequal_token(&expect,&output));
+}
+static void test_two_push_two_pop(){
+    struct Token input1;  input1.ltype  = NUMBER;       input1.u.number  = 1142;
+    struct Token input2;  input2.ltype  = LITERAL_NAME; input2.u.name    = "paooonf";
+    struct Token expect1; expect1.ltype = LITERAL_NAME; expect1.u.name   = "paooonf";
+    struct Token expect2; expect2.ltype = NUMBER;       expect2.u.number = 1142;
+    struct Token output1;
+    struct Token output2;
+
+    reset_stack();
+    stack_push(&input1);
+    stack_push(&input2);
+    stack_pop(&output1);
+    //この時点ではちゃんとoutput1はexpect1と同じ状態なのですけれど
+    printf("ltype:%d, name:%s \n",output1.ltype,output1.u.name);
+    stack_pop(&output2);
+    //ここではoutput1.name = 1142 になっちゃいますの
+    printf("ltype:%d, name:%s \n",output1.ltype,output1.u.name);
+
+    assert (1 == isequal_token(&expect1,&output1));
+    assert (1 == isequal_token(&expect2,&output2));
+
+}
 
 static void unit_tests() {
     test_isequal_tokens_are_equal();
     test_one_pop();
-//    test_one_push();
-//    test_one_push_one_pop();
-//    test_two_push_two_pop();
+    test_one_push();
+    test_one_push_name();
+    test_one_push_one_pop();
+    test_two_push_two_pop();
 }
 
 int main() {
