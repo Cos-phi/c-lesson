@@ -106,6 +106,13 @@ void reset_stack(){
     stack_index = 0;
 }
 
+void print_stack(){
+    printf("stack");
+    for( int i = 0; i < cur_stack_pos; i++){
+        printf(" %#x",stack[i]); 
+    }
+    printf("\n");
+}
 
 
 static void test_isequal_tokens_are_equal(){
@@ -134,7 +141,12 @@ static void test_one_pop(){
 
 static void test_one_push(){
     struct Token input; input.ltype = NUMBER; input.u.number = 42;
-    char* expect = "42";
+    char expect[4];
+    expect[0] = 0x2a;
+    expect[1] = 0x00;
+    expect[2] = 0x00;
+    expect[3] = 0x00;
+    expect[4] = '\0';
 
     reset_stack();
     stack_push(&input);
@@ -176,6 +188,8 @@ static void test_two_push_two_pop(){
     stack_push(&input2);
     stack_pop(&output1);
     stack_pop(&output2);
+
+    print_stack();
 
     assert (1 == isequal_token(&expect1,&output1));
     assert (1 == isequal_token(&expect2,&output2));

@@ -5,44 +5,25 @@
 #include <assert.h>
 
 int str2int(char* str){
-    //int num = (int)*str;
-    int num = 0;
-    int i = 0;
-    int sign = 1;
-    if ( '-' == str[0] ){
-        i++;
-        sign = -1;
-    }
-    while ( i < strlen(str) ){
-        num *= 10;
-        num += str[i] - '0';
-        i++;
-    }
-    return num*sign;
+    int num = ( (int)str[0] + (int)(str[1]<<8) + (int)(str[2]<<16) + (int)(str[3]<<24) );
+    return num;
 }
 
 void int2str(int num, char* out_str){
-    int cur_pos = 0;
-    if ( 0 == num ){
-        out_str[cur_pos++] = '0';
-    }else if ( 0 > num ){
-        out_str[cur_pos] = '-';
-        num = (-1)*num;
-        cur_pos++;
-    }
-    while (0 != num){
-        int num_power = (int)(log10(num));
-        int cur_num = (int)(num/pow(10,num_power));
-        out_str[cur_pos] = '0' + cur_num;
-        num -= (int)(num / pow(10,num_power)) * pow(10,num_power);
-        cur_pos++;
-    }
-    out_str[cur_pos] = '\0';
+    out_str[0] = (char)( num & 0x000000ff  );
+    out_str[1] = (char)((num & 0x0000ff00) >>  8);
+    out_str[2] = (char)((num & 0x00ff0000) >> 16);
+    out_str[3] = (char)((num & 0xff000000) >> 24);
+    out_str[4] = '\0';
 }
 
 
 static void test_str2int_123(){
-    char* input = "123";
+    char input[4];
+    input[0] = 0x7b;
+    input[1] = 0x00;
+    input[2] = 0x00;
+    input[3] = 0x00;
     int expect = 123;
 
     int result = str2int(input);
@@ -51,7 +32,11 @@ static void test_str2int_123(){
 }
 
 static void test_str2int_0(){
-    char* input = "0";
+    char input[4];
+    input[0] = 0x00;
+    input[1] = 0x00;
+    input[2] = 0x00;
+    input[3] = 0x00;
     int expect = 0;
 
     int result = str2int(input);
@@ -60,7 +45,11 @@ static void test_str2int_0(){
 }
 
 static void test_str2int_minus42(){
-    char* input = "-42";
+    char input[4];
+    input[0] = 0xD6;
+    input[1] = 0x00;
+    input[2] = 0x00;
+    input[3] = 0x00;
     int expect = -42;
 
     int result = str2int(input);
@@ -70,7 +59,12 @@ static void test_str2int_minus42(){
 
 static void test_int2str_123(){
     int input = 123;
-    char* expect = "123";
+    char expect[4];
+    expect[0] = 0x7b;
+    expect[1] = 0x00;
+    expect[2] = 0x00;
+    expect[3] = 0x00;
+    expect[4] = '\0';
 
     int str_size = (int)(sizeof(int)*log10(256))+1+1; // size*byte + "\n" + '-'
     char out_str[str_size];
@@ -81,7 +75,12 @@ static void test_int2str_123(){
 
 static void test_int2str_0(){
     int input = 0;
-    char* expect = "0";
+    char expect[5];
+    expect[0] = 0x00;
+    expect[1] = 0x00;
+    expect[2] = 0x00;
+    expect[3] = 0x00;
+    expect[4] = '\0';
 
     int str_size = (int)(sizeof(int)*log10(256))+1+1; // size*byte + "\n" + '-'
     char out_str[str_size];
@@ -92,7 +91,12 @@ static void test_int2str_0(){
 
 static void test_int2str_minus42(){
     int input = -42;
-    char* expect = "-42";
+    char expect[5];
+    expect[0] = 0xD6;
+    expect[1] = 0xFF;
+    expect[2] = 0xFF;
+    expect[3] = 0xFF;
+    expect[4] = '\0';
 
     int str_size = (int)(sizeof(int)*log10(256))+1+1; // size*byte + "\n" + '-'
     char out_str[str_size];
@@ -109,8 +113,9 @@ static void unit_tests_intstr(){
     test_str2int_0();
     test_str2int_minus42();
 }
-/**
+/*
 void main(){
     unit_tests_intstr();
 }
-**/
+*/
+
