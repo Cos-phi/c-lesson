@@ -17,6 +17,18 @@ void int2str(int num, char* out_str){
     out_str[4] = '\0';
 }
 
+static void test_str2int_33147(){
+    char input[4];
+    input[0] = 0x7b;
+    input[1] = 0x81;
+    input[2] = 0x00;
+    input[3] = 0x00;
+    int expect = 33147;
+
+    int result = str2int(input);
+    
+    assert(expect == result);
+}
 
 static void test_str2int_123(){
     char input[4];
@@ -112,10 +124,9 @@ static void unit_tests_intstr(){
     test_str2int_123();
     test_str2int_0();
     test_str2int_minus42();
+    test_str2int_33147();
 }
-/*
 void main(){
     unit_tests_intstr();
 }
-*/
 
