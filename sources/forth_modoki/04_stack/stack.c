@@ -37,16 +37,19 @@ static int stack_index = 0;
 void stack_push(struct Token *input_token) {
     char* input_str;
     input_str = (char*)malloc(NAME_SIZE);
+    int input_pos = 0;
     if (NUMBER == input_token->ltype){
         int2str(input_token->u.number,input_str);
+        while(4 > input_pos){
+            stack[cur_stack_pos++] = input_str[input_pos++];
+        }
     }else if (LITERAL_NAME == input_token->ltype) {
         input_str = input_token->u.name;
+        while('\0' != input_str[input_pos]){
+            stack[cur_stack_pos++] = input_str[input_pos++];
+        }
     }
 
-    int input_pos = 0;
-    while('\0' != input_str[input_pos]){
-        stack[cur_stack_pos++] = input_str[input_pos++];
-    }
 
     stack_index++;
     stack_pos_array[stack_index] = cur_stack_pos;
@@ -188,8 +191,6 @@ static void test_two_push_two_pop(){
     stack_push(&input2);
     stack_pop(&output1);
     stack_pop(&output2);
-
-    print_stack();
 
     assert (1 == isequal_token(&expect1,&output1));
     assert (1 == isequal_token(&expect2,&output2));
