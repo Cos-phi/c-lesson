@@ -5,7 +5,29 @@
 #include <assert.h>
 
 int str2int(char* str){
-    int num = ( (int)str[0] + (int)(str[1]<<8) + (int)(str[2]<<16) + (int)(str[3]<<24) );
+    //int num = ( (int)str[0] + (int)(str[1]<<8) + (int)(str[2]<<16) + (int)(str[3]<<24) );
+    int num = 0;
+    if ( 0x80 > str[0] ){
+        num += (int) str[0]        & 0x000000ff;
+    }else{
+        num += (int) str[0]        & 0xffffffff;
+    }
+    if ( 0x80 > str[1] ){
+        num += (int) str[1] <<  8  & 0x0000ff00;
+    }else{
+        num += (int) str[1] <<  8  & 0xffffff00;
+    }
+    if ( 0x80 > str[2] ){
+        num += (int) str[2] << 16  & 0x00ff0000;
+    }else{
+        num += (int) str[2] << 16  & 0xffff0000;
+    }
+    if ( 0x80 > str[3] ){
+        num += (int) str[3] << 24  & 0xff000000;
+    }else{
+        num += (int) str[3] << 24  & 0xff000000;
+    }
+        
     return num;
 }
 
@@ -59,12 +81,14 @@ static void test_str2int_0(){
 static void test_str2int_minus42(){
     char input[4];
     input[0] = 0xD6;
-    input[1] = 0x00;
-    input[2] = 0x00;
-    input[3] = 0x00;
+    input[1] = 0xFF;
+    input[2] = 0xFF;
+    input[3] = 0xFF;
     int expect = -42;
 
     int result = str2int(input);
+    printf("result %x\n",result);
+    printf("result %d\n",result);
     
     assert(expect == result);
 }
