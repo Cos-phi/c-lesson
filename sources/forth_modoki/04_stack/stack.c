@@ -204,6 +204,7 @@ static void unit_tests() {
     test_one_push_name();
     test_one_push_one_pop();
     test_two_push_two_pop();
+    print_stack();
 }
 
 
