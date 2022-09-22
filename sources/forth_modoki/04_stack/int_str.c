@@ -87,8 +87,6 @@ static void test_str2int_minus42(){
     int expect = -42;
 
     int result = str2int(input);
-    printf("result %x\n",result);
-    printf("result %d\n",result);
     
     assert(expect == result);
 }
@@ -150,7 +148,10 @@ static void unit_tests_intstr(){
     test_str2int_minus42();
     test_str2int_33147();
 }
+/*
+
 void main(){
     unit_tests_intstr();
 }
 
+*/

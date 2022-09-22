@@ -168,8 +168,8 @@ static void test_one_push_name(){
 }
 
 static void test_one_push_one_pop(){
-    struct Token input;  input.ltype  = NUMBER; input.u.number  = 123;
-    struct Token expect; expect.ltype = NUMBER; expect.u.number = 123;
+    struct Token input;  input.ltype  = NUMBER; input.u.number  = 31123;
+    struct Token expect; expect.ltype = NUMBER; expect.u.number = 31123;
     struct Token output;
 
     reset_stack();
@@ -179,10 +179,10 @@ static void test_one_push_one_pop(){
     assert (1 == isequal_token(&expect,&output));
 }
 static void test_two_push_two_pop(){
-    struct Token input1;  input1.ltype  = NUMBER;       input1.u.number  = 1142;
+    struct Token input1;  input1.ltype  = NUMBER;       input1.u.number  = -1142;
     struct Token input2;  input2.ltype  = LITERAL_NAME; input2.u.name    = "paooonf";
     struct Token expect1; expect1.ltype = LITERAL_NAME; expect1.u.name   = "paooonf";
-    struct Token expect2; expect2.ltype = NUMBER;       expect2.u.number = 1142;
+    struct Token expect2; expect2.ltype = NUMBER;       expect2.u.number = -1142;
     struct Token output1;
     struct Token output2;
 
