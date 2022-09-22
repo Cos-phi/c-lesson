@@ -5,7 +5,6 @@
 #include <assert.h>
 
 int str2int(char* str){
-    //int num = ( (int)str[0] + (int)(str[1]<<8) + (int)(str[2]<<16) + (int)(str[3]<<24) );
     int num = 0;
     if ( 0x80 > str[0] ){
         num += (int) str[0]        & 0x000000ff;
@@ -22,11 +21,11 @@ int str2int(char* str){
     }else{
         num += (int) str[2] << 16  & 0xffff0000;
     }
-    if ( 0x80 > str[3] ){
+//  if ( 0x80 > str[3] ){
         num += (int) str[3] << 24  & 0xff000000;
-    }else{
-        num += (int) str[3] << 24  & 0xff000000;
-    }
+//  }else{
+//      num += (int) str[3] << 24  & 0xff000000;
+//  }
         
     return num;
 }
