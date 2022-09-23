@@ -1,4 +1,3 @@
-#include "stack.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,32 +27,29 @@ struct Token {
 #define NAME_SIZE 256
 #define STACK_SIZE 1024
 
-static char stack[NAME_SIZE*STACK_SIZE];
-static int cur_stack_pos = 0;
-static int stack_pos_array[STACK_SIZE];
-static enum LexicalType stack_ltype_array[STACK_SIZE];
+static struct Token stack[STACK_SIZE];
 static int stack_index = 0;
 
 void stack_push(struct Token *input_token) {
-    char* input_str;
-    input_str = (char*)malloc(NAME_SIZE);
-    int input_pos = 0;
-    if (NUMBER == input_token->ltype){
-        int2str(input_token->u.number,input_str);
-        while(4 > input_pos){
-            stack[cur_stack_pos++] = input_str[input_pos++];
-        }
-    }else if (LITERAL_NAME == input_token->ltype) {
-        input_str = input_token->u.name;
-        while('\0' != input_str[input_pos]){
-            stack[cur_stack_pos++] = input_str[input_pos++];
-        }
-    }
-
-
     stack_index++;
-    stack_pos_array[stack_index] = cur_stack_pos;
-    stack_ltype_array[stack_index] = input_token->ltype;
+    stack[stack_index].ltype = input_token->ltype;
+    switch(input_token->ltype){
+        case NUMBER:
+            stack[stack_index].u.number = input_token->u.number;
+            break;
+        case EXECUTABLE_NAME:
+        case LITERAL_NAME:
+            stack[stack_index].u.name = input_token->u.name;
+            break;
+        case SPACE:
+        case OPEN_CURLY:
+        case CLOSE_CURLY:
+        case END_OF_FILE:
+            stack[stack_index].u.onechar = input_token->u.onechar;
+            break;
+        case UNKNOWN:
+            break;
+    }
 }
 
 void stack_pop(struct Token *out_token) {
@@ -61,30 +57,25 @@ void stack_pop(struct Token *out_token) {
         struct Token out_token = {UNKNOWN, {0}};
         return;
     }
-
-    out_token->ltype = stack_ltype_array[stack_index];
-    
-    int end_pos = stack_pos_array[stack_index];
+    out_token->ltype = stack[stack_index].ltype ;
+    switch(stack[stack_index].ltype){
+        case NUMBER:
+            out_token->u.number = stack[stack_index].u.number;
+            break;
+        case EXECUTABLE_NAME:
+        case LITERAL_NAME:
+            out_token->u.name = stack[stack_index].u.name;
+            break;
+        case SPACE:
+        case OPEN_CURLY:
+        case CLOSE_CURLY:
+        case END_OF_FILE:
+            out_token->u.onechar = stack[stack_index].u.onechar;
+            break;
+        case UNKNOWN:
+            break;
+    }
     stack_index--;
-    int start_pos = stack_pos_array[stack_index];
-    int i = 0;
-    char pop_str[NAME_SIZE];
-    while(start_pos != end_pos){
-        pop_str[i++] = stack[start_pos++];
-    }
-    pop_str[i] = '\0';
-
-    if (NUMBER == out_token->ltype){
-        out_token->u.number = str2int(pop_str);
-    }else if (LITERAL_NAME == out_token->ltype) {
-        out_token->u.name = (char*)malloc(NAME_SIZE);
-        int j = 0;
-        do{
-            out_token->u.name[j] = pop_str[j];
-            j++;
-        }while('\0' != pop_str[j]);
-
-    }
 }
 
 int isequal_token(struct Token *token1, struct Token *token2) {
@@ -96,7 +87,14 @@ int isequal_token(struct Token *token1, struct Token *token2) {
                 if (token1->u.number == token2->u.number) return 1;
                 else return 0;
             case LITERAL_NAME:
+            case EXECUTABLE_NAME:
                 if (0 == strcmp(token1->u.name, token2->u.name)) return 1;
+                else return 0;
+            case SPACE:
+            case OPEN_CURLY:
+            case CLOSE_CURLY:
+            case END_OF_FILE:
+                if (token1->u.onechar == token2->u.onechar) return 1;
                 else return 0;
             default:
                 return 1;
@@ -105,14 +103,30 @@ int isequal_token(struct Token *token1, struct Token *token2) {
 }
 
 void reset_stack(){
-    cur_stack_pos = 0;
     stack_index = 0;
 }
 
 void print_stack(){
     printf("stack");
-    for( int i = 0; i < cur_stack_pos; i++){
-        printf(" %#x",stack[i]); 
+    for( int i = 0; i < stack_index; i++){
+        printf(" %d",stack[i].ltype); 
+        switch(stack[stack_index].ltype){
+            case NUMBER:
+                printf("%d ",stack[stack_index].u.number);
+                break;
+            case EXECUTABLE_NAME:
+            case LITERAL_NAME:
+                printf("%s ",stack[stack_index].u.name);
+                break;
+            case SPACE:
+            case OPEN_CURLY:
+            case CLOSE_CURLY:
+            case END_OF_FILE:
+                printf("%c ",stack[stack_index].u.onechar);
+                break;
+            case UNKNOWN:
+                break;
+        }
     }
     printf("\n");
 }
@@ -144,27 +158,12 @@ static void test_one_pop(){
 
 static void test_one_push(){
     struct Token input; input.ltype = NUMBER; input.u.number = 42;
-    char expect[4];
-    expect[0] = 0x2a;
-    expect[1] = 0x00;
-    expect[2] = 0x00;
-    expect[3] = 0x00;
-    expect[4] = '\0';
+    struct Token expect; expect.ltype = NUMBER; expect.u.number = 42;
 
     reset_stack();
     stack_push(&input);
     
-    assert (0 == strcmp(expect,stack));
-}
-
-static void test_one_push_name(){
-    struct Token input; input.ltype = LITERAL_NAME; input.u.name = "abc";
-    char* expect = "abc";
-
-    reset_stack();
-    stack_push(&input);
-    
-    assert (0 == strcmp(expect,stack));
+    assert (1 == isequal_token(&expect,&stack[stack_index]));
 }
 
 static void test_one_push_one_pop(){
@@ -201,10 +200,8 @@ static void unit_tests() {
     test_isequal_tokens_are_equal();
     test_one_pop();
     test_one_push();
-    test_one_push_name();
     test_one_push_one_pop();
     test_two_push_two_pop();
-    print_stack();
 }
 
 
