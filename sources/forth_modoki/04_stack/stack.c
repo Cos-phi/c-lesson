@@ -32,24 +32,7 @@ static int stack_index = 0;
 
 void stack_push(struct Token *input_token) {
     stack_index++;
-    stack[stack_index].ltype = input_token->ltype;
-    switch(input_token->ltype){
-        case NUMBER:
-            stack[stack_index].u.number = input_token->u.number;
-            break;
-        case EXECUTABLE_NAME:
-        case LITERAL_NAME:
-            stack[stack_index].u.name = input_token->u.name;
-            break;
-        case SPACE:
-        case OPEN_CURLY:
-        case CLOSE_CURLY:
-        case END_OF_FILE:
-            stack[stack_index].u.onechar = input_token->u.onechar;
-            break;
-        case UNKNOWN:
-            break;
-    }
+    stack[stack_index] = *input_token;
 }
 
 void stack_pop(struct Token *out_token) {
@@ -57,24 +40,7 @@ void stack_pop(struct Token *out_token) {
         struct Token out_token = {UNKNOWN, {0}};
         return;
     }
-    out_token->ltype = stack[stack_index].ltype ;
-    switch(stack[stack_index].ltype){
-        case NUMBER:
-            out_token->u.number = stack[stack_index].u.number;
-            break;
-        case EXECUTABLE_NAME:
-        case LITERAL_NAME:
-            out_token->u.name = stack[stack_index].u.name;
-            break;
-        case SPACE:
-        case OPEN_CURLY:
-        case CLOSE_CURLY:
-        case END_OF_FILE:
-            out_token->u.onechar = stack[stack_index].u.onechar;
-            break;
-        case UNKNOWN:
-            break;
-    }
+    *out_token = stack[stack_index];
     stack_index--;
 }
 

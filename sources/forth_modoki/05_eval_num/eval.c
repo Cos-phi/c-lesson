@@ -1,6 +1,13 @@
 #include "clesson.h"
 
-void eval() {}
+void eval() {
+    struct Token cur_token = {UNKNOWN, {0} };
+    int ch = EOF;
+    do {
+        ch = parse_one(ch, &cur_token);
+    }while(ch != EOF);
+
+}
 
 static void test_eval_num_one() {
     char *input = "123";
@@ -11,7 +18,9 @@ static void test_eval_num_one() {
     eval();
 
     /* TODO: write code to pop stack top element */
-    int actual = 0;
+    struct Token actual_token = {UNKNOWN, {0} };
+    stack_pop(&actual_token);
+    int actual = actual_token.u.number;
 
     assert(expect == actual);
 
