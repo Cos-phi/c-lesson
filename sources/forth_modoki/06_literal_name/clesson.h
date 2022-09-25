@@ -42,3 +42,4 @@ void stack_push(struct Token *input_token);
 int isequal_token(struct Token *token1, struct Token *token2);
 
 int streq(char *s1, char *s2);
+void unit_tests_dict();
