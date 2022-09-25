@@ -9,18 +9,15 @@ static struct KeyValue dict_array[1024];
 
 void dict_put(char* key, struct Token *token){
     int i = 0;
-    while( i < dict_pos){
+    for(int i = 0; i < dict_pos; i++) {
         if( streq( key, dict_array[i].key ) ) {
             dict_array[i].value = *token;
-            break; //ここでreturnすれば↓のif要らなくなるかしら
+            return; 
         }
-        i++;
     }
-    if( dict_pos == i ){
-        dict_array[dict_pos].key = key;
-        dict_array[dict_pos].value = *token;
-        dict_pos++;
-    }
+    dict_array[dict_pos].key = key;
+    dict_array[dict_pos].value = *token;
+    dict_pos++;
 }
 int dict_get(char* key, struct Token *out_token){
     for(int i = 0; i < dict_pos; i++) {
