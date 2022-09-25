@@ -1,10 +1,5 @@
 #include "clesson.h"
 static int dict_pos = 0;
-
-struct KeyValue {
-    char *key;
-    struct Token value;
-};
 static struct KeyValue dict_array[1024];
 
 void dict_put(char* key, struct Token *token){

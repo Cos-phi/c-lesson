@@ -20,6 +20,16 @@ void add_nums(){
     stack_push(&sum);
 }
 
+void def(){
+    struct Token val;
+    struct Token literal_name;
+    stack_pop(&val);
+    stack_pop(&literal_name);
+    
+    dict_put(literal_name.u.name, &val);
+//    dict_print_all();
+}
+
 void eval() {
     struct Token token = {UNKNOWN, {0} };
     int ch = EOF;
@@ -35,8 +45,10 @@ void eval() {
                 case CLOSE_CURLY:
                     break;
                 case EXECUTABLE_NAME:
-                    if( 1 == streq(token.u.name,"add")){
+                    if( streq("add", token.u.name) ){
                         add_nums();
+                    }else if( streq("def", token.u.name) ){
+                        def();
                     }
                     break;
                 case LITERAL_NAME:
@@ -47,6 +59,20 @@ void eval() {
             }
         }
     }while(ch != EOF);
+
+}
+
+static void test_def() {
+    char *input = "/abc 12 def";
+    struct Token expect_value; expect_value.ltype = NUMBER; expect_value.u.number = 12;
+
+    cl_getc_set_src(input);
+    eval();
+    struct Token actual_token = {UNKNOWN, {0} };
+    dict_get("abc",&actual_token);
+    int actual = actual_token.u.number;
+    
+    assert(12 == actual);
 
 }
 
@@ -123,6 +149,7 @@ int main() {
     test_eval_num_add();
     test_eval_num_add2();
     unit_tests_dict();
+    test_def();
 
     return 0;
 }
