@@ -25,9 +25,9 @@ void def(){
     struct Token literal_name;
     stack_pop(&val);
     stack_pop(&literal_name);
-    
+    assert( literal_name.ltype == LITERAL_NAME);
+
     dict_put(literal_name.u.name, &val);
-//    dict_print_all();
 }
 
 static int dict_pos = 0;
@@ -76,6 +76,7 @@ void eval() {
     do {
         ch = parse_one(ch, &token);
         if(token.ltype != UNKNOWN) {
+            struct Token ref_token = {UNKNOWN, {0} };
             switch(token.ltype) {
                 case NUMBER:
                     stack_push(&token);
@@ -89,15 +90,7 @@ void eval() {
                         add_nums();
                     }else if( streq("def", token.u.name) ){
                         def();
-                    }else{// (name ga dict ni attara...){
-                        char* name;
-                        for(int i = 0; i < dict_pos; i++) {
-                            if( streq( token.u.name, dict_array[i].key ) ) {
-                                name = token.u.name;
-                            }
-                        }
-                        struct Token ref_token = {UNKNOWN, {0} };
-                        dict_get(name,&ref_token);
+                    }else if( dict_get(token.u.name,&ref_token) ){
                         stack_push(&ref_token);
                     }
                     break;
