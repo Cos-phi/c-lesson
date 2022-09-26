@@ -61,6 +61,10 @@ void dict_print_all(){
     }
 }
 
+void dict_clear(){
+    dict_pos = 0;
+}
+
 int isequal_keyvalue(struct KeyValue *keyvalue1, struct KeyValue *keyvalue2){
     if( keyvalue1->key != keyvalue2->key ){
         return 0;
@@ -159,7 +163,12 @@ static void test_dict_put() {
 
 void unit_tests_dict(){
     test_isequal_keyvalue();
+    dict_clear();
     test_dict_put();
+    dict_clear();
+    test_def();
+    dict_clear();
+    test_def_and_add();
 }
 
 static void test_eval_num_one() {
@@ -235,8 +244,6 @@ int main() {
     test_eval_num_add();
     test_eval_num_add2();
     unit_tests_dict();
-    test_def();
-    test_def_and_add();
 
     return 0;
 }
