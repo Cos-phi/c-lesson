@@ -44,6 +44,7 @@ void dict_put(char* key, struct Token *token){
     dict_array[dict_pos].value = *token;
     dict_pos++;
 }
+
 int dict_get(char* key, struct Token *out_token){
     for(int i = 0; i < dict_pos; i++) {
         if(streq(key, dict_array[i].key)) {

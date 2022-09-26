@@ -75,11 +75,11 @@ int isequal_token(struct Token *token1, struct Token *token2) {
     }
 }
 
-void reset_stack(){
+void stack_clear(){
     stack_index = 0;
 }
 
-void print_stack(){
+void stack_print_all(){
     printf("stack");
     for( int i = 0; i < stack_index; i++){
         printf(" %d",stack[i].ltype); 
@@ -123,7 +123,7 @@ static void test_one_pop(){
     struct Token expect = {UNKNOWN, {0}};
     struct Token output = {UNKNOWN, {0}};
 
-    reset_stack();
+    stack_clear();
     stack_pop(&output);
 
     assert (1 == isequal_token(&expect,&output));
@@ -133,7 +133,7 @@ static void test_one_push(){
     struct Token input; input.ltype = NUMBER; input.u.number = 42;
     struct Token expect; expect.ltype = NUMBER; expect.u.number = 42;
 
-    reset_stack();
+    stack_clear();
     stack_push(&input);
     
     assert (1 == isequal_token(&expect,&stack[stack_index]));
@@ -144,7 +144,7 @@ static void test_one_push_one_pop(){
     struct Token expect; expect.ltype = NUMBER; expect.u.number = 33147;
     struct Token output;
 
-    reset_stack();
+    stack_clear();
     stack_push(&input);
     stack_pop(&output);
 
@@ -158,7 +158,7 @@ static void test_two_push_two_pop(){
     struct Token output1;
     struct Token output2;
 
-    reset_stack();
+    stack_clear();
     stack_push(&input1);
     stack_push(&input2);
     stack_pop(&output1);
