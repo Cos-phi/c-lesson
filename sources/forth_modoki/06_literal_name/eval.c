@@ -1,12 +1,5 @@
 #include "clesson.h"
 
-int streq(char *s1,char *s2){
-    if( 0 == strcmp(s1,s2) ){
-        return 1;
-    }else{
-        return 0;
-    } 
-}
 
 void add_nums(){
     struct Token num1;
@@ -65,6 +58,34 @@ void eval() {
 
 }
 
+static void test_def_and_add() {
+    char *input = "/abc 12 def abc abc add";
+    int expect = 24;
+
+    cl_getc_set_src(input);
+    eval();
+    
+    struct Token actual_token = {UNKNOWN, {0} };
+    stack_pop(&actual_token);
+    int actual = actual_token.u.number;
+
+    assert(expect == actual);
+
+}
+
+static void test_def() {
+    char *input = "/abc 12 def";
+    struct Token expect_value; expect_value.ltype = NUMBER; expect_value.u.number = 12;
+
+    cl_getc_set_src(input);
+    eval();
+    struct Token actual_token = {UNKNOWN, {0} };
+    dict_get("abc",&actual_token);
+    int actual = actual_token.u.number;
+    
+    assert(12 == actual);
+
+}
 
 static void test_eval_num_one() {
     char *input = "123";
@@ -138,6 +159,9 @@ int main() {
     test_eval_num_add();
     test_eval_num_add2();
     unit_tests_dict();
+    test_def();
+    dict_clear();
+    test_def_and_add();
 
     return 0;
 }

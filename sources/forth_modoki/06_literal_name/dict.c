@@ -3,6 +3,14 @@
 static int dict_pos = 0;
 static struct KeyValue dict_array[1024];
 
+int streq(char *s1,char *s2){
+    if( 0 == strcmp(s1,s2) ){
+        return 1;
+    }else{
+        return 0;
+    } 
+}
+
 void dict_put(char* key, struct Token *token){
     for(int i = 0; i < dict_pos; i++) {
         if( streq( key, dict_array[i].key ) ) {
@@ -46,34 +54,6 @@ int isequal_keyvalue(struct KeyValue *keyvalue1, struct KeyValue *keyvalue2){
 }
 
 
-static void test_def_and_add() {
-    char *input = "/abc 12 def abc abc add";
-    int expect = 24;
-
-    cl_getc_set_src(input);
-    eval();
-    
-    struct Token actual_token = {UNKNOWN, {0} };
-    stack_pop(&actual_token);
-    int actual = actual_token.u.number;
-
-    assert(expect == actual);
-
-}
-
-static void test_def() {
-    char *input = "/abc 12 def";
-    struct Token expect_value; expect_value.ltype = NUMBER; expect_value.u.number = 12;
-
-    cl_getc_set_src(input);
-    eval();
-    struct Token actual_token = {UNKNOWN, {0} };
-    dict_get("abc",&actual_token);
-    int actual = actual_token.u.number;
-    
-    assert(12 == actual);
-
-}
 
 static void test_isequal_keyvalue(){
     struct Token input1_value;  input1_value.ltype  = NUMBER; input1_value.u.number  = 123;
@@ -102,7 +82,4 @@ void unit_tests_dict(){
     dict_clear();
     test_dict_put();
     dict_clear();
-    test_def();
-    dict_clear();
-    test_def_and_add();
 }

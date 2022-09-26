@@ -50,13 +50,14 @@ int isequal_token(struct Token *token1, struct Token *token2);
 void stack_clear();
 
 //eval.c
-void eval();
-int streq(char *s1, char *s2);
+//void eval();
 
 //dict.c
+int streq(char *s1, char *s2);
 void dict_put(char* key, struct Token *token);
 int dict_get(char* key, struct Token *out_token);
 void def();
 void dict_print_all();
+void dict_clear();
 int isequal_keyvalue(struct KeyValue *keyvalue1, struct KeyValue *keyvalue2);
 void unit_tests_dict();
