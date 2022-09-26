@@ -20,6 +20,16 @@ void add_nums(){
     stack_push(&sum);
 }
 
+void def(){
+    struct Token val;
+    struct Token literal_name;
+    stack_pop(&val);
+    stack_pop(&literal_name);
+    assert( literal_name.ltype == LITERAL_NAME);
+
+    dict_put(literal_name.u.name, &val);
+}
+
 void eval() {
     struct Token token = {UNKNOWN, {0} };
     int ch = EOF;
