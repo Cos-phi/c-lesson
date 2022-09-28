@@ -35,6 +35,7 @@ struct KeyValue {
 
 #define NAME_SIZE 256
 #define STACK_SIZE 1024
+#define TABLE_SIZE 16
 
 //cl_getc.c
 int cl_getc();
@@ -48,9 +49,6 @@ void stack_pop(struct Token *out_token);
 void stack_push(struct Token *input_token);
 int isequal_token(struct Token *token1, struct Token *token2);
 void stack_clear();
-
-//eval.c
-//void eval();
 
 //dict.c
 int streq(char *s1, char *s2);

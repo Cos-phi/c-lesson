@@ -5,12 +5,7 @@ struct Node {
     struct Token value;
     struct Node *next;
 };
-#define TABLE_SIZE 1024
 struct Node *array[TABLE_SIZE];
-
-
-//static int dict_pos = 0;
-//static struct KeyValue dict_array[1024];
 
 int streq(char *s1,char *s2){
     if( 0 == strcmp(s1,s2) ){
@@ -20,21 +15,22 @@ int streq(char *s1,char *s2){
     } 
 }
 
-void update_or_insert_list(struct Node *head, char* key, struct Token *value){
+void update_or_insert_list(struct Node *cur_node, char* key, struct Token *value){
     int idx = hash(key);
-    do{
-        if( head->key == key ){
-            head->value = *value;
-            return;
-        }else if( NULL == head ){
-            head = malloc(sizeof(struct Node));
-            head->next = NULL;
-            head->key = key;
-            head->value = *value;
+    struct Node *prev_node;
+    while( NULL != cur_node ){
+        if( cur_node->key == key ){
+            cur_node->value = *value;
             return;
         }
-        head = head->next;
-    }while( NULL != head ); 
+        prev_node = cur_node;
+        cur_node = cur_node->next;
+    }
+    assert( NULL == cur_node );
+    cur_node = malloc(sizeof(struct Node));
+    cur_node->key = key;
+    cur_node->value = *value;
+    prev_node->next = cur_node;
 }
 
 void dict_put(char* key, struct Token *value){
@@ -52,30 +48,28 @@ void dict_put(char* key, struct Token *value){
 }
 
 int dict_get(char* key, struct Token *out_token){
-    dict_print_all();
     int idx = hash(key);
-    struct Node *head = array[idx];
-    while( head != NULL ){
-        printf("head->key: '%s' val: %d \n",head->key, head->value.u.number);
-        printf("key      : '%s' \n",key);
-        assert( head->key == key );
-        if( head->key == key ){
-            *out_token = head->value;
+    struct Node *cur_node = array[idx];
+    while( cur_node != NULL ){
+        if( streq(key,cur_node->key) ){
+            *out_token = cur_node->value;
             return 1;
         }
-        head = head->next;
+        cur_node = cur_node->next;
     }
-    printf("key %s is not exist!\n",head->key);
+    printf("key %s is not exist!\n",cur_node->key);
     return 0;
 }
 
 void dict_print_all(){
     for(int i = 0; i < TABLE_SIZE ; i++) {
-        struct Node *head = array[i];
-        while( head != NULL ){
-            printf("key: %s, value: %d \n",head->key, head->value.u.number);
-            head = head->next;
+        struct Node *cur_node = array[i];
+        printf("hash %d :",i);
+        while( cur_node != NULL ){
+            printf(" %s => %d ",cur_node->key, cur_node->value.u.number);
+            cur_node = cur_node->next;
         }
+        printf("\n");
     }
 }
 
@@ -122,16 +116,26 @@ static void test_dict_put() {
 }
 
 static void test_dict_put2() {
-    char* input_key = "mue-";
-    struct Token input_value;  input_value.ltype  = NUMBER; input_value.u.number  = 123;
-    struct Token expect_value; expect_value.ltype = NUMBER; expect_value.u.number = 123;
+    char* input_key  = "mue-";
+    char* input_key2 = "ume-";
+    char* input_key3 = "me-u";
+    char* input_key4 = "aja";
+    struct Token input_value;  input_value.ltype  = NUMBER; input_value.u.number  = 1;
+    struct Token input_value2;  input_value2.ltype  = NUMBER; input_value2.u.number  = 2;
+    struct Token input_value3;  input_value3.ltype  = NUMBER; input_value3.u.number  = 4;
+    struct Token input_value4;  input_value4.ltype  = NUMBER; input_value4.u.number  = 32;
+    struct Token expect_value; expect_value.ltype = NUMBER; expect_value.u.number = 2;
     struct Token actual_value = {UNKNOWN, {0}};
 
     dict_put(input_key,&input_value);
-    dict_get(input_key,&actual_value);
+    dict_put(input_key2,&input_value2);
+    dict_put(input_key3,&input_value3);
+    dict_put(input_key4,&input_value4);
+    dict_print_all();
+
+    dict_get(input_key2,&actual_value);
     
-    
-    assert( actual_value.u.number == input_value.u.number );
+    assert( actual_value.u.number == expect_value.u.number );
 }
 
 void unit_tests_dict(){

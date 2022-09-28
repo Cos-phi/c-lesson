@@ -59,8 +59,8 @@ void eval() {
 }
 
 static void test_def_and_add() {
-    char *input = "/abc 12 def abc abc add";
-    int expect = 24;
+    char *input = "/mue- 12 def /ume- 30 def ume- mue- add";
+    int expect = 12 + 30;
 
     cl_getc_set_src(input);
     eval();

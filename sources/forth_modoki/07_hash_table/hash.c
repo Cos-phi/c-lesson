@@ -1,6 +1,5 @@
 #include "clesson.h"
 
-#define TABLE_SIZE 1024
 
 struct Node {
     char *key;
@@ -8,12 +7,12 @@ struct Node {
     struct Node *next;
 };
 
-struct Node *array[1024];
+struct Node *array[TABLE_SIZE];
 
 int hash(char *str) {
     unsigned int val = 0;
     while(*str) {
         val += *str++;
     }
-    return (int)(val%1024);
+    return (int)(val%TABLE_SIZE);
 }
