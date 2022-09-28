@@ -74,13 +74,13 @@ static void test_def_and_add() {
 }
 
 static void test_def() {
-    char *input = "/abc 12 def";
-    struct Token expect_value; expect_value.ltype = NUMBER; expect_value.u.number = 12;
-
+    char *input = "/abcd 12 def";
     cl_getc_set_src(input);
-    eval();
+    struct Token expect_value; expect_value.ltype = NUMBER; expect_value.u.number = 12;
     struct Token actual_token = {UNKNOWN, {0} };
-    dict_get("abc",&actual_token);
+
+    eval();
+    dict_get("abcd",&actual_token);
     int actual = actual_token.u.number;
     
     assert(12 == actual);

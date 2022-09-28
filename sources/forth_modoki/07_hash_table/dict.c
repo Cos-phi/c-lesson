@@ -20,26 +20,31 @@ int streq(char *s1,char *s2){
     } 
 }
 
-void update_or_insert_list(struct Node head, char* key, struct Token *value){
+void update_or_insert_list(struct Node *head, char* key, struct Token *value){
     int idx = hash(key);
-    if( head->key == key ){
-        haed->value = *token;
-    }else{
-        head->next = (Node*)malloc(sizeof(Node));
-        head->next->next = NULL;
-        head->next->key = key;
-        head->next->value = *token;
-    }
+    do{
+        if( head->key == key ){
+            head->value = *value;
+            return;
+        }else if( NULL == head ){
+            head = malloc(sizeof(struct Node));
+            head->next = NULL;
+            head->key = key;
+            head->value = *value;
+            return;
+        }
+        head = head->next;
+    }while( NULL != head ); 
 }
 
-void dict_put(char* key, struct Token *token){
+void dict_put(char* key, struct Token *value){
     int idx = hash(key);
     struct Node *head = array[idx];
-    if( head == NULL ) {
-        head = (Node*)malloc(sizeof(Node));
+    if( NULL == head ) {
+        head = malloc(sizeof(struct Node));
         head->next = NULL;
         head->key = key;
-        head->value = *token;
+        head->value = *value;
         array[idx] = head;
         return;
     }
@@ -47,26 +52,37 @@ void dict_put(char* key, struct Token *token){
 }
 
 int dict_get(char* key, struct Token *out_token){
+    dict_print_all();
     int idx = hash(key);
     struct Node *head = array[idx];
     while( head != NULL ){
+        printf("head->key: '%s' val: %d \n",head->key, head->value.u.number);
+        printf("key      : '%s' \n",key);
+        assert( head->key == key );
         if( head->key == key ){
             *out_token = head->value;
             return 1;
         }
         head = head->next;
     }
+    printf("key %s is not exist!\n",head->key);
     return 0;
 }
 
 void dict_print_all(){
-    for(int i = 0; i < dict_pos; i++) {
-        printf("key: %s, value: %d \n",dict_array[i].key, dict_array[i].value.u.number);
+    for(int i = 0; i < TABLE_SIZE ; i++) {
+        struct Node *head = array[i];
+        while( head != NULL ){
+            printf("key: %s, value: %d \n",head->key, head->value.u.number);
+            head = head->next;
+        }
     }
 }
 
 void dict_clear(){
-    dict_pos = 0;
+    for(int i = 0; i < TABLE_SIZE ; i++) {
+        array[i] = NULL;
+    }
 }
 
 int isequal_keyvalue(struct KeyValue *keyvalue1, struct KeyValue *keyvalue2){
@@ -93,19 +109,36 @@ static void test_isequal_keyvalue(){
 }
 
 static void test_dict_put() {
-    char* input_key = "key";
+    char* input_key = "hoge";
     struct Token input_value;  input_value.ltype  = NUMBER; input_value.u.number  = 123;
     struct Token expect_value; expect_value.ltype = NUMBER; expect_value.u.number = 123;
-    struct KeyValue expect = {"key", expect_value};
+    struct Token actual_value = {UNKNOWN, {0}};
 
     dict_put(input_key,&input_value);
+    dict_get(input_key,&actual_value);
     
-    assert( isequal_keyvalue( &(dict_array[0]), &expect ) );
+    
+    assert( actual_value.u.number == input_value.u.number );
+}
+
+static void test_dict_put2() {
+    char* input_key = "mue-";
+    struct Token input_value;  input_value.ltype  = NUMBER; input_value.u.number  = 123;
+    struct Token expect_value; expect_value.ltype = NUMBER; expect_value.u.number = 123;
+    struct Token actual_value = {UNKNOWN, {0}};
+
+    dict_put(input_key,&input_value);
+    dict_get(input_key,&actual_value);
+    
+    
+    assert( actual_value.u.number == input_value.u.number );
 }
 
 void unit_tests_dict(){
     test_isequal_keyvalue();
     dict_clear();
     test_dict_put();
+    dict_clear();
+    test_dict_put2();
     dict_clear();
 }
