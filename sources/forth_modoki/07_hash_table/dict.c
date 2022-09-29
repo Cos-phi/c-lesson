@@ -57,7 +57,6 @@ int dict_get(char* key, struct Token *out_token){
         }
         cur_node = cur_node->next;
     }
-    printf("key %s is not exist!\n",cur_node->key);
     return 0;
 }
 
@@ -131,7 +130,6 @@ static void test_dict_put2() {
     dict_put(input_key2,&input_value2);
     dict_put(input_key3,&input_value3);
     dict_put(input_key4,&input_value4);
-    dict_print_all();
 
     dict_get(input_key2,&actual_value);
     

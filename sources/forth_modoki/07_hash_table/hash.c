@@ -7,8 +7,6 @@ struct Node {
     struct Node *next;
 };
 
-struct Node *array[TABLE_SIZE];
-
 int hash(char *str) {
     unsigned int val = 0;
     while(*str) {
