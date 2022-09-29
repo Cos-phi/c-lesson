@@ -16,7 +16,6 @@ int streq(char *s1,char *s2){
 }
 
 void update_or_insert_list(struct Node *cur_node, char* key, struct Token *value){
-    int idx = hash(key);
     struct Node *prev_node;
     while( NULL != cur_node ){
         if( cur_node->key == key ){
