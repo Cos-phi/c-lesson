@@ -1,3 +1,4 @@
+#include "element.h"
 #include "clesson.h"
 
 int hash(char *str) {
