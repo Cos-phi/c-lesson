@@ -25,18 +25,16 @@ void def(){
     dict_put(literal_name.u.name, &val);
 }
 
-struct Element create_num_element(struct Token token){
-    assert( TOKEN_NUMBER == token.ltype );
+struct Element create_num_element(int input){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
     element.etype = ELEMENT_NUMBER;
-    element.u.number = token.u.number;
+    element.u.number = input;
     return element;
 }
-struct Element create_literal_element(struct Token token){
-    assert( TOKEN_LITERAL_NAME == token.ltype );
+struct Element create_literal_element(char* input){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
     element.etype = ELEMENT_LITERAL_NAME;
-    element.u.name = token.u.name;
+    element.u.name = input;
     return element;
 }
 
@@ -49,7 +47,7 @@ void eval() {
             struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
             switch(token.ltype) {
                 case TOKEN_NUMBER:
-                    ref_element = create_num_element(token);
+                    ref_element = create_num_element(token.u.number);
                     stack_push(&ref_element);
                     break;
                 case TOKEN_SPACE:
@@ -66,7 +64,7 @@ void eval() {
                     }
                     break;
                 case TOKEN_LITERAL_NAME:
-                    ref_element = create_literal_element(token);
+                    ref_element = create_literal_element(token.u.name);
                     stack_push(&ref_element);
                     break;
                 default:
