@@ -2,6 +2,10 @@
 #include "clesson.h"
 
 
+struct KeyValue {
+    char *key;
+    struct Element value;
+};
 
 struct Node {
     char *key;
@@ -115,10 +119,16 @@ static void test_dict_put2() {
     assert( actual_value.u.number == expect_value.u.number );
 }
 
-void unit_tests_dict(){
+static void unit_tests_dict(){
     dict_clear();
     test_dict_put();
     dict_clear();
     test_dict_put2();
     dict_clear();
 }
+
+#if 0
+void main(){
+    unit_tests_dict();
+}
+#endif

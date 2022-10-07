@@ -174,7 +174,6 @@ int main() {
     test_eval_num_two();
     test_eval_num_add();
     test_eval_num_add2();
-    unit_tests_dict();
     test_def();
     dict_clear();
     test_def_and_add();

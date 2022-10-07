@@ -18,12 +18,7 @@ struct Element {
         int number;
         char onechar;
         char *name;
-    } u;
-};
-
-struct KeyValue {
-    char *key;
-    struct Element value;
+    }u;
 };
 
 #endif
@@ -34,12 +29,9 @@ void stack_push(struct Element *input_element);
 void stack_clear();
 
 //dict.c
-void dict_put(char* key, struct Element *element);
 int dict_get(char* key, struct Element *out_element);
-void def();
-void dict_print_all();
+void dict_put(char* key, struct Element *element);
 void dict_clear();
-void unit_tests_dict();
 
 //hash.c
 int hash(char* str);
