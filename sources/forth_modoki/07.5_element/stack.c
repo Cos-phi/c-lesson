@@ -40,23 +40,6 @@ void stack_pop(struct Element *out_element) {
     stack_index--;
 }
 
-int isequal_element(struct Element *element1, struct Element *element2) {
-    if (element1->etype != element2->etype){
-        return 0;
-    }else{
-        switch(element1->etype) {
-            case ELEMENT_NUMBER:
-                if (element1->u.number == element2->u.number) return 1;
-                else return 0;
-            case ELEMENT_LITERAL_NAME:
-                if (0 == strcmp(element1->u.name, element2->u.name)) return 1;
-                else return 0;
-            default:
-                return 1;
-        }
-    }
-}
-
 void stack_clear(){
     stack_index = 0;
 }
@@ -79,6 +62,23 @@ void stack_print_all(){
     printf("\n");
 }
 
+
+static int isequal_element(struct Element *element1, struct Element *element2) {
+    if (element1->etype != element2->etype){
+        return 0;
+    }else{
+        switch(element1->etype) {
+            case ELEMENT_NUMBER:
+                if (element1->u.number == element2->u.number) return 1;
+                else return 0;
+            case ELEMENT_LITERAL_NAME:
+                if (0 == strcmp(element1->u.name, element2->u.name)) return 1;
+                else return 0;
+            default:
+                return 1;
+        }
+    }
+}
 
 static void test_isequal_elements_are_equal(){
     struct Element input_1;

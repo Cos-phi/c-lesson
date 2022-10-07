@@ -55,9 +55,9 @@ void eval() {
                 case TOKEN_CLOSE_CURLY:
                     break;
                 case TOKEN_EXECUTABLE_NAME:
-                    if( streq("add", token.u.name) ){
+                    if( 0 == strcmp("add", token.u.name) ){
                         add_nums();
-                    }else if( streq("def", token.u.name) ){
+                    }else if( 0 == strcmp("def", token.u.name) ){
                         def();
                     }else if( dict_get(token.u.name,&ref_element) ){
                         stack_push(&ref_element);
@@ -72,7 +72,6 @@ void eval() {
             }
         }
     }while(ch != EOF);
-
 }
 
 static void test_def_and_add() {

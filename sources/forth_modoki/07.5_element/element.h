@@ -31,17 +31,14 @@ struct KeyValue {
 //stack.c
 void stack_pop(struct Element *out_element);
 void stack_push(struct Element *input_element);
-int isequal_element(struct Element *element1, struct Element *element2);
 void stack_clear();
 
 //dict.c
-int streq(char *s1, char *s2);
 void dict_put(char* key, struct Element *element);
 int dict_get(char* key, struct Element *out_element);
 void def();
 void dict_print_all();
 void dict_clear();
-int isequal_keyvalue(struct KeyValue *keyvalue1, struct KeyValue *keyvalue2);
 void unit_tests_dict();
 
 //hash.c

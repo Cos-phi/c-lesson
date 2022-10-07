@@ -2,6 +2,7 @@
 #include "clesson.h"
 
 
+
 struct Node {
     char *key;
     struct Element value;
@@ -79,29 +80,6 @@ void dict_clear(){
     }
 }
 
-int isequal_keyvalue(struct KeyValue *keyvalue1, struct KeyValue *keyvalue2){
-    if( keyvalue1->key != keyvalue2->key ){
-        return 0;
-    }else if( 1 != isequal_element( &(keyvalue1->value), &(keyvalue2->value) )){
-        return 0;
-    }else{
-        return 1;
-    }
-}
-
-
-
-static void test_isequal_keyvalue(){
-    struct Element input1_value;  input1_value.etype  = ELEMENT_NUMBER; input1_value.u.number  = 123;
-    struct KeyValue input1 = { "key1", input1_value};
-    struct Element input2_value;  input2_value.etype  = ELEMENT_NUMBER; input2_value.u.number  = 123;
-    struct KeyValue input2 = { "key1", input2_value};
-    
-    int ans = isequal_keyvalue(&input1,&input2);
-    
-    assert(1 == ans);
-}
-
 static void test_dict_put() {
     char* input_key = "hoge";
     struct Element input_value;  input_value.etype  = ELEMENT_NUMBER; input_value.u.number  = 123;
@@ -138,7 +116,6 @@ static void test_dict_put2() {
 }
 
 void unit_tests_dict(){
-    test_isequal_keyvalue();
     dict_clear();
     test_dict_put();
     dict_clear();
