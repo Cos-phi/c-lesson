@@ -9,6 +9,7 @@
 enum ElementType {
     ELEMENT_NUMBER,
     ELEMENT_LITERAL_NAME,
+    ELEMENT_C_FUNC,
     ELEMENT_UNKNOWN
 };
 
@@ -18,6 +19,7 @@ struct Element {
         int number;
         char onechar;
         char *name;
+        void (*cfunc)();
     }u;
 };
 
