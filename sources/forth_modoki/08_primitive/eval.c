@@ -56,26 +56,18 @@ void div_op(){
     stack_push(&div);
 }
 
+void register_primitive(char* name, void (*func)()) {
+    struct Element primitive = {ELEMENT_C_FUNC, {0} };
+    primitive.u.cfunc = func;
+    dict_put(name, &primitive);
+}
+
 void register_primitives() {
-    struct Element primitive_def = {ELEMENT_C_FUNC, {0} };
-    primitive_def.u.cfunc = def;
-    dict_put("def", &primitive_def);
-
-    struct Element primitive_add = {ELEMENT_C_FUNC, {0} };
-    primitive_add.u.cfunc = add_op;
-    dict_put("add", &primitive_add);
-
-    struct Element primitive_sub = {ELEMENT_C_FUNC, {0} };
-    primitive_sub.u.cfunc = sub_op;
-    dict_put("sub", &primitive_sub);
-
-    struct Element primitive_mul = {ELEMENT_C_FUNC, {0} };
-    primitive_mul.u.cfunc = mul_op;
-    dict_put("mul", &primitive_mul);
-
-    struct Element primitive_div = {ELEMENT_C_FUNC, {0} };
-    primitive_div.u.cfunc = div_op;
-    dict_put("div", &primitive_div);
+    register_primitive("def", def);
+    register_primitive("add", add_op);
+    register_primitive("sub", sub_op);
+    register_primitive("mul", mul_op);
+    register_primitive("div", div_op);
 }
 
 struct Element create_num_element(int input){
