@@ -2,6 +2,15 @@
 #include "element.h"
 #include "clesson.h"
 
+void def(){
+    struct Element val;
+    struct Element literal_name;
+    stack_pop(&val);
+    stack_pop(&literal_name);
+    assert( literal_name.etype == ELEMENT_LITERAL_NAME);
+
+    dict_put(literal_name.u.name, &val);
+}
 
 void add_op(){
     struct Element num1;
@@ -14,25 +23,30 @@ void add_op(){
 
     stack_push(&sum);
 }
+void sub_op(){
+    struct Element num1;
+    struct Element num2;
+    stack_pop(&num1);
+    stack_pop(&num2);
 
-void def(){
-    struct Element val;
-    struct Element literal_name;
-    stack_pop(&val);
-    stack_pop(&literal_name);
-    assert( literal_name.etype == ELEMENT_LITERAL_NAME);
+    struct Element sub = {ELEMENT_NUMBER, {0} };
+    sub.u.number = num2.u.number - num1.u.number ;
 
-    dict_put(literal_name.u.name, &val);
+    stack_push(&sub);
 }
 
 void register_primitives() {
+    struct Element primitive_def = {ELEMENT_C_FUNC, {0} };
+    primitive_def.u.cfunc = def;
+    dict_put("def", &primitive_def);
+
     struct Element primitive_add = {ELEMENT_C_FUNC, {0} };
     primitive_add.u.cfunc = add_op;
     dict_put("add", &primitive_add);
 
-    struct Element primitive_def = {ELEMENT_C_FUNC, {0} };
-    primitive_def.u.cfunc = def;
-    dict_put("def", &primitive_def);
+    struct Element primitive_sub = {ELEMENT_C_FUNC, {0} };
+    primitive_sub.u.cfunc = sub_op;
+    dict_put("sub", &primitive_sub);
 }
 
 struct Element create_num_element(int input){
@@ -185,6 +199,22 @@ static void test_eval_num_add2() {
     assert(expect == actual);
 }
 
+static void test_eval_num_sub() {
+    char *input = "5 3 sub";
+    int expect = 2;
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+    printf("actual sub = %d \n",actual);
+
+    assert(expect == actual);
+}
+
 int main() {
     register_primitives();
     test_eval_num_one();
@@ -192,9 +222,14 @@ int main() {
     test_eval_num_add();
     test_eval_num_add2();
     test_def();
+
     dict_clear();
     register_primitives();
     test_def_and_add();
+
+    dict_clear();
+    register_primitives();
+    test_eval_num_sub(); 
 
     return 0;
 }
