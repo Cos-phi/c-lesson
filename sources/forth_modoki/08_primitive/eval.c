@@ -13,8 +13,7 @@ void def(){
 }
 
 void add_op(){
-    struct Element num1;
-    struct Element num2;
+    struct Element num1, num2;
     stack_pop(&num1);
     stack_pop(&num2);
 
@@ -23,9 +22,9 @@ void add_op(){
 
     stack_push(&sum);
 }
+
 void sub_op(){
-    struct Element num1;
-    struct Element num2;
+    struct Element num1, num2;
     stack_pop(&num1);
     stack_pop(&num2);
 
@@ -33,6 +32,28 @@ void sub_op(){
     sub.u.number = num2.u.number - num1.u.number ;
 
     stack_push(&sub);
+}
+
+void mul_op(){
+    struct Element num1, num2;
+    stack_pop(&num1);
+    stack_pop(&num2);
+
+    struct Element mul = {ELEMENT_NUMBER, {0} };
+    mul.u.number = num1.u.number * num2.u.number ;
+
+    stack_push(&mul);
+}
+
+void div_op(){
+    struct Element num1, num2;
+    stack_pop(&num1);
+    stack_pop(&num2);
+
+    struct Element div = {ELEMENT_NUMBER, {0} };
+    div.u.number = num2.u.number / num1.u.number ;
+
+    stack_push(&div);
 }
 
 void register_primitives() {
@@ -47,6 +68,14 @@ void register_primitives() {
     struct Element primitive_sub = {ELEMENT_C_FUNC, {0} };
     primitive_sub.u.cfunc = sub_op;
     dict_put("sub", &primitive_sub);
+
+    struct Element primitive_mul = {ELEMENT_C_FUNC, {0} };
+    primitive_mul.u.cfunc = mul_op;
+    dict_put("mul", &primitive_mul);
+
+    struct Element primitive_div = {ELEMENT_C_FUNC, {0} };
+    primitive_div.u.cfunc = div_op;
+    dict_put("div", &primitive_div);
 }
 
 struct Element create_num_element(int input){
@@ -91,7 +120,10 @@ void eval() {
                             case ELEMENT_UNKNOWN:
                                 abort();
                         }
-                    } 
+                    } else {
+                        abort();
+                    }
+                    
                     break;
                 case TOKEN_LITERAL_NAME:
                     ref_element = create_literal_element(token.u.name);
@@ -104,7 +136,7 @@ void eval() {
     }while(ch != EOF);
 }
 
-static void test_def_and_add() {
+static void test_eval_def_and_add() {
     char *input = "/mue- 12 def /ume- 30 def ume- mue- add";
     int expect = 12 + 30;
 
@@ -119,7 +151,7 @@ static void test_def_and_add() {
 
 }
 
-static void test_def() {
+static void test_eval_def() {
     char *input = "/abcd 12 def";
     cl_getc_set_src(input);
     struct Element expect_value; expect_value.etype = ELEMENT_NUMBER; expect_value.u.number = 12;
@@ -210,9 +242,53 @@ static void test_eval_num_sub() {
     struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
     stack_pop(&actual_element);
     int actual = actual_element.u.number;
-    printf("actual sub = %d \n",actual);
 
     assert(expect == actual);
+}
+
+static void test_eval_num_mul() {
+    char *input = "8 3 mul";
+    int expect = 24;
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
+static void test_eval_num_div() {
+    char *input = "7 2 div";
+    int expect = 3;
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
+static void test_eval_def_and_4_arithmetic_operators() {
+    char *input = "/mue- 12 def /ume- 30 def 42 ume- mue- add mul ume- 3 div sub";
+    int expect = (12 + 30) * 42 - 30 / 3;
+
+    cl_getc_set_src(input);
+    eval();
+    
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+
 }
 
 int main() {
@@ -221,15 +297,24 @@ int main() {
     test_eval_num_two();
     test_eval_num_add();
     test_eval_num_add2();
-    test_def();
+    test_eval_def();
 
     dict_clear();
     register_primitives();
-    test_def_and_add();
-
+    test_eval_def_and_add();
     dict_clear();
     register_primitives();
     test_eval_num_sub(); 
+    dict_clear();
+    register_primitives();
+    test_eval_num_mul(); 
+    dict_clear();
+    register_primitives();
+    test_eval_num_div(); 
+    
 
+    dict_clear();
+    register_primitives();
+    test_eval_def_and_4_arithmetic_operators();
     return 0;
 }
