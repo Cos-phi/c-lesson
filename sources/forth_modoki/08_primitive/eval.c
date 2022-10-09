@@ -66,10 +66,16 @@ void eval() {
                     break;
                 case TOKEN_EXECUTABLE_NAME:
                     if( dict_get(token.u.name,&ref_element) ){
-                        if(ref_element.etype == ELEMENT_C_FUNC){
-                            ref_element.u.cfunc();
-                        } else {
-                            stack_push(&ref_element);
+                        switch(ref_element.etype){
+                            case ELEMENT_C_FUNC:
+                                ref_element.u.cfunc();
+                                break;
+                            case ELEMENT_NUMBER:
+                            case ELEMENT_LITERAL_NAME:
+                                stack_push(&ref_element);
+                                break;
+                            case ELEMENT_UNKNOWN:
+                                abort();
                         }
                     } 
                     break;
