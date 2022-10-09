@@ -26,9 +26,13 @@ void def(){
 }
 
 void register_primitives() {
-    struct Element primitive_element = {ELEMENT_C_FUNC, {0} };
-    primitive_element.u.cfunc = add_op;
-    dict_put("add", &primitive_element);
+    struct Element primitive_add = {ELEMENT_C_FUNC, {0} };
+    primitive_add.u.cfunc = add_op;
+    dict_put("add", &primitive_add);
+
+    struct Element primitive_def = {ELEMENT_C_FUNC, {0} };
+    primitive_def.u.cfunc = def;
+    dict_put("def", &primitive_def);
 }
 
 struct Element create_num_element(int input){
@@ -67,9 +71,7 @@ void eval() {
                         } else {
                             stack_push(&ref_element);
                         }
-                    } else if( 0 == strcmp("def", token.u.name) ){
-                        def();
-                    }
+                    } 
                     break;
                 case TOKEN_LITERAL_NAME:
                     ref_element = create_literal_element(token.u.name);
