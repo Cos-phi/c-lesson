@@ -3,7 +3,7 @@
 #include "clesson.h"
 
 
-void add_nums(){
+void add_op(){
     struct Element num1;
     struct Element num2;
     stack_pop(&num1);
@@ -23,6 +23,12 @@ void def(){
     assert( literal_name.etype == ELEMENT_LITERAL_NAME);
 
     dict_put(literal_name.u.name, &val);
+}
+
+void register_primitives() {
+    struct Element primitive_element = {ELEMENT_C_FUNC, {0} };
+    primitive_element.u.cfunc = add_op;
+    dict_put("add", &primitive_element);
 }
 
 struct Element create_num_element(int input){
@@ -55,12 +61,14 @@ void eval() {
                 case TOKEN_CLOSE_CURLY:
                     break;
                 case TOKEN_EXECUTABLE_NAME:
-                    if( 0 == strcmp("add", token.u.name) ){
-                        add_nums();
-                    }else if( 0 == strcmp("def", token.u.name) ){
+                    if( dict_get(token.u.name,&ref_element) ){
+                        if(ref_element.etype == ELEMENT_C_FUNC){
+                            ref_element.u.cfunc();
+                        } else {
+                            stack_push(&ref_element);
+                        }
+                    } else if( 0 == strcmp("def", token.u.name) ){
                         def();
-                    }else if( dict_get(token.u.name,&ref_element) ){
-                        stack_push(&ref_element);
                     }
                     break;
                 case TOKEN_LITERAL_NAME:
@@ -170,12 +178,14 @@ static void test_eval_num_add2() {
 }
 
 int main() {
+    register_primitives();
     test_eval_num_one();
     test_eval_num_two();
     test_eval_num_add();
     test_eval_num_add2();
     test_def();
     dict_clear();
+    register_primitives();
     test_def_and_add();
 
     return 0;
