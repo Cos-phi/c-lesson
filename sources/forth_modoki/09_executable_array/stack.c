@@ -45,15 +45,18 @@ void stack_clear(){
 }
 
 void stack_print_all(){
-    printf("stack");
-    for( int i = 0; i < stack_index; i++){
-        printf(" %d",stack[i].etype); 
-        switch(stack[stack_index].etype){
+    printf("stack\n");
+    for( int i = 1; i <= stack_index; i++){
+        printf(" type%d:",stack[i].etype); 
+        switch(stack[i].etype){
             case ELEMENT_NUMBER:
-                printf("%d ",stack[stack_index].u.number);
+                printf("num %d \n",stack[i].u.number);
                 break;
             case ELEMENT_LITERAL_NAME:
-                printf("%s ",stack[stack_index].u.name);
+                printf("literal %s \n",stack[i].u.name);
+                break;
+            case ELEMENT_EXECUTABLE_NAME:
+                printf("[] \n");
                 break;
             case ELEMENT_UNKNOWN:
                 break;

@@ -135,7 +135,6 @@ struct Element compile_exec_array(int ch){
             }
         }
     }while(ch != EOF);
-    abort();
 }
 
 void eval_exec_array(struct ElementArray *elems) {
@@ -160,10 +159,12 @@ void eval_exec_array(struct ElementArray *elems) {
                             break;
                         case ELEMENT_EXECUTABLE_NAME:
                         case ELEMENT_UNKNOWN:
-                            abort();
+                        default:
+                            break;
+                            //abort();
                     }
                 } else {
-                    abort();
+                    //abort();
                 }
                 break;
             case ELEMENT_C_FUNC:
@@ -389,11 +390,14 @@ static void test_eval_def_and_4_arithmetic_operators() {
 }
 
 static void test_eval_compile_executable_array() {
-    char *input = "/abc { 1 2 add } def abc";
+    char *input = "/abc { 1 2 add } def /aaa 222 def aaa abc";
     int expect = 1 + 2;
 
     cl_getc_set_src(input);
     eval();
+
+    stack_print_all();
+    dict_print_all();
     
     struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
     stack_pop(&actual_element);
@@ -430,6 +434,7 @@ int main() {
     test_eval_def_and_4_arithmetic_operators();
 
     dict_clear();
+    register_primitives();
     test_eval_compile_executable_array();
     return 0;
 }

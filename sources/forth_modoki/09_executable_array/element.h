@@ -35,11 +35,13 @@ struct ElementArray {
 //stack.c
 void stack_pop(struct Element *out_element);
 void stack_push(struct Element *input_element);
+void stack_print_all();
 void stack_clear();
 
 //dict.c
 int dict_get(char* key, struct Element *out_element);
 void dict_put(char* key, struct Element *element);
+void dict_print_all();
 void dict_clear();
 
 //hash.c
