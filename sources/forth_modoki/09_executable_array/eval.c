@@ -82,6 +82,102 @@ struct Element create_literal_element(char* input){
     element.u.name = input;
     return element;
 }
+struct Element create_executable_element(char* input){
+    struct Element element = {ELEMENT_UNKNOWN, {0} };
+    element.etype = ELEMENT_EXECUTABLE_NAME;
+    element.u.name = input;
+    return element;
+}
+
+struct Element compile_exec_array(int ch){
+    struct Element element = {ELEMENT_UNKNOWN, {0} };
+    element.etype = ELEMENT_EXECUTABLE_NAME;
+
+    struct Element cur_exec_array[MAX_NAME_OP_NUMBERS];
+    int cur_index = 0;
+    struct Token token = {TOKEN_UNKNOWN, {0} };
+    do {
+        ch = parse_one(ch, &token);
+        if(token.ltype != TOKEN_UNKNOWN) {
+            struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
+            switch(token.ltype) {
+                case TOKEN_NUMBER:
+                    ref_element = create_num_element(token.u.number);
+                    cur_exec_array[cur_index] = ref_element;
+                    cur_index++;
+                    break;
+                case TOKEN_OPEN_CURLY:
+                    ref_element = compile_exec_array(ch);
+                    cur_exec_array[cur_index] = ref_element;
+                    cur_index++;
+                    break;
+                case TOKEN_CLOSE_CURLY:
+                    {
+                    struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*(cur_index+1) );
+                    arr->len = cur_index+1;
+                    memcpy( arr->elements, cur_exec_array, sizeof(struct Element)*(cur_index+1));
+                    element.u.byte_codes = arr;
+                    return element;
+                    }
+                case TOKEN_EXECUTABLE_NAME:
+                    ref_element = create_executable_element(token.u.name);
+                    cur_exec_array[cur_index] = ref_element;
+                    cur_index++;
+                    break;
+                case TOKEN_LITERAL_NAME:
+                    ref_element = create_literal_element(token.u.name);
+                    cur_exec_array[cur_index] = ref_element;
+                    cur_index++;
+                    break;
+                case TOKEN_SPACE:
+                default:
+                    break;
+            }
+        }
+    }while(ch != EOF);
+    abort();
+}
+
+void eval_exec_array(struct ElementArray *elems) {
+    int len = elems->len;
+    for(int i = 0; i < elems->len; i++){
+        struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
+        switch(elems->elements[i].etype) {
+            case ELEMENT_NUMBER:
+            case ELEMENT_LITERAL_NAME:
+                ref_element = elems->elements[i];
+                stack_push(&ref_element);
+                break;
+            case ELEMENT_EXECUTABLE_NAME:
+                if( dict_get(elems->elements[i].u.name,&ref_element) ){
+                    switch(ref_element.etype){
+                        case ELEMENT_C_FUNC:
+                            ref_element.u.cfunc();
+                            break;
+                        case ELEMENT_NUMBER:
+                        case ELEMENT_LITERAL_NAME:
+                            stack_push(&ref_element);
+                            break;
+                        case ELEMENT_EXECUTABLE_NAME:
+                        case ELEMENT_UNKNOWN:
+                            abort();
+                    }
+                } else {
+                    abort();
+                }
+                break;
+            case ELEMENT_C_FUNC:
+                ref_element = elems->elements[i];
+                ref_element.u.cfunc();
+                break;
+            case ELEMENT_UNKNOWN:
+            default:
+                break;
+        }
+    
+    }
+
+}
 
 void eval() {
     struct Token token = {TOKEN_UNKNOWN, {0} };
@@ -96,8 +192,13 @@ void eval() {
                     stack_push(&ref_element);
                     break;
                 case TOKEN_SPACE:
+                    break;
                 case TOKEN_OPEN_CURLY:
+                    ref_element = compile_exec_array(ch);
+                    stack_push(&ref_element);
+                    break;
                 case TOKEN_CLOSE_CURLY:
+                    abort();
                     break;
                 case TOKEN_EXECUTABLE_NAME:
                     if( dict_get(token.u.name,&ref_element) ){
@@ -110,6 +211,8 @@ void eval() {
                                 stack_push(&ref_element);
                                 break;
                             case ELEMENT_EXECUTABLE_NAME:
+                                eval_exec_array(ref_element.u.byte_codes);
+                                break;
                             case ELEMENT_UNKNOWN:
                                 abort();
                         }
@@ -128,6 +231,7 @@ void eval() {
         }
     }while(ch != EOF);
 }
+
 
 static void test_eval_def_and_add() {
     char *input = "/mue- 12 def /ume- 30 def ume- mue- add";
@@ -284,6 +388,21 @@ static void test_eval_def_and_4_arithmetic_operators() {
 
 }
 
+static void test_eval_compile_executable_array() {
+    char *input = "/abc { 1 2 add } def abc";
+    int expect = 1 + 2;
+
+    cl_getc_set_src(input);
+    eval();
+    
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+
+}
+
 int main() {
     register_primitives();
     test_eval_num_one();
@@ -309,5 +428,8 @@ int main() {
     dict_clear();
     register_primitives();
     test_eval_def_and_4_arithmetic_operators();
+
+    dict_clear();
+    test_eval_compile_executable_array();
     return 0;
 }

@@ -21,7 +21,13 @@ struct Element {
         char onechar;
         char *name;
         void (*cfunc)();
+        struct ElementArray *byte_codes;
     }u;
+};
+
+struct ElementArray {
+    int len;
+    struct Element elements[0];
 };
 
 #endif
