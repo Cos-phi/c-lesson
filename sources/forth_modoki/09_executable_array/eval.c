@@ -170,9 +170,6 @@ void eval_exec_array(struct ElementArray *elems) {
                 }
                 break;
             case ELEMENT_C_FUNC:
-                ref_element = elems->elements[i];
-                ref_element.u.cfunc();
-                break;
             case ELEMENT_UNKNOWN:
             default:
                 break;
