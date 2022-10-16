@@ -113,9 +113,9 @@ struct Element compile_exec_array(int* ch){
                     break;
                 case TOKEN_CLOSE_CURLY:
                     {
-                    struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*(cur_index+1) );
-                    arr->len = cur_index+1;
-                    memcpy( arr->elements, cur_exec_array, sizeof(struct Element)*(cur_index+1));
+                    struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*(cur_index) );
+                    arr->len = cur_index;
+                    memcpy( arr->elements, cur_exec_array, sizeof(struct Element)*(cur_index));
                     element.u.byte_codes = arr;
                     return element;
                     }
@@ -406,15 +406,11 @@ static void test_eval_compile_executable_array() {
 }
 
 static void test_eval_compile_executable_array_nest() {
-    char *input = "/ZZ {6} def /YY {4 ZZ 5} def /XX {1 2 YY 3} def XX";
-    int expect = 0;
-    
+    char *input = "/ZZ {6} def /YY {4 ZZ 5} def /XX {1 2 YY 3} def XX mul mul mul mul add";
+    int expect = 3*5*6*4*2+1;
 
     cl_getc_set_src(input);
     eval();
-
-    stack_print_all();
-    dict_print_all();
 
     struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
     stack_pop(&actual_element);
