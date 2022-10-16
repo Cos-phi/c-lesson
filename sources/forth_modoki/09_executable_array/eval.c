@@ -158,6 +158,8 @@ void eval_exec_array(struct ElementArray *elems) {
                             stack_push(&ref_element);
                             break;
                         case ELEMENT_EXECUTABLE_NAME:
+                            eval_exec_array(ref_element.u.byte_codes);
+                            break;
                         case ELEMENT_UNKNOWN:
                         default:
                             break;
@@ -177,7 +179,6 @@ void eval_exec_array(struct ElementArray *elems) {
         }
     
     }
-
 }
 
 void eval() {
@@ -404,6 +405,25 @@ static void test_eval_compile_executable_array() {
 
 }
 
+static void test_eval_compile_executable_array_nest() {
+    char *input = "/ZZ {6} def /YY {4 ZZ 5} def /XX {1 2 YY 3} def XX";
+    int expect = 0;
+    
+
+    cl_getc_set_src(input);
+    eval();
+
+    stack_print_all();
+    dict_print_all();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+
+}
+
 int main() {
     register_primitives();
     test_eval_num_one();
@@ -426,12 +446,19 @@ int main() {
     test_eval_num_div(); 
     
 
+    stack_clear();
     dict_clear();
     register_primitives();
     test_eval_def_and_4_arithmetic_operators();
 
+    stack_clear();
     dict_clear();
     register_primitives();
     test_eval_compile_executable_array();
+
+    stack_clear();
+    dict_clear();
+    register_primitives();
+    test_eval_compile_executable_array_nest();
     return 0;
 }
