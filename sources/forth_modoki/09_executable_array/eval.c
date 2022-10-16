@@ -89,7 +89,7 @@ struct Element create_executable_element(char* input){
     return element;
 }
 
-struct Element compile_exec_array(int* ch){
+struct Element compile_exec_array(int* inout_ch){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
     element.etype = ELEMENT_EXECUTABLE_NAME;
 
@@ -97,7 +97,7 @@ struct Element compile_exec_array(int* ch){
     int cur_index = 0;
     struct Token token = {TOKEN_UNKNOWN, {0} };
     do {
-        *ch = parse_one(*ch, &token);
+        *inout_ch = parse_one(*inout_ch, &token);
         if(token.ltype != TOKEN_UNKNOWN) {
             struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
             switch(token.ltype) {
@@ -107,7 +107,7 @@ struct Element compile_exec_array(int* ch){
                     cur_index++;
                     break;
                 case TOKEN_OPEN_CURLY:
-                    ref_element = compile_exec_array(ch);
+                    ref_element = compile_exec_array(inout_ch);
                     cur_exec_array[cur_index] = ref_element;
                     cur_index++;
                     break;
@@ -134,7 +134,7 @@ struct Element compile_exec_array(int* ch){
                     break;
             }
         }
-    }while(*ch != EOF);
+    }while(*inout_ch != EOF);
 }
 
 void eval_exec_array(struct ElementArray *elems) {
