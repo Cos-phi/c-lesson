@@ -89,7 +89,7 @@ struct Element create_executable_element(char* input){
     return element;
 }
 
-struct Element compile_exec_array(int ch){
+struct Element compile_exec_array(int* ch){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
     element.etype = ELEMENT_EXECUTABLE_NAME;
 
@@ -97,7 +97,7 @@ struct Element compile_exec_array(int ch){
     int cur_index = 0;
     struct Token token = {TOKEN_UNKNOWN, {0} };
     do {
-        ch = parse_one(ch, &token);
+        *ch = parse_one(*ch, &token);
         if(token.ltype != TOKEN_UNKNOWN) {
             struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
             switch(token.ltype) {
@@ -134,7 +134,7 @@ struct Element compile_exec_array(int ch){
                     break;
             }
         }
-    }while(ch != EOF);
+    }while(*ch != EOF);
 }
 
 void eval_exec_array(struct ElementArray *elems) {
@@ -161,10 +161,10 @@ void eval_exec_array(struct ElementArray *elems) {
                         case ELEMENT_UNKNOWN:
                         default:
                             break;
-                            //abort();
+                            abort();
                     }
                 } else {
-                    //abort();
+                    abort();
                 }
                 break;
             case ELEMENT_C_FUNC:
@@ -195,7 +195,7 @@ void eval() {
                 case TOKEN_SPACE:
                     break;
                 case TOKEN_OPEN_CURLY:
-                    ref_element = compile_exec_array(ch);
+                    ref_element = compile_exec_array(&ch);
                     stack_push(&ref_element);
                     break;
                 case TOKEN_CLOSE_CURLY:
@@ -390,15 +390,12 @@ static void test_eval_def_and_4_arithmetic_operators() {
 }
 
 static void test_eval_compile_executable_array() {
-    char *input = "/abc { 1 2 add } def /aaa 222 def aaa abc";
+    char *input = "/abc { 1 2 add } def abc";
     int expect = 1 + 2;
 
     cl_getc_set_src(input);
     eval();
 
-    stack_print_all();
-    dict_print_all();
-    
     struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
     stack_pop(&actual_element);
     int actual = actual_element.u.number;

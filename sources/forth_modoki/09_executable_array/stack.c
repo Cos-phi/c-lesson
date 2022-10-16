@@ -16,6 +16,9 @@ void stack_push(struct Element *input_element) {
         case ELEMENT_LITERAL_NAME:
             stack[stack_index].u.name = input_element->u.name;
             break;
+        case ELEMENT_EXECUTABLE_NAME:
+            stack[stack_index].u.byte_codes = input_element->u.byte_codes;
+            break;
         case ELEMENT_UNKNOWN:
             break;
     }
@@ -34,6 +37,9 @@ void stack_pop(struct Element *out_element) {
         case ELEMENT_LITERAL_NAME:
             out_element->u.name = stack[stack_index].u.name;
             break;
+        case ELEMENT_EXECUTABLE_NAME:
+            out_element->u.byte_codes = stack[stack_index].u.byte_codes;
+            break;
         case ELEMENT_UNKNOWN:
             break;
     }
@@ -45,7 +51,7 @@ void stack_clear(){
 }
 
 void stack_print_all(){
-    printf("stack\n");
+    printf("stack(cur index is %d)\n",stack_index);
     for( int i = 1; i <= stack_index; i++){
         printf(" type%d:",stack[i].etype); 
         switch(stack[i].etype){
@@ -56,7 +62,7 @@ void stack_print_all(){
                 printf("literal %s \n",stack[i].u.name);
                 break;
             case ELEMENT_EXECUTABLE_NAME:
-                printf("[] \n");
+                printf("[%d] \n",stack[i].u.byte_codes->len);
                 break;
             case ELEMENT_UNKNOWN:
                 break;
