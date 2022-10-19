@@ -98,43 +98,43 @@ struct Element compile_exec_array(int* inout_ch){
     struct Token token = {TOKEN_UNKNOWN, {0} };
     do {
         *inout_ch = parse_one(*inout_ch, &token);
-        if(token.ltype != TOKEN_UNKNOWN) {
-            struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
-            switch(token.ltype) {
-                case TOKEN_NUMBER:
-                    ref_element = create_num_element(token.u.number);
-                    cur_exec_array[cur_index] = ref_element;
-                    cur_index++;
-                    break;
-                case TOKEN_OPEN_CURLY:
-                    ref_element = compile_exec_array(inout_ch);
-                    cur_exec_array[cur_index] = ref_element;
-                    cur_index++;
-                    break;
-                case TOKEN_CLOSE_CURLY:
-                    {
-                    struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*(cur_index) );
-                    arr->len = cur_index;
-                    memcpy( arr->elements, cur_exec_array, sizeof(struct Element)*(cur_index));
-                    element.u.byte_codes = arr;
-                    return element;
-                    }
-                case TOKEN_EXECUTABLE_NAME:
-                    ref_element = create_executable_element(token.u.name);
-                    cur_exec_array[cur_index] = ref_element;
-                    cur_index++;
-                    break;
-                case TOKEN_LITERAL_NAME:
-                    ref_element = create_literal_element(token.u.name);
-                    cur_exec_array[cur_index] = ref_element;
-                    cur_index++;
-                    break;
-                case TOKEN_SPACE:
-                default:
-                    break;
-            }
+        struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
+        switch(token.ltype) {
+            case TOKEN_NUMBER:
+                ref_element = create_num_element(token.u.number);
+                cur_exec_array[cur_index] = ref_element;
+                cur_index++;
+                break;
+            case TOKEN_OPEN_CURLY:
+                ref_element = compile_exec_array(inout_ch);
+                cur_exec_array[cur_index] = ref_element;
+                cur_index++;
+                break;
+            case TOKEN_CLOSE_CURLY:
+                {
+                struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*(cur_index) );
+                arr->len = cur_index;
+                memcpy( arr->elements, cur_exec_array, sizeof(struct Element)*(cur_index));
+                element.u.byte_codes = arr;
+                return element;
+                }
+            case TOKEN_EXECUTABLE_NAME:
+                ref_element = create_executable_element(token.u.name);
+                cur_exec_array[cur_index] = ref_element;
+                cur_index++;
+                break;
+            case TOKEN_LITERAL_NAME:
+                ref_element = create_literal_element(token.u.name);
+                cur_exec_array[cur_index] = ref_element;
+                cur_index++;
+                break;
+            case TOKEN_SPACE:
+            case TOKEN_UNKNOWN:
+            default:
+                break;
         }
     }while(*inout_ch != EOF);
+    abort();
 }
 
 void eval_exec_array(struct ElementArray *elems) {
