@@ -89,20 +89,20 @@ struct Element create_executable_element(char* input){
     return element;
 }
 
-void autoarray_init(struct AutoArray *out_autoarray){
-    int initsize = 5;
-    struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray)+sizeof(struct Element)*initsize );
+#define AUTOARRAY_INIT_SIZE 3
 
+void autoarray_init(struct AutoArray *out_autoarray){
+    int initsize = AUTOARRAY_INIT_SIZE;
+    out_autoarray->var_array = (struct ElementArray*)malloc( sizeof(struct ElementArray)+sizeof(struct Element)*initsize );
+    out_autoarray->var_array->len = 0;
     out_autoarray->size = initsize;
-    out_autoarray->var_array = arr;
 }
 
 void autoarray_add_element(struct AutoArray *autoarray, struct Element *newelem){
-    if( autoarray->var_array->len > autoarray->size ){
+    if( autoarray->var_array->len+1 > autoarray->size ){
         autoarray->size *= 2;
-        //autoarray->var_array->elements = realloc( autoarray->var_array->elements, sizeof(struct ElementArray)+sizeof(struct Element)*autoarray->size );
+        autoarray->var_array = realloc( autoarray->var_array, sizeof(struct ElementArray)+sizeof(struct Element)*autoarray->size );
     }
-
     autoarray->var_array->elements[autoarray->var_array->len] = *newelem;
     autoarray->var_array->len++;
 }
@@ -400,7 +400,7 @@ static void test_eval_def_and_4_arithmetic_operators() {
 }
 
 static void test_eval_compile_executable_array() {
-    char *input = "/abc { 1 2 add } def abc";
+    char *input = "/abc { 1 2 add 3 add 3 sub} def abc";
     int expect = 1 + 2;
 
     cl_getc_set_src(input);
