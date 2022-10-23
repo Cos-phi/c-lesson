@@ -89,12 +89,31 @@ struct Element create_executable_element(char* input){
     return element;
 }
 
+void autoarray_init(struct AutoArray *out_autoarray){
+    int initsize = 5;
+    struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray)+sizeof(struct Element)*initsize );
+
+    out_autoarray->size = initsize;
+    out_autoarray->var_array = arr;
+}
+
+void autoarray_add_element(struct AutoArray *autoarray, struct Element *newelem){
+    if( autoarray->var_array->len > autoarray->size ){
+        autoarray->size *= 2;
+        //autoarray->var_array->elements = realloc( autoarray->var_array->elements, sizeof(struct ElementArray)+sizeof(struct Element)*autoarray->size );
+    }
+
+    autoarray->var_array->elements[autoarray->var_array->len] = *newelem;
+    autoarray->var_array->len++;
+}
+
+
 struct Element compile_exec_array(int* inout_ch){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
     element.etype = ELEMENT_EXECUTABLE_NAME;
 
-    struct Element cur_exec_array[MAX_NAME_OP_NUMBERS];
-    int cur_index = 0;
+    struct AutoArray cur_exec_array;
+    autoarray_init(&cur_exec_array);
     struct Token token = {TOKEN_UNKNOWN, {0} };
     do {
         *inout_ch = parse_one(*inout_ch, &token);
@@ -102,31 +121,24 @@ struct Element compile_exec_array(int* inout_ch){
         switch(token.ltype) {
             case TOKEN_NUMBER:
                 ref_element = create_num_element(token.u.number);
-                cur_exec_array[cur_index] = ref_element;
-                cur_index++;
+                autoarray_add_element(&cur_exec_array, &ref_element);
                 break;
             case TOKEN_OPEN_CURLY:
                 ref_element = compile_exec_array(inout_ch);
-                cur_exec_array[cur_index] = ref_element;
-                cur_index++;
+                autoarray_add_element(&cur_exec_array, &ref_element);
                 break;
             case TOKEN_CLOSE_CURLY:
                 {
-                struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*(cur_index) );
-                arr->len = cur_index;
-                memcpy( arr->elements, cur_exec_array, sizeof(struct Element)*(cur_index));
-                element.u.byte_codes = arr;
+                element.u.byte_codes = cur_exec_array.var_array;
                 return element;
                 }
             case TOKEN_EXECUTABLE_NAME:
                 ref_element = create_executable_element(token.u.name);
-                cur_exec_array[cur_index] = ref_element;
-                cur_index++;
+                autoarray_add_element(&cur_exec_array, &ref_element);
                 break;
             case TOKEN_LITERAL_NAME:
                 ref_element = create_literal_element(token.u.name);
-                cur_exec_array[cur_index] = ref_element;
-                cur_index++;
+                autoarray_add_element(&cur_exec_array, &ref_element);
                 break;
             case TOKEN_SPACE:
             case TOKEN_UNKNOWN:

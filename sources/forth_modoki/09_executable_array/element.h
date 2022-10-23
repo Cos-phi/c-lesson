@@ -30,6 +30,11 @@ struct ElementArray {
     struct Element elements[0];
 };
 
+struct AutoArray{
+    int size;
+    struct ElementArray *var_array;
+};
+
 #endif
 
 //stack.c
