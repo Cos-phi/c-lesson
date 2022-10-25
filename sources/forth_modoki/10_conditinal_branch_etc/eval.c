@@ -1,91 +1,6 @@
 #include "parser.h"
 #include "element.h"
 #include "clesson.h"
-void eval_exec_array(struct ElementArray *elems); 
-
-void def(){
-    struct Element val;
-    struct Element literal_name;
-    stack_pop(&val);
-    stack_pop(&literal_name);
-    assert( literal_name.etype == ELEMENT_LITERAL_NAME);
-
-    dict_put(literal_name.u.name, &val);
-}
-
-void add_op(){
-    struct Element num1, num2;
-    stack_pop(&num1);
-    stack_pop(&num2);
-
-    struct Element sum = {ELEMENT_NUMBER, {0} };
-    sum.u.number = num1.u.number + num2.u.number;
-
-    stack_push(&sum);
-}
-
-void sub_op(){
-    struct Element num1, num2;
-    stack_pop(&num1);
-    stack_pop(&num2);
-
-    struct Element sub = {ELEMENT_NUMBER, {0} };
-    sub.u.number = num2.u.number - num1.u.number ;
-
-    stack_push(&sub);
-}
-
-void mul_op(){
-    struct Element num1, num2;
-    stack_pop(&num1);
-    stack_pop(&num2);
-
-    struct Element mul = {ELEMENT_NUMBER, {0} };
-    mul.u.number = num1.u.number * num2.u.number ;
-
-    stack_push(&mul);
-}
-
-void div_op(){
-    struct Element num1, num2;
-    stack_pop(&num1);
-    stack_pop(&num2);
-
-    struct Element div = {ELEMENT_NUMBER, {0} };
-    div.u.number = num2.u.number / num1.u.number ;
-
-    stack_push(&div);
-}
-
-void ifelse_op(){
-    struct Element bool1, proc1, proc2;
-    stack_pop(&proc2);
-    stack_pop(&proc1);
-    stack_pop(&bool1);
-
-    if(bool1.u.number == 1){
-        eval_exec_array(proc1.u.byte_codes);
-    }else if(bool1.u.number == 0){
-        eval_exec_array(proc2.u.byte_codes);
-    }else{
-        abort();
-    }
-}
-
-void register_primitive(char* name, void (*func)()) {
-    struct Element primitive = {ELEMENT_C_FUNC, {0} };
-    primitive.u.cfunc = func;
-    dict_put(name, &primitive);
-}
-
-void register_primitives() {
-    register_primitive("def", def);
-    register_primitive("add", add_op);
-    register_primitive("sub", sub_op);
-    register_primitive("mul", mul_op);
-    register_primitive("div", div_op);
-    register_primitive("ifelse", ifelse_op);
-}
 
 struct Element create_num_element(int input){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
@@ -246,6 +161,90 @@ void eval() {
             }
         }
     }while(ch != EOF);
+}
+
+void def(){
+    struct Element val;
+    struct Element literal_name;
+    stack_pop(&val);
+    stack_pop(&literal_name);
+    assert( literal_name.etype == ELEMENT_LITERAL_NAME);
+
+    dict_put(literal_name.u.name, &val);
+}
+
+void add_op(){
+    struct Element num1, num2;
+    stack_pop(&num1);
+    stack_pop(&num2);
+
+    struct Element sum = {ELEMENT_NUMBER, {0} };
+    sum.u.number = num1.u.number + num2.u.number;
+
+    stack_push(&sum);
+}
+
+void sub_op(){
+    struct Element num1, num2;
+    stack_pop(&num1);
+    stack_pop(&num2);
+
+    struct Element sub = {ELEMENT_NUMBER, {0} };
+    sub.u.number = num2.u.number - num1.u.number ;
+
+    stack_push(&sub);
+}
+
+void mul_op(){
+    struct Element num1, num2;
+    stack_pop(&num1);
+    stack_pop(&num2);
+
+    struct Element mul = {ELEMENT_NUMBER, {0} };
+    mul.u.number = num1.u.number * num2.u.number ;
+
+    stack_push(&mul);
+}
+
+void div_op(){
+    struct Element num1, num2;
+    stack_pop(&num1);
+    stack_pop(&num2);
+
+    struct Element div = {ELEMENT_NUMBER, {0} };
+    div.u.number = num2.u.number / num1.u.number ;
+
+    stack_push(&div);
+}
+
+void ifelse_op(){
+    struct Element bool1, proc1, proc2;
+    stack_pop(&proc2);
+    stack_pop(&proc1);
+    stack_pop(&bool1);
+
+    if(bool1.u.number == 1){
+        eval_exec_array(proc1.u.byte_codes);
+    }else if(bool1.u.number == 0){
+        eval_exec_array(proc2.u.byte_codes);
+    }else{
+        abort();
+    }
+}
+
+void register_primitive(char* name, void (*func)()) {
+    struct Element primitive = {ELEMENT_C_FUNC, {0} };
+    primitive.u.cfunc = func;
+    dict_put(name, &primitive);
+}
+
+void register_primitives() {
+    register_primitive("def", def);
+    register_primitive("add", add_op);
+    register_primitive("sub", sub_op);
+    register_primitive("mul", mul_op);
+    register_primitive("div", div_op);
+    register_primitive("ifelse", ifelse_op);
 }
 
 
