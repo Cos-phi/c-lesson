@@ -513,51 +513,40 @@ static void test_eval_eq() {
     assert(expect == actual);
 }
 
-int main() {
+static void init_test_eval(){
+    stack_clear();
+    dict_clear();
     register_primitives();
+}
+
+int main() {
+    init_test_eval();
     test_eval_num_one();
     test_eval_num_two();
     test_eval_num_add();
     test_eval_num_add2();
     test_eval_def();
 
-    dict_clear();
-    register_primitives();
+    init_test_eval();
     test_eval_def_and_add();
-    dict_clear();
-    register_primitives();
     test_eval_num_sub(); 
-    dict_clear();
-    register_primitives();
     test_eval_num_mul(); 
-    dict_clear();
-    register_primitives();
     test_eval_num_div(); 
     
 
-    stack_clear();
-    dict_clear();
-    register_primitives();
+    init_test_eval();
     test_eval_def_and_4_arithmetic_operators();
 
-    stack_clear();
-    dict_clear();
-    register_primitives();
+    init_test_eval();
     test_eval_compile_executable_array();
 
-    stack_clear();
-    dict_clear();
-    register_primitives();
+    init_test_eval();
     test_eval_compile_executable_array_nest();
 
-    stack_clear();
-    dict_clear();
-    register_primitives();
+    init_test_eval();
     test_eval_ifelse();
 
-    stack_clear();
-    dict_clear();
-    register_primitives();
+    init_test_eval();
     test_eval_eq();
     return 0;
 }
