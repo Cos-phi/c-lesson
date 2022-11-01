@@ -58,20 +58,6 @@ int stack_pop_int(){
             out_num = elem.u.number;
             break;
         case ELEMENT_EXECUTABLE_NAME:
-            if( dict_get(elem.u.name,&ref_elem) ){
-                switch(ref_elem.etype){
-                    case ELEMENT_NUMBER:
-                        out_num = elem.u.number;
-                        break;
-                    case ELEMENT_C_FUNC:
-                    case ELEMENT_LITERAL_NAME:
-                    case ELEMENT_EXECUTABLE_NAME:
-                    case ELEMENT_UNKNOWN:
-                        abort();    
-                        break;
-                }
-            } 
-            break;
         case ELEMENT_LITERAL_NAME:
         case ELEMENT_C_FUNC:
         case ELEMENT_UNKNOWN:

@@ -559,6 +559,20 @@ static void test_eval_comparison_operators() {
     assert(expect == actual);
 }
 
+static void test_eval_comparison_operators2() {
+    char *input = "/hoge {1 3 3} def hoge eq add";
+    int expect = 2;
+
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
 static void init_test_eval(){
     stack_clear();
     dict_clear();
@@ -597,5 +611,7 @@ int main() {
 
     init_test_eval();
     test_eval_comparison_operators();
+    init_test_eval();
+    test_eval_comparison_operators2();
     return 0;
 }
