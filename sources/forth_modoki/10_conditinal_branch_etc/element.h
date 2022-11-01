@@ -35,6 +35,7 @@ struct ElementArray {
 //stack.c
 void stack_pop(struct Element *out_element);
 void stack_push(struct Element *input_element);
+int stack_pop_int();
 void stack_print_all();
 void stack_clear();
 

@@ -232,48 +232,12 @@ void ifelse_op(){
     }
 }
 
-int elem_to_int(struct Element elem){
-    int out_num;
-
-    struct Element ref_elem = {ELEMENT_UNKNOWN, {0} };
-    switch(elem.etype){
-        case ELEMENT_NUMBER:
-            out_num = elem.u.number;
-            break;
-        case ELEMENT_EXECUTABLE_NAME:
-            if( dict_get(elem.u.name,&ref_elem) ){
-                switch(ref_elem.etype){
-                    case ELEMENT_NUMBER:
-                        out_num = elem.u.number;
-                        break;
-                    case ELEMENT_C_FUNC:
-                    case ELEMENT_LITERAL_NAME:
-                    case ELEMENT_EXECUTABLE_NAME:
-                    case ELEMENT_UNKNOWN:
-                        abort();    
-                        break;
-                }
-            } 
-            break;
-        case ELEMENT_LITERAL_NAME:
-        case ELEMENT_C_FUNC:
-        case ELEMENT_UNKNOWN:
-            abort();
-    }
-
-    return out_num;
-}
-
 void eq_op(){
-    struct Element elem1, elem2;
-    stack_pop(&elem1);
-    stack_pop(&elem2);
-
-    int ref_num1, ref_num2;
-    ref_num1 = elem_to_int(elem1);
-    ref_num2 = elem_to_int(elem2);
-
     struct Element bool_elem = {ELEMENT_NUMBER, {0} };
+
+    int ref_num1 = stack_pop_int();
+    int ref_num2 = stack_pop_int();
+
     if(ref_num1 == ref_num2){
         bool_elem.u.number = 1;
     }else{

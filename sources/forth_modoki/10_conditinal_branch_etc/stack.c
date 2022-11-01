@@ -46,6 +46,41 @@ void stack_pop(struct Element *out_element) {
     stack_index--;
 }
 
+int stack_pop_int(){
+    int out_num;
+
+    struct Element elem;
+    stack_pop(&elem);
+
+    struct Element ref_elem = {ELEMENT_UNKNOWN, {0} };
+    switch(elem.etype){
+        case ELEMENT_NUMBER:
+            out_num = elem.u.number;
+            break;
+        case ELEMENT_EXECUTABLE_NAME:
+            if( dict_get(elem.u.name,&ref_elem) ){
+                switch(ref_elem.etype){
+                    case ELEMENT_NUMBER:
+                        out_num = elem.u.number;
+                        break;
+                    case ELEMENT_C_FUNC:
+                    case ELEMENT_LITERAL_NAME:
+                    case ELEMENT_EXECUTABLE_NAME:
+                    case ELEMENT_UNKNOWN:
+                        abort();    
+                        break;
+                }
+            } 
+            break;
+        case ELEMENT_LITERAL_NAME:
+        case ELEMENT_C_FUNC:
+        case ELEMENT_UNKNOWN:
+            abort();
+    }
+
+    return out_num;
+}
+
 void stack_clear(){
     stack_index = 0;
 }
