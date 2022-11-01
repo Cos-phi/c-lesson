@@ -234,16 +234,79 @@ void ifelse_op(){
 
 void eq_op(){
     struct Element bool_elem = {ELEMENT_NUMBER, {0} };
-
-    int ref_num1 = stack_pop_int();
     int ref_num2 = stack_pop_int();
+    int ref_num1 = stack_pop_int();
 
     if(ref_num1 == ref_num2){
         bool_elem.u.number = 1;
     }else{
         bool_elem.u.number = 0;
     }
+    stack_push(&bool_elem);
+}
 
+void neq_op(){
+    struct Element bool_elem = {ELEMENT_NUMBER, {0} };
+    int ref_num2 = stack_pop_int();
+    int ref_num1 = stack_pop_int();
+
+    if(ref_num1 != ref_num2){
+        bool_elem.u.number = 1;
+    }else{
+        bool_elem.u.number = 0;
+    }
+    stack_push(&bool_elem);
+}
+
+void gt_op(){
+    struct Element bool_elem = {ELEMENT_NUMBER, {0} };
+    int ref_num2 = stack_pop_int();
+    int ref_num1 = stack_pop_int();
+
+    if(ref_num1 > ref_num2){
+        bool_elem.u.number = 1;
+    }else{
+        bool_elem.u.number = 0;
+    }
+    stack_push(&bool_elem);
+}
+
+void ge_op(){
+    struct Element bool_elem = {ELEMENT_NUMBER, {0} };
+    int ref_num2 = stack_pop_int();
+    int ref_num1 = stack_pop_int();
+
+    if(ref_num1 >= ref_num2){
+        bool_elem.u.number = 1;
+    }else{
+        bool_elem.u.number = 0;
+    }
+    stack_push(&bool_elem);
+}
+
+void lt_op(){
+    struct Element bool_elem = {ELEMENT_NUMBER, {0} };
+    int ref_num2 = stack_pop_int();
+    int ref_num1 = stack_pop_int();
+
+    if(ref_num1 < ref_num2){
+        bool_elem.u.number = 1;
+    }else{
+        bool_elem.u.number = 0;
+    }
+    stack_push(&bool_elem);
+}
+
+void le_op(){
+    struct Element bool_elem = {ELEMENT_NUMBER, {0} };
+    int ref_num2 = stack_pop_int();
+    int ref_num1 = stack_pop_int();
+
+    if(ref_num1 <= ref_num2){
+        bool_elem.u.number = 1;
+    }else{
+        bool_elem.u.number = 0;
+    }
     stack_push(&bool_elem);
 }
 
@@ -261,6 +324,11 @@ void register_primitives() {
     register_primitive("div", div_op);
     register_primitive("ifelse", ifelse_op);
     register_primitive("eq", eq_op);
+    register_primitive("neq", neq_op);
+    register_primitive("gt", gt_op);
+    register_primitive("ge", ge_op);
+    register_primitive("lt", lt_op);
+    register_primitive("le", le_op);
 }
 
 
@@ -477,6 +545,20 @@ static void test_eval_eq() {
     assert(expect == actual);
 }
 
+static void test_eval_comparison_operators() {
+    char *input = "1 1 eq 2 3 neq add 3 2 gt add 5 3 ge add 2 4 lt add 3 3 le add 4 2 eq add 3 3 neq add 2 2 gt add 4 7 ge add 3 2 lt add 8 7 le add";
+    int expect = 1+1+1+1+1+1+0+0+0+0+0+0;
+
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
 static void init_test_eval(){
     stack_clear();
     dict_clear();
@@ -512,5 +594,8 @@ int main() {
 
     init_test_eval();
     test_eval_eq();
+
+    init_test_eval();
+    test_eval_comparison_operators();
     return 0;
 }
