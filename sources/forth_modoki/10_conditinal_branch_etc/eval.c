@@ -217,19 +217,15 @@ void div_op(){
     stack_push(&div);
 }
 
-void ifelse_op(){
-    struct Element bool1, proc1, proc2;
-    stack_pop(&proc2);
-    stack_pop(&proc1);
-    stack_pop(&bool1);
+void mod_op(){
+    struct Element num1, num2;
+    stack_pop(&num1);
+    stack_pop(&num2);
 
-    if(bool1.u.number == 1){
-        eval_exec_array(proc1.u.byte_codes);
-    }else if(bool1.u.number == 0){
-        eval_exec_array(proc2.u.byte_codes);
-    }else{
-        abort();
-    }
+    struct Element mod = {ELEMENT_NUMBER, {0} };
+    mod.u.number = num2.u.number % num1.u.number ;
+
+    stack_push(&mod);
 }
 
 void eq_op(){
@@ -310,6 +306,115 @@ void le_op(){
     stack_push(&bool_elem);
 }
 
+void pop_op(){
+    struct Element elem;
+    stack_pop(&elem);
+}
+
+void exch_op(){
+    struct Element elem1, elem2;
+    stack_pop(&elem2);
+    stack_pop(&elem1);
+    
+    stack_push(&elem2);
+    stack_push(&elem1);
+}
+
+void dup_op(){
+    struct Element elem;
+    stack_pop(&elem);
+    
+    stack_push(&elem);
+    stack_push(&elem);
+}
+
+void index_op(){
+    int n = stack_pop_int();
+    
+    struct Element elements[n];
+    for( int i=0; i<=n; i++ ){
+        stack_pop(&elements[i]);
+    }
+    for( int i=n; i>=0; i-- ){
+        stack_push(&elements[i]);
+    }
+    stack_push(&elements[n]);
+}
+
+void roll_op(){
+    int j = stack_pop_int();
+    int n = stack_pop_int();
+    j = j % n;
+    struct Element elements[n];
+
+    for( int i=0; i<n; i++ ){
+        stack_pop(&elements[i]);
+    }
+
+    for( int i=j-1; i>=0; i-- ){
+        stack_push(&elements[i]);
+    }
+    for( int i=n-1; i>=j; i-- ){
+        stack_push(&elements[i]);
+    }
+}
+
+void exec_op(){
+    struct Element proc1;
+    stack_pop(&proc1);
+
+    eval_exec_array(proc1.u.byte_codes);
+}
+
+void if_op(){
+    struct Element bool1, proc1;
+    stack_pop(&proc1);
+    stack_pop(&bool1);
+
+    if(1 == bool1.u.number){
+        eval_exec_array(proc1.u.byte_codes);
+    }
+}
+
+void ifelse_op(){
+    struct Element bool1, proc1, proc2;
+    stack_pop(&proc2);
+    stack_pop(&proc1);
+    stack_pop(&bool1);
+
+    if(1 == bool1.u.number){
+        eval_exec_array(proc1.u.byte_codes);
+    }else if(0 == bool1.u.number){
+        eval_exec_array(proc2.u.byte_codes);
+    }else{
+        abort();
+    }
+}
+
+void repeat_op(){
+    struct Element proc1;
+    stack_pop(&proc1);
+    int n = stack_pop_int();
+
+    for(int i=0; i<n; i++){
+        eval_exec_array(proc1.u.byte_codes);
+    }
+}
+
+void while_op(){
+    struct Element body, cond, bool1;
+    stack_pop(&body);
+    stack_pop(&cond);
+    eval_exec_array(cond.u.byte_codes);
+    stack_pop(&bool1);
+    while(1 == bool1.u.number){
+        eval_exec_array(body.u.byte_codes);
+        eval_exec_array(cond.u.byte_codes);
+        stack_pop(&bool1);
+    }
+
+}
+
 void register_primitive(char* name, void (*func)()) {
     struct Element primitive = {ELEMENT_C_FUNC, {0} };
     primitive.u.cfunc = func;
@@ -322,13 +427,23 @@ void register_primitives() {
     register_primitive("sub", sub_op);
     register_primitive("mul", mul_op);
     register_primitive("div", div_op);
-    register_primitive("ifelse", ifelse_op);
+    register_primitive("mod", mod_op);
     register_primitive("eq", eq_op);
     register_primitive("neq", neq_op);
     register_primitive("gt", gt_op);
     register_primitive("ge", ge_op);
     register_primitive("lt", lt_op);
     register_primitive("le", le_op);
+    register_primitive("pop", pop_op);
+    register_primitive("exch", exch_op);
+    register_primitive("dup", dup_op);
+    register_primitive("index", index_op);
+    register_primitive("roll", roll_op);
+    register_primitive("exec", exec_op);
+    register_primitive("if", if_op);
+    register_primitive("ifelse", ifelse_op);
+    register_primitive("repeat", repeat_op);
+    register_primitive("while", while_op);
 }
 
 
@@ -573,6 +688,49 @@ static void test_eval_comparison_operators2() {
     assert(expect == actual);
 }
 
+static void test_eval_stack_operators() {
+    char *input = "1 dup 2 3 dup pop exch mod add 3 4 5 6 7 4 3 roll 2 index add";
+    int expect = 10;
+
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
+static void test_eval_control_operators() {
+    char *input = "{1 2 add} exec 12 {4 add} repeat";
+    int expect = 1+2+4*12;
+
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
+static void test_eval_while() {
+    char *input = "/hoge 1 def {hoge 5 le} {/hoge hoge 1 add def} while hoge";
+    int expect = 5;
+
+    cl_getc_set_src(input);
+    eval();
+    stack_print_all();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
 static void init_test_eval(){
     stack_clear();
     dict_clear();
@@ -613,5 +771,14 @@ int main() {
     test_eval_comparison_operators();
     init_test_eval();
     test_eval_comparison_operators2();
+
+    init_test_eval();
+    test_eval_stack_operators();
+
+    init_test_eval();
+    test_eval_control_operators();
+
+    init_test_eval();
+    //test_eval_while();
     return 0;
 }
