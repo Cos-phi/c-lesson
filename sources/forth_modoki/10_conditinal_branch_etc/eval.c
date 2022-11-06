@@ -735,7 +735,7 @@ static void init_test_eval(){
     register_primitives();
 }
 
-int main() {
+static void unit_tests(){
     init_test_eval();
     test_eval_num_one();
     test_eval_num_two();
@@ -778,5 +778,20 @@ int main() {
 
     init_test_eval();
     test_eval_while();
+}
+
+int main() {
+    unit_tests();
+
+    init_test_eval();
+    FILE *file;
+    file = fopen("test.ps","r");
+    cl_getc_set_file(file);
+    eval();
+    dict_print_all();
+    stack_print_all();
+    fclose(file);
+
+
     return 0;
 }

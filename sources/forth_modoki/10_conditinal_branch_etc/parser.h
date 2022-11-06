@@ -32,6 +32,7 @@ struct Token {
 //cl_getc.c
 int cl_getc();
 void cl_getc_set_src(char* str);
+void cl_getc_set_file(FILE* input_file);
 
 //parce.c
 int parse_one(int prev_ch, struct Token *out_token); 
