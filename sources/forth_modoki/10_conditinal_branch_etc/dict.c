@@ -25,7 +25,7 @@ int streq(char *s1,char *s2){
 void update_or_insert_list(struct Node *cur_node, char* key, struct Element *value){
     struct Node *prev_node;
     while( NULL != cur_node ){
-        if( cur_node->key == key ){
+        if( streq(cur_node->key,key) ){
             cur_node->value = *value;
             return;
         }

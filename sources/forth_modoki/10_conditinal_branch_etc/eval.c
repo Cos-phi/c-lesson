@@ -261,10 +261,8 @@ void gt_op(){
 
     if(ref_num1 > ref_num2){
         bool_elem.u.number = 1;
-        printf("%d > %d \n",ref_num1,ref_num2);
     }else{
         bool_elem.u.number = 0;
-        printf("%d <= %d \n",ref_num1,ref_num2);
     }
     stack_push(&bool_elem);
 }
@@ -411,8 +409,6 @@ void while_op(){
     int bool1 = stack_pop_int();
     while(1 == bool1){
         eval_exec_array(body.u.byte_codes);
-        stack_print_all();
-        dict_print_all();
         eval_exec_array(cond.u.byte_codes);
         bool1 = stack_pop_int();
     }
@@ -725,7 +721,6 @@ static void test_eval_while() {
 
     cl_getc_set_src(input);
     eval();
-    stack_print_all();
 
     struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
     stack_pop(&actual_element);
@@ -782,6 +777,6 @@ int main() {
     test_eval_control_operators();
 
     init_test_eval();
-//    test_eval_while();
+    test_eval_while();
     return 0;
 }
