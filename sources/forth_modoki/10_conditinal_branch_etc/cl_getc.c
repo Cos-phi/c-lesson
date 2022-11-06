@@ -16,7 +16,6 @@ int cl_getc() {
         }
     }else{
         cur_ch = fgetc(file);
-        printf("fgetc %c \n",cur_ch);
         return cur_ch;
     }
 }
