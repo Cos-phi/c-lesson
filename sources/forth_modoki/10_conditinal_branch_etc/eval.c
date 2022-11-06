@@ -261,8 +261,10 @@ void gt_op(){
 
     if(ref_num1 > ref_num2){
         bool_elem.u.number = 1;
+        printf("%d > %d \n",ref_num1,ref_num2);
     }else{
         bool_elem.u.number = 0;
+        printf("%d <= %d \n",ref_num1,ref_num2);
     }
     stack_push(&bool_elem);
 }
@@ -402,17 +404,18 @@ void repeat_op(){
 }
 
 void while_op(){
-    struct Element body, cond, bool1;
+    struct Element body, cond;
     stack_pop(&body);
     stack_pop(&cond);
     eval_exec_array(cond.u.byte_codes);
-    stack_pop(&bool1);
-    while(1 == bool1.u.number){
+    int bool1 = stack_pop_int();
+    while(1 == bool1){
         eval_exec_array(body.u.byte_codes);
+        stack_print_all();
+        dict_print_all();
         eval_exec_array(cond.u.byte_codes);
-        stack_pop(&bool1);
+        bool1 = stack_pop_int();
     }
-
 }
 
 void register_primitive(char* name, void (*func)()) {
@@ -448,7 +451,7 @@ void register_primitives() {
 
 
 static void test_eval_def_and_add() {
-    char *input = "/mue- 12 def /ume- 30 def ume- mue- add";
+    char *input = "/mue- 44 def /mue- 12 def /ume- 30 def ume- mue- add";
     int expect = 12 + 30;
 
     cl_getc_set_src(input);
@@ -717,8 +720,8 @@ static void test_eval_control_operators() {
 }
 
 static void test_eval_while() {
-    char *input = "/hoge 1 def {hoge 5 le} {/hoge hoge 1 add def} while hoge";
-    int expect = 5;
+    char *input = "/hoge 1 def {16 hoge gt} {/hoge 2 hoge mul def} while hoge";
+    int expect = 16;
 
     cl_getc_set_src(input);
     eval();
@@ -779,6 +782,6 @@ int main() {
     test_eval_control_operators();
 
     init_test_eval();
-    //test_eval_while();
+//    test_eval_while();
     return 0;
 }
