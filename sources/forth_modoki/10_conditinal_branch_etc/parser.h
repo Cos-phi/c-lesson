@@ -16,6 +16,7 @@ enum LexicalType {
     TOKEN_OPEN_CURLY,
     TOKEN_CLOSE_CURLY, 
     TOKEN_END_OF_FILE,
+    TOKEN_COMMENT,
     TOKEN_UNKNOWN
 };
 

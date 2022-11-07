@@ -4,12 +4,13 @@
 
 enum LexicalType to_lexicaltype(char ch){
     if (ch >= '0' && ch <= '9') return TOKEN_NUMBER;
-    else if (ch == ' ') return TOKEN_SPACE;
+    else if (ch == ' ' || ch == '\n') return TOKEN_SPACE;
     else if (ch >= 'A' && ch <= 'z') return TOKEN_EXECUTABLE_NAME;
     else if (ch == '/') return TOKEN_LITERAL_NAME;
     else if (ch == '{') return TOKEN_OPEN_CURLY;
     else if (ch == '}') return TOKEN_CLOSE_CURLY; 
     else if (ch == EOF) return TOKEN_END_OF_FILE;
+    else if (ch == '%') return TOKEN_COMMENT;
     else return TOKEN_UNKNOWN;
 }
 
@@ -62,6 +63,14 @@ int parse_one(int prev_ch, struct Token *out_token) {
             } while((prev_ch = cl_getc()) != EOF);
             return prev_ch;
 
+        case TOKEN_COMMENT:
+            do {
+                if( '\n' == prev_ch ){
+                    break;
+                }
+            } while((prev_ch = cl_getc()) != EOF);
+            return prev_ch;
+            
         default:
             out_token->ltype = ltype;
             out_token->u.onechar = prev_ch;

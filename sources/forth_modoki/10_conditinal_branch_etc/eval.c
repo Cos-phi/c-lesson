@@ -746,6 +746,26 @@ static void test_cl_getc_set_file() {
     assert(expect = actual);
 }
 
+static void test_cl_getc_set_file_factorial() {
+    char *input_file = "factorial.ps";
+    int expect = 5*4*3*2*1;
+
+    FILE *file;
+    file = fopen(input_file,"r");
+    cl_getc_set_file(file);
+    eval();
+    fclose(file);
+
+    dict_print_all();
+    stack_print_all();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect = actual);
+}
+
 static void init_test_eval(){
     stack_clear();
     dict_clear();
@@ -798,11 +818,14 @@ static void unit_tests(){
 
     init_test_eval();
     test_cl_getc_set_file();
+
+    init_test_eval();
+//    test_cl_getc_set_file_factorial();
+
 }
 
 int main() {
     unit_tests();
-
 
     return 0;
 }
