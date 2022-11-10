@@ -238,6 +238,7 @@ static void test_eval_def_and_add() {
 
     cl_getc_set_src(input);
     eval();
+
     
     struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
     stack_pop(&actual_element);
