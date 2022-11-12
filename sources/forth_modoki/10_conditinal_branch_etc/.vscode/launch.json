@@ -1,0 +1,34 @@
+{
+  "configurations": [
+    {
+      "name": "(Windows) 起動",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/test.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "console": "externalTerminal"
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "e:/Cloud/Cosphi/programming/sources/forth_modoki/10_conditinal_branch_etc",
+      "program": "e:/Cloud/Cosphi/programming/sources/forth_modoki/10_conditinal_branch_etc/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}
