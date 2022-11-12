@@ -332,6 +332,7 @@ void index_op(){
     int n = stack_pop_int();
     
     struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*n );
+    arr->len = n;
     for( int i=0; i<=n; i++ ){
         stack_pop(&arr->elements[i]);
     }
@@ -346,6 +347,7 @@ void roll_op(){
     int n = stack_pop_int();
     j = j % n;
     struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*n );
+    arr->len = n;
 
     for( int i=0; i<n; i++ ){
         stack_pop(&arr->elements[i]);
