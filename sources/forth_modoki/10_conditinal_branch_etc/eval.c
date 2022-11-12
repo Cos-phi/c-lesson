@@ -822,7 +822,7 @@ static void unit_tests(){
     test_cl_getc_set_file();
 
     init_test_eval();
-//    test_cl_getc_set_file_factorial();
+    test_cl_getc_set_file_factorial();
 
 }
 
