@@ -67,7 +67,8 @@ int dict_get(char* key, struct Element *out_element){
 }
 
 void dict_print_all(){
-    for(int i = 0; i < TABLE_SIZE ; i++) {
+    int i;
+    for(i = 0; i < TABLE_SIZE ; i++) {
         struct Node *cur_node = array[i];
         printf("hash %d :",i);
         while( cur_node != NULL ){
@@ -79,7 +80,8 @@ void dict_print_all(){
 }
 
 void dict_clear(){
-    for(int i = 0; i < TABLE_SIZE ; i++) {
+    int i;
+    for(i = 0; i < TABLE_SIZE ; i++) {
         array[i] = NULL;
     }
 }
