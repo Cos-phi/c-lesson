@@ -1,0 +1,62 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1101,5): warning MSB8027: cl_getc.c という名前の複数のファイルでは、同じ場所に出力が生成されます。これにより、不適切なビルド結果が生じる可能性があります。関連するファイルは 02_int_parser_getc\cl_getc.c, 03_parser\cl_getc.c, 05_eval_num\cl_getc.c, 06_literal_name\cl_getc.c, 07.5_element\cl_getc.c, 07_hash_table\cl_getc.c, 08_primitive\cl_getc.c, 09_executable_array\cl_getc.c, 10_conditinal_branch_etc\cl_getc.c です。
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1101,5): warning MSB8027: parser.c という名前の複数のファイルでは、同じ場所に出力が生成されます。これにより、不適切なビルド結果が生じる可能性があります。関連するファイルは 03_parser\parser.c, 05_eval_num\parser.c, 06_literal_name\parser.c, 07.5_element\parser.c, 07_hash_table\parser.c, 08_primitive\parser.c, 09_executable_array\parser.c, 10_conditinal_branch_etc\parser.c です。
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1101,5): warning MSB8027: stack.c という名前の複数のファイルでは、同じ場所に出力が生成されます。これにより、不適切なビルド結果が生じる可能性があります。関連するファイルは 04_stack\stack.c, 05_eval_num\stack.c, 06_literal_name\stack.c, 07.5_element\stack.c, 07_hash_table\stack.c, 08_primitive\stack.c, 09_executable_array\stack.c, 10_conditinal_branch_etc\stack.c です。
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1101,5): warning MSB8027: eval.c という名前の複数のファイルでは、同じ場所に出力が生成されます。これにより、不適切なビルド結果が生じる可能性があります。関連するファイルは 05_eval_num\eval.c, 06_literal_name\eval.c, 07.5_element\eval.c, 07_hash_table\eval.c, 08_primitive\eval.c, 09_executable_array\eval.c, 10_conditinal_branch_etc\eval.c です。
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1101,5): warning MSB8027: dict.c という名前の複数のファイルでは、同じ場所に出力が生成されます。これにより、不適切なビルド結果が生じる可能性があります。関連するファイルは 06_literal_name\dict.c, 07.5_element\dict.c, 07_hash_table\dict.c, 08_primitive\dict.c, 09_executable_array\dict.c, 10_conditinal_branch_etc\dict.c です。
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1101,5): warning MSB8027: hash.c という名前の複数のファイルでは、同じ場所に出力が生成されます。これにより、不適切なビルド結果が生じる可能性があります。関連するファイルは 07.5_element\hash.c, 07_hash_table\hash.c, 08_primitive\hash.c, 09_executable_array\hash.c, 10_conditinal_branch_etc\hash.c です。
+  int_parser.c
+  cl_getc.c
+  int_parser_getc.c
+  cl_getc.c
+  parser.c
+  stack.c
+  cl_getc.c
+  eval.c
+  parser.c
+  stack.c
+  cl_getc.c
+  dict.c
+  eval.c
+  parser.c
+  stack.c
+  cl_getc.c
+  dict.c
+  eval.c
+  hash.c
+  parser.c
+  コードを生成中...
+  コンパイル中...
+  stack.c
+  cl_getc.c
+  dict.c
+  eval.c
+  hash.c
+  parser.c
+  stack.c
+  cl_getc.c
+  dict.c
+  eval.c
+  hash.c
+  parser.c
+  stack.c
+  cl_getc.c
+  dict.c
+  eval.c
+  hash.c
+  parser.c
+  stack.c
+  cl_getc.c
+  コードを生成中...
+  コンパイル中...
+  dict.c
+  eval.c
+E:\Cloud\Cosphi\programming\sources\forth_modoki\10_conditinal_branch_etc\eval.c(334,29): error C2057: 定数式が必要です。
+E:\Cloud\Cosphi\programming\sources\forth_modoki\10_conditinal_branch_etc\eval.c(334,30): error C2466: サイズが 0 の配列を割り当てまたは宣言しようとしました。
+E:\Cloud\Cosphi\programming\sources\forth_modoki\10_conditinal_branch_etc\eval.c(334,20): error C2133: 'elements': サイズが不明です。
+E:\Cloud\Cosphi\programming\sources\forth_modoki\10_conditinal_branch_etc\eval.c(348,29): error C2057: 定数式が必要です。
+E:\Cloud\Cosphi\programming\sources\forth_modoki\10_conditinal_branch_etc\eval.c(348,30): error C2466: サイズが 0 の配列を割り当てまたは宣言しようとしました。
+E:\Cloud\Cosphi\programming\sources\forth_modoki\10_conditinal_branch_etc\eval.c(348,20): error C2133: 'elements': サイズが不明です。
+  hash.c
+  parser.c
+  stack.c
+  コードを生成中...

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{6DBC81F2-D1E2-4CB9-874B-351378AD4591}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="01_int_parser\int_parser.c" />
+    <ClCompile Include="02_int_parser_getc\cl_getc.c" />
+    <ClCompile Include="02_int_parser_getc\int_parser_getc.c" />
+    <ClCompile Include="03_parser\cl_getc.c" />
+    <ClCompile Include="03_parser\parser.c" />
+    <ClCompile Include="04_stack\stack.c" />
+    <ClCompile Include="05_eval_num\cl_getc.c" />
+    <ClCompile Include="05_eval_num\eval.c" />
+    <ClCompile Include="05_eval_num\parser.c" />
+    <ClCompile Include="05_eval_num\stack.c" />
+    <ClCompile Include="06_literal_name\cl_getc.c" />
+    <ClCompile Include="06_literal_name\dict.c" />
+    <ClCompile Include="06_literal_name\eval.c" />
+    <ClCompile Include="06_literal_name\parser.c" />
+    <ClCompile Include="06_literal_name\stack.c" />
+    <ClCompile Include="07.5_element\cl_getc.c" />
+    <ClCompile Include="07.5_element\dict.c" />
+    <ClCompile Include="07.5_element\eval.c" />
+    <ClCompile Include="07.5_element\hash.c" />
+    <ClCompile Include="07.5_element\parser.c" />
+    <ClCompile Include="07.5_element\stack.c" />
+    <ClCompile Include="07_hash_table\cl_getc.c" />
+    <ClCompile Include="07_hash_table\dict.c" />
+    <ClCompile Include="07_hash_table\eval.c" />
+    <ClCompile Include="07_hash_table\hash.c" />
+    <ClCompile Include="07_hash_table\parser.c" />
+    <ClCompile Include="07_hash_table\stack.c" />
+    <ClCompile Include="08_primitive\cl_getc.c" />
+    <ClCompile Include="08_primitive\dict.c" />
+    <ClCompile Include="08_primitive\eval.c" />
+    <ClCompile Include="08_primitive\hash.c" />
+    <ClCompile Include="08_primitive\parser.c" />
+    <ClCompile Include="08_primitive\stack.c" />
+    <ClCompile Include="09_executable_array\cl_getc.c" />
+    <ClCompile Include="09_executable_array\dict.c" />
+    <ClCompile Include="09_executable_array\eval.c" />
+    <ClCompile Include="09_executable_array\hash.c" />
+    <ClCompile Include="09_executable_array\parser.c" />
+    <ClCompile Include="09_executable_array\stack.c" />
+    <ClCompile Include="10_conditinal_branch_etc\cl_getc.c" />
+    <ClCompile Include="10_conditinal_branch_etc\dict.c" />
+    <ClCompile Include="10_conditinal_branch_etc\eval.c" />
+    <ClCompile Include="10_conditinal_branch_etc\hash.c" />
+    <ClCompile Include="10_conditinal_branch_etc\parser.c" />
+    <ClCompile Include="10_conditinal_branch_etc\stack.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="02_int_parser_getc\clesson.h" />
+    <ClInclude Include="03_parser\clesson.h" />
+    <ClInclude Include="05_eval_num\clesson.h" />
+    <ClInclude Include="06_literal_name\clesson.h" />
+    <ClInclude Include="07.5_element\clesson.h" />
+    <ClInclude Include="07.5_element\element.h" />
+    <ClInclude Include="07.5_element\parser.h" />
+    <ClInclude Include="07_hash_table\clesson.h" />
+    <ClInclude Include="08_primitive\clesson.h" />
+    <ClInclude Include="08_primitive\element.h" />
+    <ClInclude Include="08_primitive\parser.h" />
+    <ClInclude Include="09_executable_array\clesson.h" />
+    <ClInclude Include="09_executable_array\element.h" />
+    <ClInclude Include="09_executable_array\parser.h" />
+    <ClInclude Include="10_conditinal_branch_etc\clesson.h" />
+    <ClInclude Include="10_conditinal_branch_etc\element.h" />
+    <ClInclude Include="10_conditinal_branch_etc\parser.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
