@@ -6,5 +6,7 @@ int hash(char *str) {
     while(*str) {
         val += *str++;
     }
-    return (int)(val%TABLE_SIZE);
+    int table_size = TABLE_SIZE;
+    int hashval = (int)val % table_size;
+    return hashval;
 }
