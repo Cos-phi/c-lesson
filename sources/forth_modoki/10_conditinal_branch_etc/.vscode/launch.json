@@ -12,5 +12,24 @@
       "console": "externalTerminal",
       "preLaunchTask": "build with cl.exe"
     },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "e:/Cloud/Cosphi/programming/sources/forth_modoki/10_conditinal_branch_etc",
+      "program": "e:/Cloud/Cosphi/programming/sources/forth_modoki/10_conditinal_branch_etc/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
   ]
 }
