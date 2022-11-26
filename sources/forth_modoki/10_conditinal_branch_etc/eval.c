@@ -23,7 +23,7 @@ struct Element create_executable_element(char* input){
 
 struct Element compile_exec_array(int* inout_ch){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
-    element.etype = ELEMENT_EXECUTABLE_NAME;
+    element.etype = ELEMENT_EXECUTABLE_ARRAY;
 
     struct Element cur_exec_array[MAX_NAME_OP_NUMBERS];
     int cur_index = 0;
@@ -71,11 +71,13 @@ struct Element compile_exec_array(int* inout_ch){
 
 void eval_exec_array(struct ElementArray *elems) {
     int len = elems->len;
-    for(int i = 0; i < elems->len; i++){
+    int i;
+    for(i = 0; i < elems->len; i++){
         struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
         switch(elems->elements[i].etype) {
             case ELEMENT_NUMBER:
             case ELEMENT_LITERAL_NAME:
+            case ELEMENT_EXECUTABLE_ARRAY:
                 ref_element = elems->elements[i];
                 stack_push(&ref_element);
                 break;
@@ -89,7 +91,7 @@ void eval_exec_array(struct ElementArray *elems) {
                         case ELEMENT_LITERAL_NAME:
                             stack_push(&ref_element);
                             break;
-                        case ELEMENT_EXECUTABLE_NAME:
+                        case ELEMENT_EXECUTABLE_ARRAY:
                             eval_exec_array(ref_element.u.byte_codes);
                             break;
                         case ELEMENT_UNKNOWN:
@@ -141,7 +143,7 @@ void eval() {
                             case ELEMENT_LITERAL_NAME:
                                 stack_push(&ref_element);
                                 break;
-                            case ELEMENT_EXECUTABLE_NAME:
+                            case ELEMENT_EXECUTABLE_ARRAY:
                                 eval_exec_array(ref_element.u.byte_codes);
                                 break;
                             case ELEMENT_UNKNOWN:
@@ -150,7 +152,6 @@ void eval() {
                     } else {
                         abort();
                     }
-                    
                     break;
                 case TOKEN_LITERAL_NAME:
                     ref_element = create_literal_element(token.u.name);
@@ -333,10 +334,11 @@ void index_op(){
     
     struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*n );
     arr->len = n;
-    for( int i=0; i<=n; i++ ){
+    int i;
+    for( i=0; i<=n; i++ ){
         stack_pop(&arr->elements[i]);
     }
-    for( int i=n; i>=0; i-- ){
+    for( i=n; i>=0; i-- ){
         stack_push(&arr->elements[i]);
     }
     stack_push(&arr->elements[n]);
@@ -349,14 +351,15 @@ void roll_op(){
     struct ElementArray *arr = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*n );
     arr->len = n;
 
-    for( int i=0; i<n; i++ ){
+    int i;
+    for( i=0; i<n; i++ ){
         stack_pop(&arr->elements[i]);
     }
 
-    for( int i=j-1; i>=0; i-- ){
+    for( i=j-1; i>=0; i-- ){
         stack_push(&arr->elements[i]);
     }
-    for( int i=n-1; i>=j; i-- ){
+    for( i=n-1; i>=j; i-- ){
         stack_push(&arr->elements[i]);
     }
 }
@@ -398,7 +401,8 @@ void repeat_op(){
     stack_pop(&proc1);
     int n = stack_pop_int();
 
-    for(int i=0; i<n; i++){
+    int i;
+    for(i=0; i<n; i++){
         eval_exec_array(proc1.u.byte_codes);
     }
 }
@@ -757,9 +761,6 @@ static void test_cl_getc_set_file_factorial() {
     cl_getc_set_file(file);
     eval();
     fclose(file);
-
-    dict_print_all();
-    stack_print_all();
 
     struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
     stack_pop(&actual_element);

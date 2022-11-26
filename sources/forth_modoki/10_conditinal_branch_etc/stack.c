@@ -16,7 +16,7 @@ void stack_push(struct Element *input_element) {
         case ELEMENT_LITERAL_NAME:
             stack[stack_index].u.name = input_element->u.name;
             break;
-        case ELEMENT_EXECUTABLE_NAME:
+        case ELEMENT_EXECUTABLE_ARRAY:
             stack[stack_index].u.byte_codes = input_element->u.byte_codes;
             break;
         case ELEMENT_UNKNOWN:
@@ -37,7 +37,7 @@ void stack_pop(struct Element *out_element) {
         case ELEMENT_LITERAL_NAME:
             out_element->u.name = stack[stack_index].u.name;
             break;
-        case ELEMENT_EXECUTABLE_NAME:
+        case ELEMENT_EXECUTABLE_ARRAY:
             out_element->u.byte_codes = stack[stack_index].u.byte_codes;
             break;
         case ELEMENT_UNKNOWN:
@@ -58,6 +58,7 @@ int stack_pop_int(){
             out_num = elem.u.number;
             break;
         case ELEMENT_EXECUTABLE_NAME:
+        case ELEMENT_EXECUTABLE_ARRAY:
         case ELEMENT_LITERAL_NAME:
         case ELEMENT_C_FUNC:
         case ELEMENT_UNKNOWN:
@@ -73,7 +74,8 @@ void stack_clear(){
 
 void stack_print_all(){
     printf("stack(cur index is %d)\n",stack_index);
-    for( int i = 1; i <= stack_index; i++){
+    int i;
+    for( i = 1; i <= stack_index; i++){
         printf(" type%d:",stack[i].etype); 
         switch(stack[i].etype){
             case ELEMENT_NUMBER:
@@ -82,7 +84,7 @@ void stack_print_all(){
             case ELEMENT_LITERAL_NAME:
                 printf("literal %s \n",stack[i].u.name);
                 break;
-            case ELEMENT_EXECUTABLE_NAME:
+            case ELEMENT_EXECUTABLE_ARRAY:
                 printf("[%d] \n",stack[i].u.byte_codes->len);
                 break;
             case ELEMENT_UNKNOWN:
