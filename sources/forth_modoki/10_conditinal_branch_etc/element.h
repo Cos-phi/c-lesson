@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 #ifndef STRUCT_H
 #define STRUCT_H

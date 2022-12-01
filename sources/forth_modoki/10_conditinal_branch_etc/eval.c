@@ -773,6 +773,24 @@ static void test_cl_getc_set_file_sum_k() {
     char *input_file = "sum_k.ps";
     int expect = 10+9+8+7+6+5+4+3+2+1;
 
+    errno;
+    FILE *file = NULL;
+    file = fopen(input_file,"r");
+    cl_getc_set_file(file);
+    eval();
+    fclose(file);
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
+static void test_cl_getc_set_file_repeat() {
+    char *input_file = "repeat.ps";
+    int expect = 1+2+4*12;
+
     FILE *file;
     file = fopen(input_file,"r");
     cl_getc_set_file(file);
@@ -844,6 +862,9 @@ static void unit_tests(){
 
     init_test_eval();
     test_cl_getc_set_file_sum_k();
+
+//    init_test_eval();
+//    test_cl_getc_set_file_repeat();
 }
 
 int main() {

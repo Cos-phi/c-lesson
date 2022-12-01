@@ -7,7 +7,7 @@ static FILE *file = NULL;
 static int cur_ch;
 
 
-int cl_getc() {
+int cl_getc(){
     if(file == NULL){
         if(strlen(input) == pos){
             return EOF;
