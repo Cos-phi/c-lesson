@@ -749,12 +749,12 @@ static void test_cl_getc_set_file() {
     stack_pop(&actual_element);
     int actual = actual_element.u.number;
 
-    assert(expect = actual);
+    assert(expect == actual);
 }
 
 static void test_cl_getc_set_file_factorial() {
     char *input_file = "factorial.ps";
-    int expect = 5*4*3*2*1;
+    int expect = 10*9*8*7*6*5*4*3*2*1;
 
     FILE *file;
     file = fopen(input_file,"r");
@@ -766,7 +766,24 @@ static void test_cl_getc_set_file_factorial() {
     stack_pop(&actual_element);
     int actual = actual_element.u.number;
 
-    assert(expect = actual);
+    assert(expect == actual);
+}
+
+static void test_cl_getc_set_file_sum_k() {
+    char *input_file = "sum_k.ps";
+    int expect = 10+9+8+7+6+5+4+3+2+1;
+
+    FILE *file;
+    file = fopen(input_file,"r");
+    cl_getc_set_file(file);
+    eval();
+    fclose(file);
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
 }
 
 static void init_test_eval(){
@@ -825,6 +842,8 @@ static void unit_tests(){
     init_test_eval();
     test_cl_getc_set_file_factorial();
 
+    init_test_eval();
+    test_cl_getc_set_file_sum_k();
 }
 
 int main() {
