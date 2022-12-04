@@ -804,6 +804,24 @@ static void test_cl_getc_set_file_repeat() {
     assert(expect == actual);
 }
 
+static void test_cl_getc_set_file_sum_k2() {
+    char *input_file = "sum_k2.ps";
+    int expect = 10*10 + 9*9 + 8*8 + 7*7 + 6*6 + 5*5 + 4*4 + 3*3 + 2*2 + 1*1;
+
+    errno;
+    FILE *file = NULL;
+    file = fopen(input_file,"r");
+    cl_getc_set_file(file);
+    eval();
+    fclose(file);
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
 static void init_test_eval(){
     stack_clear();
     dict_clear();
@@ -863,8 +881,11 @@ static void unit_tests(){
     init_test_eval();
     test_cl_getc_set_file_sum_k();
 
-//    init_test_eval();
-//    test_cl_getc_set_file_repeat();
+    init_test_eval();
+    test_cl_getc_set_file_repeat();
+
+    init_test_eval();
+    test_cl_getc_set_file_sum_k2();
 }
 
 int main() {
