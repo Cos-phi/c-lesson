@@ -822,6 +822,24 @@ static void test_cl_getc_set_file_sum_k2() {
     assert(expect == actual);
 }
 
+static void test_cl_getc_set_file_fibo() {
+    char *input_file = "fibo.ps";
+    int expect = 55;
+
+    errno;
+    FILE *file = NULL;
+    file = fopen(input_file,"r");
+    cl_getc_set_file(file);
+    eval();
+    fclose(file);
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
 static void init_test_eval(){
     stack_clear();
     dict_clear();
@@ -886,6 +904,9 @@ static void unit_tests(){
 
     init_test_eval();
     test_cl_getc_set_file_sum_k2();
+    
+    init_test_eval();
+    test_cl_getc_set_file_fibo();
 }
 
 int main() {
