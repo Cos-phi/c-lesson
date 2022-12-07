@@ -79,10 +79,10 @@ void stack_print_all(){
         printf(" type%d:",stack[i].etype); 
         switch(stack[i].etype){
             case ELEMENT_NUMBER:
-                printf("num %d \n",stack[i].u.number);
+                printf("num\t %d \n",stack[i].u.number);
                 break;
             case ELEMENT_LITERAL_NAME:
-                printf("literal %s \n",stack[i].u.name);
+                printf("literal\t %s \n",stack[i].u.name);
                 break;
             case ELEMENT_EXECUTABLE_ARRAY:
                 printf("[%d] \n",stack[i].u.byte_codes->len);

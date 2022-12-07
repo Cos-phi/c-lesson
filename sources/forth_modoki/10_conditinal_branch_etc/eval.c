@@ -840,6 +840,44 @@ static void test_cl_getc_set_file_fibo() {
     assert(expect == actual);
 }
 
+static void test_cl_getc_set_file_fizzbuzz() {
+    char *input_file = "fizzbuzz.ps";
+    char* expect = "FizzBuzz";
+
+    FILE *file;
+    file = fopen(input_file,"r");
+    cl_getc_set_file(file);
+    eval();
+    fclose(file);
+
+    //stack_print_all();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    char* actual = actual_element.u.name;
+
+    assert(streq(expect,actual));
+}
+
+static void test_cl_getc_set_file_primeseries() {
+    char *input_file = "primeseries.ps";
+    int* expect = 97;
+
+    FILE *file;
+    file = fopen(input_file,"r");
+    cl_getc_set_file(file);
+    eval();
+    fclose(file);
+
+    //stack_print_all();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int* actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
 static void init_test_eval(){
     stack_clear();
     dict_clear();
@@ -907,6 +945,12 @@ static void unit_tests(){
     
     init_test_eval();
     test_cl_getc_set_file_fibo();
+
+    init_test_eval();
+    test_cl_getc_set_file_fizzbuzz();
+
+    init_test_eval();
+    test_cl_getc_set_file_primeseries();
 }
 
 int main() {
