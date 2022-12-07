@@ -1,0 +1,10 @@
+/repeat2 {
+    /repeat_func exch def
+    /repeat_cont exch def
+    {repeat_cont 1 ge}
+    {
+        repeat_func
+        /repeat_cont repeat_cont 1 sub def
+    } while
+} def
+{1 2 add} exec 12 {4 add} repeat2

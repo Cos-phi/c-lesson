@@ -1,0 +1,24 @@
+/isprime {
+    /isprimeflag 1 def
+    dup
+    2 div exch
+    {1 index 1 gt}
+    {
+        dup
+        2 index
+        mod 0 eq {/isprimeflag 0 def} if
+        exch 1 sub exch
+    } while
+    pop pop isprimeflag
+} def
+/primeseries {
+    /primeend exch def
+    1
+    {dup primeend le}
+    {
+        dup isprime {dup} if
+        1 add
+    } while
+    pop
+} def
+100 primeseries
