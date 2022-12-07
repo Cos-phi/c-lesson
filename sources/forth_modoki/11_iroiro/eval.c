@@ -451,11 +451,17 @@ void register_primitives() {
     register_primitive("while", while_op);
 }
 
+static void init_test_eval(){
+    stack_clear();
+    dict_clear();
+    register_primitives();
+}
 
 static void test_eval_def_and_add() {
     char *input = "/mue- 44 def /mue- 12 def /ume- 30 def ume- mue- add";
     int expect = 12 + 30;
 
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
     
@@ -469,6 +475,8 @@ static void test_eval_def_and_add() {
 
 static void test_eval_def() {
     char *input = "/abcd 12 def";
+
+    init_test_eval();
     cl_getc_set_src(input);
     struct Element expect_value; expect_value.etype = ELEMENT_NUMBER; expect_value.u.number = 12;
     struct Element actual_element= {ELEMENT_UNKNOWN, {0} };
@@ -485,6 +493,7 @@ static void test_eval_num_one() {
     char *input = "123";
     int expect = 123;
 
+    init_test_eval();
     cl_getc_set_src(input);
 
     eval();
@@ -501,6 +510,7 @@ static void test_eval_num_two() {
     int expect1 = 456;
     int expect2 = 123;
 
+    init_test_eval();
     cl_getc_set_src(input);
 
     eval();
@@ -521,6 +531,7 @@ static void test_eval_num_add() {
     char *input = "1 2 add";
     int expect = 3;
 
+    init_test_eval();
     cl_getc_set_src(input);
 
     eval();
@@ -536,6 +547,7 @@ static void test_eval_num_add2() {
     char *input = "1 2 3 add add 4 5 6 7 8 9 add add add add add add";
     int expect = 45;
 
+    init_test_eval();
     cl_getc_set_src(input);
 
     eval();
@@ -551,6 +563,7 @@ static void test_eval_num_sub() {
     char *input = "5 3 sub";
     int expect = 2;
 
+    init_test_eval();
     cl_getc_set_src(input);
 
     eval();
@@ -566,6 +579,7 @@ static void test_eval_num_mul() {
     char *input = "8 3 mul";
     int expect = 24;
 
+    init_test_eval();
     cl_getc_set_src(input);
 
     eval();
@@ -581,6 +595,7 @@ static void test_eval_num_div() {
     char *input = "7 2 div";
     int expect = 3;
 
+    init_test_eval();
     cl_getc_set_src(input);
 
     eval();
@@ -596,6 +611,7 @@ static void test_eval_def_and_4_arithmetic_operators() {
     char *input = "/mue- 12 def /ume- 30 def 42 ume- mue- add mul ume- 3 div sub";
     int expect = (12 + 30) * 42 - 30 / 3;
 
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
     
@@ -611,6 +627,7 @@ static void test_eval_compile_executable_array() {
     char *input = "/abc { 1 2 add } def abc";
     int expect = 1 + 2;
 
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
 
@@ -626,6 +643,7 @@ static void test_eval_compile_executable_array_nest() {
     char *input = "/ZZ {6} def /YY {4 ZZ 5} def /XX {1 2 YY 3} def XX mul mul mul mul add";
     int expect = 3*5*6*4*2+1;
 
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
 
@@ -641,6 +659,7 @@ static void test_eval_ifelse() {
     char *input = "5 1 {1 add} {2 add} ifelse 0 {1 add} {2 add} ifelse";
     int expect = 5 + 1 + 2;
 
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
 
@@ -655,6 +674,7 @@ static void test_eval_eq() {
     char *input = "/abc 42 def 42 abc eq 54 abc eq add";
     int expect = 1;
 
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
 
@@ -669,6 +689,7 @@ static void test_eval_comparison_operators() {
     char *input = "1 1 eq 2 3 neq add 3 2 gt add 5 3 ge add 2 4 lt add 3 3 le add 4 2 eq add 3 3 neq add 2 2 gt add 4 7 ge add 3 2 lt add 8 7 le add";
     int expect = 1+1+1+1+1+1+0+0+0+0+0+0;
 
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
 
@@ -683,6 +704,7 @@ static void test_eval_comparison_operators2() {
     char *input = "/hoge {1 3 3} def hoge eq add";
     int expect = 2;
 
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
 
@@ -697,6 +719,7 @@ static void test_eval_stack_operators() {
     char *input = "1 dup 2 3 dup pop exch mod add 3 4 5 6 7 4 3 roll 2 index add";
     int expect = 10;
 
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
 
@@ -711,6 +734,82 @@ static void test_eval_control_operators() {
     char *input = "{1 2 add} exec 12 {4 add} repeat";
     int expect = 1+2+4*12;
 
+    init_test_eval();
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
+static void test_eval_control_operators2() {
+    char *input = "{{1 2 add} exec 12 {4 add} repeat} exec";
+    int expect = 1+2+4*12;
+
+    init_test_eval();
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
+static void test_eval_control_operators3() {
+    char *input = "1 {2} {3} ifelse 4 add";
+    int expect = 2 + 4;
+
+    init_test_eval();
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
+static void test_eval_control_operators4() {
+    char *input = "/a { {345} ifelse} def 1 {123} a";
+    int expect = 123;
+
+    init_test_eval();
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
+static void test_eval_control_operators5() {
+    char *input = "/f { {1 3 add} exec 3} def f add";
+    int expect = 4+3;
+
+    init_test_eval();
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
+static void test_eval_control_operators6() {
+    char *input = "/b { 1 {3} if 2} def /a {b 1} def a add add";
+    int expect = 3 + 2 + 1;
+
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
 
@@ -725,6 +824,7 @@ static void test_eval_while() {
     char *input = "/hoge 1 def {16 hoge gt} {/hoge 2 hoge mul def} while hoge";
     int expect = 16;
 
+    init_test_eval();
     cl_getc_set_src(input);
     eval();
 
@@ -736,9 +836,10 @@ static void test_eval_while() {
 }
 
 static void test_cl_getc_set_file() {
-    char *input_file = "test.ps";
+    char *input_file = "ps/test.ps";
     int expect = 42;
 
+    init_test_eval();
     FILE *file;
     file = fopen(input_file,"r");
     cl_getc_set_file(file);
@@ -753,9 +854,10 @@ static void test_cl_getc_set_file() {
 }
 
 static void test_cl_getc_set_file_factorial() {
-    char *input_file = "factorial.ps";
+    char *input_file = "ps/factorial.ps";
     int expect = 10*9*8*7*6*5*4*3*2*1;
 
+    init_test_eval();
     FILE *file;
     file = fopen(input_file,"r");
     cl_getc_set_file(file);
@@ -770,10 +872,10 @@ static void test_cl_getc_set_file_factorial() {
 }
 
 static void test_cl_getc_set_file_sum_k() {
-    char *input_file = "sum_k.ps";
+    char *input_file = "ps/sum_k.ps";
     int expect = 10+9+8+7+6+5+4+3+2+1;
 
-    errno;
+    init_test_eval();
     FILE *file = NULL;
     file = fopen(input_file,"r");
     cl_getc_set_file(file);
@@ -788,9 +890,10 @@ static void test_cl_getc_set_file_sum_k() {
 }
 
 static void test_cl_getc_set_file_repeat() {
-    char *input_file = "repeat.ps";
+    char *input_file = "ps/repeat.ps";
     int expect = 1+2+4*12;
 
+    init_test_eval();
     FILE *file;
     file = fopen(input_file,"r");
     cl_getc_set_file(file);
@@ -805,10 +908,10 @@ static void test_cl_getc_set_file_repeat() {
 }
 
 static void test_cl_getc_set_file_sum_k2() {
-    char *input_file = "sum_k2.ps";
+    char *input_file = "ps/sum_k2.ps";
     int expect = 10*10 + 9*9 + 8*8 + 7*7 + 6*6 + 5*5 + 4*4 + 3*3 + 2*2 + 1*1;
 
-    errno;
+    init_test_eval();
     FILE *file = NULL;
     file = fopen(input_file,"r");
     cl_getc_set_file(file);
@@ -823,10 +926,11 @@ static void test_cl_getc_set_file_sum_k2() {
 }
 
 static void test_cl_getc_set_file_fibo() {
-    char *input_file = "fibo.ps";
+    //char *input_file = "ps/fibo.ps";
+    char *input_file = "ps_yoheikikuta/fibo.ps";
     int expect = 55;
 
-    errno;
+    init_test_eval();
     FILE *file = NULL;
     file = fopen(input_file,"r");
     cl_getc_set_file(file);
@@ -841,9 +945,11 @@ static void test_cl_getc_set_file_fibo() {
 }
 
 static void test_cl_getc_set_file_fizzbuzz() {
-    char *input_file = "fizzbuzz.ps";
+    char *input_file = "ps/fizzbuzz.ps";
+    //char *input_file = "ps_oikawa124/fizzbuzz.ps";
     char* expect = "FizzBuzz";
 
+    init_test_eval();
     FILE *file;
     file = fopen(input_file,"r");
     cl_getc_set_file(file);
@@ -860,9 +966,10 @@ static void test_cl_getc_set_file_fizzbuzz() {
 }
 
 static void test_cl_getc_set_file_primeseries() {
-    char *input_file = "primeseries.ps";
+    char *input_file = "ps/primeseries.ps";
     int* expect = 97;
 
+    init_test_eval();
     FILE *file;
     file = fopen(input_file,"r");
     cl_getc_set_file(file);
@@ -878,78 +985,41 @@ static void test_cl_getc_set_file_primeseries() {
     assert(expect == actual);
 }
 
-static void init_test_eval(){
-    stack_clear();
-    dict_clear();
-    register_primitives();
-}
-
 static void unit_tests(){
-    init_test_eval();
     test_eval_num_one();
     test_eval_num_two();
     test_eval_num_add();
     test_eval_num_add2();
     test_eval_def();
-
-    init_test_eval();
     test_eval_def_and_add();
     test_eval_num_sub(); 
     test_eval_num_mul(); 
     test_eval_num_div(); 
     
-
-    init_test_eval();
     test_eval_def_and_4_arithmetic_operators();
-
-    init_test_eval();
     test_eval_compile_executable_array();
-
-    init_test_eval();
     test_eval_compile_executable_array_nest();
-
-    init_test_eval();
     test_eval_ifelse();
-
-    init_test_eval();
     test_eval_eq();
 
-    init_test_eval();
     test_eval_comparison_operators();
-    init_test_eval();
     test_eval_comparison_operators2();
-
-    init_test_eval();
     test_eval_stack_operators();
-
-    init_test_eval();
     test_eval_control_operators();
+    test_eval_control_operators2();
+    test_eval_control_operators3();
+    test_eval_control_operators4();
+    test_eval_control_operators5();
+    test_eval_control_operators6();
 
-    init_test_eval();
     test_eval_while();
-
-    init_test_eval();
     test_cl_getc_set_file();
-
-    init_test_eval();
     test_cl_getc_set_file_factorial();
-
-    init_test_eval();
     test_cl_getc_set_file_sum_k();
-
-    init_test_eval();
     test_cl_getc_set_file_repeat();
-
-    init_test_eval();
     test_cl_getc_set_file_sum_k2();
-    
-    init_test_eval();
     test_cl_getc_set_file_fibo();
-
-    init_test_eval();
     test_cl_getc_set_file_fizzbuzz();
-
-    init_test_eval();
     test_cl_getc_set_file_primeseries();
 }
 
