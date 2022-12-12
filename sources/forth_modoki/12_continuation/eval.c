@@ -69,20 +69,23 @@ struct Element compile_exec_array(int* inout_ch){
     abort();
 }
 
+
+static struct Continuation *prev = NULL;
+
 void eval_exec_array(struct ElementArray *elems) {
-    int len = elems->len;
+    struct ElementArray *cur_elems = elems;
     int i;
-    for(i = 0; i < elems->len; i++){
+    for(i = 0; i < cur_elems->len; i++){
         struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
-        switch(elems->elements[i].etype) {
+        switch(cur_elems->elements[i].etype) {
             case ELEMENT_NUMBER:
             case ELEMENT_LITERAL_NAME:
             case ELEMENT_EXECUTABLE_ARRAY:
-                ref_element = elems->elements[i];
+                ref_element = cur_elems->elements[i];
                 stack_push(&ref_element);
                 break;
             case ELEMENT_EXECUTABLE_NAME:
-                if( dict_get(elems->elements[i].u.name,&ref_element) ){
+                if( dict_get(cur_elems->elements[i].u.name,&ref_element) ){
                     switch(ref_element.etype){
                         case ELEMENT_C_FUNC:
                             ref_element.u.cfunc();
@@ -92,8 +95,12 @@ void eval_exec_array(struct ElementArray *elems) {
                             stack_push(&ref_element);
                             break;
                         case ELEMENT_EXECUTABLE_ARRAY:
-                            eval_exec_array(ref_element.u.byte_codes);
-                            break;
+                            //eval_exec_array(ref_element.u.byte_codes);
+                            prev->exec_array = cur_elems;
+                            prev->pc = i;
+                            cur_elems = ref_element.u.byte_codes;
+                            i = 0;
+                            continue;
                         case ELEMENT_UNKNOWN:
                         default:
                             break;
@@ -107,6 +114,10 @@ void eval_exec_array(struct ElementArray *elems) {
             case ELEMENT_UNKNOWN:
             default:
                 break;
+        }
+        if(i == cur_elems->len && prev != NULL) {
+            cur_elems = prev->exec_array;
+            i = prev->pc;
         }
     
     }
@@ -625,7 +636,7 @@ static void test_eval_def_and_4_arithmetic_operators() {
     assert(expect == actual);
 
 }
-/*
+
 static void test_eval_compile_executable_array() {
     char *input = "/abc { 1 2 add } def abc";
     int expect = 1 + 2;
@@ -657,7 +668,7 @@ static void test_eval_compile_executable_array_nest() {
     assert(expect == actual);
 
 }
-
+/*
 static void test_eval_ifelse() {
     char *input = "5 1 {1 add} {2 add} ifelse 0 {1 add} {2 add} ifelse";
     int expect = 5 + 1 + 2;

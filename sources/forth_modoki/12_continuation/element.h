@@ -32,6 +32,11 @@ struct ElementArray {
     struct Element elements[0];
 };
 
+struct Continuation {
+    struct ElementArray* exec_array;
+    int pc;
+};
+
 #endif
 
 //stack.c
