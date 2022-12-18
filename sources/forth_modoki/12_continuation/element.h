@@ -56,5 +56,5 @@ void dict_clear();
 int hash(char* str);
 
 //continuation_stack
-void co_push(struct Continuation *input_co);
+void co_push(struct Continuation *in_cont);
 int co_pop(struct Continuation *out_co);
