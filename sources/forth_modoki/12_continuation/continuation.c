@@ -11,11 +11,11 @@ void co_push(struct Continuation *in_cont) {
     co_stack[co_stack_pos] = *in_cont;
 }
 
-int co_pop(struct Continuation *out_co) {
+int co_pop(struct Continuation *out_cont) {
     if(0 == co_stack_pos){
         return 0;
     }
-    *out_co = co_stack[co_stack_pos];
+    *out_cont = co_stack[co_stack_pos];
     co_stack_pos--;
     return 1;
 }
