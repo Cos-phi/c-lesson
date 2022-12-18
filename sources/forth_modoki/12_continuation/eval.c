@@ -81,11 +81,12 @@ void eval_exec_array(struct ElementArray *elems) {
             stack_push(&ref_element);
         }else if( ELEMENT_EXECUTABLE_NAME == cur_etype){
             dict_get(cur_cont.exec_array->elements[cur_cont.pc].u.name, &ref_element);
-            if( ELEMENT_C_FUNC == ref_element.etype ){
+            enum ElementType ref_etype = ref_element.etype;
+            if( ELEMENT_C_FUNC == ref_etype ){
                 ref_element.u.cfunc();
-            }else if( ELEMENT_NUMBER == ref_element.etype || ELEMENT_LITERAL_NAME == ref_element.etype ){
+            }else if( ELEMENT_NUMBER == ref_etype || ELEMENT_LITERAL_NAME == ref_etype ){
                 stack_push(&ref_element);
-            }else if( ELEMENT_EXECUTABLE_ARRAY == ref_element.etype ){
+            }else if( ELEMENT_EXECUTABLE_ARRAY == ref_etype ){
                 cur_cont.pc++;
                 co_push(&cur_cont);
                 cur_cont.exec_array = ref_element.u.byte_codes;
