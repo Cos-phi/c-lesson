@@ -33,8 +33,8 @@ struct ElementArray {
 };
 
 struct Continuation {
-    int pc;
     struct ElementArray *exec_array;
+    int pc;
 };
 
 #endif
