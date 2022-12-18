@@ -69,57 +69,44 @@ struct Element compile_exec_array(int* inout_ch){
     abort();
 }
 
-
-static struct Continuation *prev = NULL;
-
 void eval_exec_array(struct ElementArray *elems) {
-    struct ElementArray *cur_elems = elems;
-    int i;
-    for(i = 0; i < cur_elems->len; i++){
-        struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
-        switch(cur_elems->elements[i].etype) {
-            case ELEMENT_NUMBER:
-            case ELEMENT_LITERAL_NAME:
-            case ELEMENT_EXECUTABLE_ARRAY:
-                ref_element = cur_elems->elements[i];
-                stack_push(&ref_element);
-                break;
-            case ELEMENT_EXECUTABLE_NAME:
-                if( dict_get(cur_elems->elements[i].u.name,&ref_element) ){
-                    switch(ref_element.etype){
-                        case ELEMENT_C_FUNC:
-                            ref_element.u.cfunc();
-                            break;
-                        case ELEMENT_NUMBER:
-                        case ELEMENT_LITERAL_NAME:
-                            stack_push(&ref_element);
-                            break;
-                        case ELEMENT_EXECUTABLE_ARRAY:
-                            //eval_exec_array(ref_element.u.byte_codes);
-                            prev->exec_array = cur_elems;
-                            prev->pc = i;
-                            cur_elems = ref_element.u.byte_codes;
-                            i = 0;
-                            continue;
-                        case ELEMENT_UNKNOWN:
-                        default:
-                            break;
-                            abort();
-                    }
-                } else {
-                    abort();
-                }
-                break;
-            case ELEMENT_C_FUNC:
-            case ELEMENT_UNKNOWN:
-            default:
-                break;
-        }
-        if(i == cur_elems->len && prev != NULL) {
-            cur_elems = prev->exec_array;
-            i = prev->pc;
-        }
+    struct Continuation input_cont;
+    input_cont.exec_array = elems;
+    input_cont.pc = 0;
+    co_push(&input_cont);
     
+    struct Continuation cur_cont;
+    co_pop(&cur_cont);
+    struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
+    while(1){
+        if( ELEMENT_NUMBER == cur_cont.exec_array->elements[cur_cont.pc].etype || ELEMENT_LITERAL_NAME == cur_cont.exec_array->elements[cur_cont.pc].etype || ELEMENT_EXECUTABLE_ARRAY == cur_cont.exec_array->elements[cur_cont.pc].etype){
+            ref_element = cur_cont.exec_array->elements[cur_cont.pc];
+            stack_push(&ref_element);
+        }else if( ELEMENT_EXECUTABLE_NAME == cur_cont.exec_array->elements[cur_cont.pc].etype){
+            dict_get(cur_cont.exec_array->elements[cur_cont.pc].u.name, &ref_element);
+            if( ELEMENT_C_FUNC == ref_element.etype ){
+                ref_element.u.cfunc();
+            }else if( ELEMENT_NUMBER == ref_element.etype || ELEMENT_LITERAL_NAME == ref_element.etype ){
+                stack_push(&ref_element);
+            }else if( ELEMENT_EXECUTABLE_ARRAY == ref_element.etype ){
+                cur_cont.pc++;
+                co_push(&cur_cont);
+                cur_cont.exec_array = ref_element.u.byte_codes;
+                cur_cont.pc = 0;
+                continue;
+            } else{
+                abort();
+            }
+        }
+        else {
+            abort();
+        }
+        cur_cont.pc++;
+        if( cur_cont.pc >= cur_cont.exec_array->len ){
+            if( 0 == co_pop(&cur_cont) ){
+                break;
+            }
+        }
     }
 }
 
@@ -998,9 +985,9 @@ static void unit_tests(){
     test_eval_num_div(); 
     
     test_eval_def_and_4_arithmetic_operators();
-    /*
     test_eval_compile_executable_array();
     test_eval_compile_executable_array_nest();
+    /*
     test_eval_ifelse();
     */
     test_eval_eq();

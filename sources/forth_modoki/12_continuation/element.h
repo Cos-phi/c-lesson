@@ -33,8 +33,8 @@ struct ElementArray {
 };
 
 struct Continuation {
-    struct ElementArray* exec_array;
     int pc;
+    struct ElementArray *exec_array;
 };
 
 #endif
@@ -54,3 +54,7 @@ void dict_clear();
 
 //hash.c
 int hash(char* str);
+
+//continuation_stack
+void co_push(struct Continuation *input_co);
+int co_pop(struct Continuation *out_co);
