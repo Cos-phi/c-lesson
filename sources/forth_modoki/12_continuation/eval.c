@@ -70,9 +70,9 @@ struct Element compile_exec_array(int* inout_ch){
 }
 
 void eval_exec_array(struct ElementArray *elems) {
-    struct Continuation cur_cont;
-    cur_cont.pc = 0;
-    cur_cont.exec_array = elems;
+    struct Continuation cur_cont = {0,elems};
+    //cur_cont.pc = 0;
+    //cur_cont.exec_array = elems;
     struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
     while(1){
         enum ElementType cur_etype = cur_cont.exec_array->elements[cur_cont.pc].etype;
