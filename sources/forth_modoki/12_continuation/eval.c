@@ -75,10 +75,11 @@ void eval_exec_array(struct ElementArray *elems) {
     cur_cont.exec_array = elems;
     struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
     while(1){
-        if( ELEMENT_NUMBER == cur_cont.exec_array->elements[cur_cont.pc].etype || ELEMENT_LITERAL_NAME == cur_cont.exec_array->elements[cur_cont.pc].etype || ELEMENT_EXECUTABLE_ARRAY == cur_cont.exec_array->elements[cur_cont.pc].etype){
+        enum ElementType cur_etype = cur_cont.exec_array->elements[cur_cont.pc].etype;
+        if( ELEMENT_NUMBER == cur_etype || ELEMENT_LITERAL_NAME == cur_etype || ELEMENT_EXECUTABLE_ARRAY == cur_etype){
             ref_element = cur_cont.exec_array->elements[cur_cont.pc];
             stack_push(&ref_element);
-        }else if( ELEMENT_EXECUTABLE_NAME == cur_cont.exec_array->elements[cur_cont.pc].etype){
+        }else if( ELEMENT_EXECUTABLE_NAME == cur_etype){
             dict_get(cur_cont.exec_array->elements[cur_cont.pc].u.name, &ref_element);
             if( ELEMENT_C_FUNC == ref_element.etype ){
                 ref_element.u.cfunc();
