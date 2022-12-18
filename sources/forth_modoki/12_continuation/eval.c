@@ -70,13 +70,9 @@ struct Element compile_exec_array(int* inout_ch){
 }
 
 void eval_exec_array(struct ElementArray *elems) {
-    struct Continuation input_cont;
-    input_cont.exec_array = elems;
-    input_cont.pc = 0;
-    co_push(&input_cont);
-    
     struct Continuation cur_cont;
-    co_pop(&cur_cont);
+    cur_cont.pc = 0;
+    cur_cont.exec_array = elems;
     struct Element ref_element = {ELEMENT_UNKNOWN, {0} };
     while(1){
         if( ELEMENT_NUMBER == cur_cont.exec_array->elements[cur_cont.pc].etype || ELEMENT_LITERAL_NAME == cur_cont.exec_array->elements[cur_cont.pc].etype || ELEMENT_EXECUTABLE_ARRAY == cur_cont.exec_array->elements[cur_cont.pc].etype){
