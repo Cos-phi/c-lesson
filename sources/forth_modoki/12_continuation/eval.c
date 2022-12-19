@@ -78,7 +78,8 @@ void eval_exec_array(struct ElementArray *exec_array) {
             ref_element = cur_cont.exec_array->elements[cur_cont.pc];
             stack_push(&ref_element);
         }else if( ELEMENT_EXECUTABLE_NAME == cur_etype){
-            dict_get(cur_cont.exec_array->elements[cur_cont.pc].u.name, &ref_element);
+            char* executable_name = cur_cont.exec_array->elements[cur_cont.pc].u.name;
+            dict_get(executable_name, &ref_element);
             enum ElementType ref_etype = ref_element.etype;
             if( ELEMENT_C_FUNC == ref_etype ){
                 ref_element.u.cfunc();
@@ -87,6 +88,14 @@ void eval_exec_array(struct ElementArray *exec_array) {
             }else if( ELEMENT_EXECUTABLE_ARRAY == ref_etype ){
                 cur_cont.pc++;
                 co_push(&cur_cont);
+                cur_cont.exec_array = ref_element.u.byte_codes;
+                cur_cont.pc = 0;
+                continue;
+            }else if( streq("exec",executable_name) ){
+                cur_cont.pc++;
+                co_push(&cur_cont);
+                stack_pop(&ref_element);
+                abort(ELEMENT_EXECUTABLE_ARRAY == ref_element.etype);
                 cur_cont.exec_array = ref_element.u.byte_codes;
                 cur_cont.pc = 0;
                 continue;
@@ -731,7 +740,7 @@ static void test_eval_control_operators() {
 }
 
 static void test_eval_control_operators_eval_exec_array_exec() {
-    char *input = "{{{1 2 add} exec 12 mul} exec {3 add} exec} exec";
+    char *input = "{{{1 2 add} exec 12 mul} exec {3 add} exec}exec";
     int expect = (1+2)*12+3;
 
     init_test_eval();
