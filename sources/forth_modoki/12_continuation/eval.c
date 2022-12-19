@@ -142,6 +142,9 @@ void eval() {
                             case ELEMENT_UNKNOWN:
                                 abort();
                         }
+                    } else if( streq("exec",token.u.name) ){
+                        stack_pop(&ref_element);
+                        eval_exec_array(ref_element.u.byte_codes);
                     } else {
                         abort();
                     }
@@ -711,10 +714,10 @@ static void test_eval_stack_operators() {
 
     assert(expect == actual);
 }
-/*
+
 static void test_eval_control_operators() {
-    char *input = "{1 2 add} exec 12 {4 add} repeat";
-    int expect = 1+2+4*12;
+    char *input = "{1 2 add} exec 12 mul";
+    int expect = (1+2)*12;
 
     init_test_eval();
     cl_getc_set_src(input);
@@ -726,6 +729,7 @@ static void test_eval_control_operators() {
 
     assert(expect == actual);
 }
+/*
 
 static void test_eval_control_operators2() {
     char *input = "{{1 2 add} exec 12 {4 add} repeat} exec";
@@ -989,8 +993,8 @@ static void unit_tests(){
 
     test_eval_comparison_operators();
     test_eval_stack_operators();
-    /*
     test_eval_control_operators();
+    /*
     test_eval_control_operators2();
     test_eval_control_operators3();
     test_eval_control_operators4();
