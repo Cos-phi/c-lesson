@@ -729,11 +729,10 @@ static void test_eval_control_operators() {
 
     assert(expect == actual);
 }
-/*
 
-static void test_eval_control_operators2() {
-    char *input = "{{1 2 add} exec 12 {4 add} repeat} exec";
-    int expect = 1+2+4*12;
+static void test_eval_control_operators_eval_exec_array_exec() {
+    char *input = "{{{1 2 add} exec 12 mul} exec {3 add} exec} exec";
+    int expect = (1+2)*12+3;
 
     init_test_eval();
     cl_getc_set_src(input);
@@ -746,6 +745,7 @@ static void test_eval_control_operators2() {
     assert(expect == actual);
 }
 
+/*
 static void test_eval_control_operators3() {
     char *input = "1 {2} {3} ifelse 4 add";
     int expect = 2 + 4;
@@ -994,8 +994,8 @@ static void unit_tests(){
     test_eval_comparison_operators();
     test_eval_stack_operators();
     test_eval_control_operators();
+    test_eval_control_operators_eval_exec_array_exec();
     /*
-    test_eval_control_operators2();
     test_eval_control_operators3();
     test_eval_control_operators4();
     test_eval_control_operators5();
