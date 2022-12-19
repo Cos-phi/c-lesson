@@ -51,6 +51,7 @@ int dict_get(char* key, struct Element *out_element);
 void dict_put(char* key, struct Element *element);
 void dict_print_all();
 void dict_clear();
+int streq(char *s1,char *s2);
 
 //hash.c
 int hash(char* str);
