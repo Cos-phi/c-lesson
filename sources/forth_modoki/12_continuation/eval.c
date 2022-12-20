@@ -71,8 +71,8 @@ struct Element compile_exec_array(int* inout_ch){
 
 void eval_exec_array(struct ElementArray *exec_array) {
     struct Continuation cur_cont = {exec_array, 0};
-    struct Element ref_element = {ELEMENT_UNKNOWN, {0}};
     while(1){
+        struct Element ref_element = {ELEMENT_UNKNOWN, {0}};
         enum ElementType cur_etype = cur_cont.exec_array->elements[cur_cont.pc].etype;
         if( ELEMENT_NUMBER == cur_etype || ELEMENT_LITERAL_NAME == cur_etype || ELEMENT_EXECUTABLE_ARRAY == cur_etype){
             ref_element = cur_cont.exec_array->elements[cur_cont.pc];
