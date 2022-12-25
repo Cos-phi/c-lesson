@@ -106,7 +106,15 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 continue;
             }else if( streq("jmp",executable_name)){
                 int jmp_num = stack_pop_int();
-                cur_cont.pc += (jmp_num - 1);
+                cur_cont.pc += jmp_num;
+                cur_cont.pc--;
+            }else if( streq("jmp_not_if",executable_name)){
+                int jmp_num = stack_pop_int();
+                int cond = stack_pop_int();
+                if( 1 == cond ){
+                    cur_cont.pc += jmp_num;
+                    cur_cont.pc--;
+                }
             }else{
                 abort();
             }
@@ -777,6 +785,21 @@ static void test_eval_jmp() {
     assert(expect == actual);
 }
 
+static void test_eval_jmp_not_if() {
+    char *input = "{1 2 5 5 eq 3 jmp 4 5 add} exec";
+    int expect = 1 + 2;
+
+    init_test_eval();
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
 /*
 static void test_eval_control_operators3() {
     char *input = "1 {2} {3} ifelse 4 add";
@@ -1019,6 +1042,7 @@ static void unit_tests(){
     test_eval_compile_executable_array();
     test_eval_compile_executable_array_nest();
     test_eval_jmp();
+    test_eval_jmp_not_if(); 
     /*
     test_eval_ifelse();
     */
