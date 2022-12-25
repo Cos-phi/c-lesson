@@ -104,6 +104,9 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 cur_cont.exec_array = ref_element.u.byte_codes;
                 cur_cont.pc = 0;
                 continue;
+            }else if( streq("jmp",executable_name)){
+                int jmp_num = stack_pop_int();
+                cur_cont.pc += (jmp_num - 1);
             }else{
                 abort();
             }
