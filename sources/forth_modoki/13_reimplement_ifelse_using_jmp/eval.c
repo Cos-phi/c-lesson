@@ -111,7 +111,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
             }else if( streq("jmp_not_if",executable_name)){
                 int jmp_num = stack_pop_int();
                 int cond = stack_pop_int();
-                if( 1 == cond ){
+                if( 0 == cond ){
                     cur_cont.pc += jmp_num;
                     cur_cont.pc--;
                 }
@@ -786,7 +786,7 @@ static void test_eval_jmp() {
 }
 
 static void test_eval_jmp_not_if() {
-    char *input = "{1 2 5 5 eq 3 jmp 4 5 add} exec";
+    char *input = "{1 2 5 5 neq 3 jmp_not_if 4 5 add} exec";
     int expect = 1 + 2;
 
     init_test_eval();
