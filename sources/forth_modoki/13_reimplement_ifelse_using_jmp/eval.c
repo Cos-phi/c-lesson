@@ -133,7 +133,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 struct Element elem_jmp = create_executable_element("jmp");
                 struct Element elem_jmp_not_if = create_executable_element("jmp_not_if");
 
-                struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*8 );
+                struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*9 );
                  
                 ifelse_exec_array->elements[0] = elem_cond;
                 ifelse_exec_array->elements[1] = elem_pcnum_1;
@@ -143,6 +143,8 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 ifelse_exec_array->elements[5] = elem_pcnum_2;
                 ifelse_exec_array->elements[6] = elem_jmp;
                 ifelse_exec_array->elements[7] = elem_exec_array_2;
+                ifelse_exec_array->elements[8] = elem_exec;
+                ifelse_exec_array->len = 9;
 
                 cur_cont.pc++;
                 if( cur_cont.pc < cur_cont.exec_array->len ){
@@ -206,6 +208,38 @@ void eval() {
                     } else if( streq("exec",token.u.name) ){
                         stack_pop(&ref_element);
                         eval_exec_array(ref_element.u.byte_codes);
+                    } else if( streq("ifelse",token.u.name)){
+                        struct Element elem_exec_array_1 = {ELEMENT_UNKNOWN, {0}};
+                        struct Element elem_exec_array_2 = {ELEMENT_UNKNOWN, {0}};
+                        struct Element elem_cond = {ELEMENT_UNKNOWN, {0}};
+                        stack_pop(&elem_exec_array_2);
+                        stack_pop(&elem_exec_array_1);
+                        stack_pop(&elem_cond);
+                        assert(ELEMENT_EXECUTABLE_ARRAY == elem_exec_array_2.etype);
+                        assert(ELEMENT_EXECUTABLE_ARRAY == elem_exec_array_1.etype);
+                        assert(ELEMENT_NUMBER == elem_cond.etype);
+
+                        struct Element elem_pcnum_1 = create_num_element(5);
+                        struct Element elem_pcnum_2 = create_num_element(3);
+                        
+                        struct Element elem_exec = create_executable_element("exec");
+                        struct Element elem_jmp = create_executable_element("jmp");
+                        struct Element elem_jmp_not_if = create_executable_element("jmp_not_if");
+
+                        struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*9 );
+                        
+                        ifelse_exec_array->elements[0] = elem_cond;
+                        ifelse_exec_array->elements[1] = elem_pcnum_1;
+                        ifelse_exec_array->elements[2] = elem_jmp_not_if;
+                        ifelse_exec_array->elements[3] = elem_exec_array_1;
+                        ifelse_exec_array->elements[4] = elem_exec;
+                        ifelse_exec_array->elements[5] = elem_pcnum_2;
+                        ifelse_exec_array->elements[6] = elem_jmp;
+                        ifelse_exec_array->elements[7] = elem_exec_array_2;
+                        ifelse_exec_array->elements[8] = elem_exec;
+                        ifelse_exec_array->len = 9;
+
+                        eval_exec_array(ifelse_exec_array);
                     } else {
                         abort();
                     }
@@ -714,7 +748,7 @@ static void test_eval_compile_executable_array_nest() {
     assert(expect == actual);
 
 }
-/*
+
 static void test_eval_ifelse() {
     char *input = "5 1 {1 add} {2 add} ifelse 0 {1 add} {2 add} ifelse";
     int expect = 5 + 1 + 2;
@@ -729,7 +763,7 @@ static void test_eval_ifelse() {
 
     assert(expect == actual);
 }
-*/
+
 
 static void test_eval_eq() {
     char *input = "/abc 42 def 42 abc eq 54 abc eq add";
@@ -1079,9 +1113,7 @@ static void unit_tests(){
     test_eval_compile_executable_array_nest();
     test_eval_jmp();
     test_eval_jmp_not_if(); 
-    /*
     test_eval_ifelse();
-    */
     test_eval_eq();
 
     test_eval_comparison_operators();
