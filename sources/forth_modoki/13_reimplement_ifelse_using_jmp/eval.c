@@ -115,6 +115,42 @@ void eval_exec_array(struct ElementArray *exec_array) {
                     cur_cont.pc += jmp_num;
                     cur_cont.pc--;
                 }
+            }else if( streq("ifelse",executable_name)){
+                struct Element elem_exec_array_1 = {ELEMENT_UNKNOWN, {0}};
+                struct Element elem_exec_array_2 = {ELEMENT_UNKNOWN, {0}};
+                struct Element elem_cond = {ELEMENT_UNKNOWN, {0}};
+                stack_pop(&elem_exec_array_2);
+                stack_pop(&elem_exec_array_1);
+                stack_pop(&elem_cond);
+                assert(ELEMENT_EXECUTABLE_ARRAY == elem_exec_array_2.etype);
+                assert(ELEMENT_EXECUTABLE_ARRAY == elem_exec_array_1.etype);
+                assert(ELEMENT_NUMBER == elem_cond.etype);
+
+                struct Element elem_pcnum_1 = create_num_element(5);
+                struct Element elem_pcnum_2 = create_num_element(3);
+                
+                struct Element elem_exec = create_executable_element("exec");
+                struct Element elem_jmp = create_executable_element("jmp");
+                struct Element elem_jmp_not_if = create_executable_element("jmp_not_if");
+
+                struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*8 );
+                 
+                ifelse_exec_array->elements[0] = elem_cond;
+                ifelse_exec_array->elements[1] = elem_pcnum_1;
+                ifelse_exec_array->elements[2] = elem_jmp_not_if;
+                ifelse_exec_array->elements[3] = elem_exec_array_1;
+                ifelse_exec_array->elements[4] = elem_exec;
+                ifelse_exec_array->elements[5] = elem_pcnum_2;
+                ifelse_exec_array->elements[6] = elem_jmp;
+                ifelse_exec_array->elements[7] = elem_exec_array_2;
+
+                cur_cont.pc++;
+                if( cur_cont.pc < cur_cont.exec_array->len ){
+                    co_push(&cur_cont);
+                }
+                cur_cont.exec_array = ifelse_exec_array;
+                cur_cont.pc = 0;
+                continue;
             }else{
                 abort();
             }
