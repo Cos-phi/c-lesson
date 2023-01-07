@@ -52,30 +52,18 @@ struct Element compile_exec_array(int* inout_ch){
                 }
             case TOKEN_EXECUTABLE_NAME:
                 if( streq("ifelse",token.u.name) ) {
-                    ref_element = create_num_element(3);
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_num_element(2);
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_executable_element("roll");
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_num_element(5);
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_executable_element("jmp_not_if");
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_executable_element("pop");
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_executable_element("exec");
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_num_element(4);
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_executable_element("jmp");
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_executable_element("exch");
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_executable_element("pop");
-                    cur_exec_array[cur_index++] = ref_element;
-                    ref_element = create_executable_element("exec");
-                    cur_exec_array[cur_index++] = ref_element;
+                    cur_exec_array[cur_index++] = create_num_element(3);
+                    cur_exec_array[cur_index++] = create_num_element(2);
+                    cur_exec_array[cur_index++] = create_executable_element("roll");
+                    cur_exec_array[cur_index++] = create_num_element(5);
+                    cur_exec_array[cur_index++] = create_executable_element("jmp_not_if");
+                    cur_exec_array[cur_index++] = create_executable_element("pop");
+                    cur_exec_array[cur_index++] = create_executable_element("exec");
+                    cur_exec_array[cur_index++] = create_num_element(4);
+                    cur_exec_array[cur_index++] = create_executable_element("jmp");
+                    cur_exec_array[cur_index++] = create_executable_element("exch");
+                    cur_exec_array[cur_index++] = create_executable_element("pop");
+                    cur_exec_array[cur_index++] = create_executable_element("exec");
                 } else {
                     ref_element = create_executable_element(token.u.name);
                     cur_exec_array[cur_index] = ref_element;
