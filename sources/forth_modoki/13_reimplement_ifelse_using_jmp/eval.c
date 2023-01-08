@@ -21,6 +21,25 @@ struct Element create_executable_element(char* input){
     return element;
 }
 
+void emit_elem(struct Emitter *emitter, struct Element elem){
+    emitter->elems[emitter->pos++] = elem;
+}
+
+void ifelse_compile(struct Emitter *emitter){
+    emit_elem(emitter, create_num_element(3));
+    emit_elem(emitter, create_num_element(2));
+    emit_elem(emitter, create_executable_element("roll"));
+    emit_elem(emitter, create_num_element(5));
+    emit_elem(emitter, create_executable_element("jmp_not_if"));
+    emit_elem(emitter, create_executable_element("pop"));
+    emit_elem(emitter, create_executable_element("exec"));
+    emit_elem(emitter, create_num_element(4));
+    emit_elem(emitter, create_executable_element("jmp"));
+    emit_elem(emitter, create_executable_element("exch"));
+    emit_elem(emitter, create_executable_element("pop"));
+    emit_elem(emitter, create_executable_element("exec"));
+}
+
 struct Element compile_exec_array(int* inout_ch){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
     element.etype = ELEMENT_EXECUTABLE_ARRAY;
@@ -52,18 +71,11 @@ struct Element compile_exec_array(int* inout_ch){
                 }
             case TOKEN_EXECUTABLE_NAME:
                 if( streq("ifelse",token.u.name) ) {
-                    cur_exec_array[cur_index++] = create_num_element(3);
-                    cur_exec_array[cur_index++] = create_num_element(2);
-                    cur_exec_array[cur_index++] = create_executable_element("roll");
-                    cur_exec_array[cur_index++] = create_num_element(5);
-                    cur_exec_array[cur_index++] = create_executable_element("jmp_not_if");
-                    cur_exec_array[cur_index++] = create_executable_element("pop");
-                    cur_exec_array[cur_index++] = create_executable_element("exec");
-                    cur_exec_array[cur_index++] = create_num_element(4);
-                    cur_exec_array[cur_index++] = create_executable_element("jmp");
-                    cur_exec_array[cur_index++] = create_executable_element("exch");
-                    cur_exec_array[cur_index++] = create_executable_element("pop");
-                    cur_exec_array[cur_index++] = create_executable_element("exec");
+                    struct Emitter emitter;
+                    emitter.elems = cur_exec_array;
+                    emitter.pos = cur_index;
+                    ifelse_compile(&emitter);
+                    cur_index = emitter.pos;
                 } else {
                     ref_element = create_executable_element(token.u.name);
                     cur_exec_array[cur_index] = ref_element;
