@@ -198,29 +198,12 @@ void eval() {
                         stack_pop(&ref_element);
                         eval_exec_array(ref_element.u.byte_codes);
                     } else if( streq("ifelse",token.u.name)){
-                        struct Element elem_exec_array_1 = {ELEMENT_UNKNOWN, {0}};
-                        struct Element elem_exec_array_2 = {ELEMENT_UNKNOWN, {0}};
-                        struct Element elem_cond = {ELEMENT_UNKNOWN, {0}};
-                        stack_pop(&elem_exec_array_2);
-                        stack_pop(&elem_exec_array_1);
-                        stack_pop(&elem_cond);
-                        assert(ELEMENT_EXECUTABLE_ARRAY == elem_exec_array_2.etype);
-                        assert(ELEMENT_EXECUTABLE_ARRAY == elem_exec_array_1.etype);
-                        assert(ELEMENT_NUMBER == elem_cond.etype);
-
-                        struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*9 );
-                        
-                        ifelse_exec_array->elements[0] = elem_cond;
-                        ifelse_exec_array->elements[1] = create_num_element(5);
-                        ifelse_exec_array->elements[2] = create_executable_element("jmp_not_if");
-                        ifelse_exec_array->elements[3] = elem_exec_array_1;
-                        ifelse_exec_array->elements[4] = create_executable_element("exec");
-                        ifelse_exec_array->elements[5] = create_num_element(3);
-                        ifelse_exec_array->elements[6] = create_executable_element("jmp");
-                        ifelse_exec_array->elements[7] = elem_exec_array_2;
-                        ifelse_exec_array->elements[8] = create_executable_element("exec");
-                        ifelse_exec_array->len = 9;
-
+                        struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*12 );
+                        struct Emitter emitter;
+                        emitter.elems = ifelse_exec_array->elements;
+                        emitter.pos = 0;
+                        ifelse_compile(&emitter);
+                        ifelse_exec_array->len = emitter.pos;
                         eval_exec_array(ifelse_exec_array);
                     } else {
                         abort();
