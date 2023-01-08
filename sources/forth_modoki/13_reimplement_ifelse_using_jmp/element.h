@@ -37,6 +37,11 @@ struct Continuation {
     int pc;
 };
 
+struct Emitter {
+    struct Element *elems;    
+    int pos;
+};
+
 #endif
 
 //stack.c

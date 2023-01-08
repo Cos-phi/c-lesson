@@ -196,24 +196,17 @@ void eval() {
                         assert(ELEMENT_EXECUTABLE_ARRAY == elem_exec_array_1.etype);
                         assert(ELEMENT_NUMBER == elem_cond.etype);
 
-                        struct Element elem_pcnum_1 = create_num_element(5);
-                        struct Element elem_pcnum_2 = create_num_element(3);
-                        
-                        struct Element elem_exec = create_executable_element("exec");
-                        struct Element elem_jmp = create_executable_element("jmp");
-                        struct Element elem_jmp_not_if = create_executable_element("jmp_not_if");
-
                         struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*9 );
                         
                         ifelse_exec_array->elements[0] = elem_cond;
-                        ifelse_exec_array->elements[1] = elem_pcnum_1;
-                        ifelse_exec_array->elements[2] = elem_jmp_not_if;
+                        ifelse_exec_array->elements[1] = create_num_element(5);
+                        ifelse_exec_array->elements[2] = create_executable_element("jmp_not_if");
                         ifelse_exec_array->elements[3] = elem_exec_array_1;
-                        ifelse_exec_array->elements[4] = elem_exec;
-                        ifelse_exec_array->elements[5] = elem_pcnum_2;
-                        ifelse_exec_array->elements[6] = elem_jmp;
+                        ifelse_exec_array->elements[4] = create_executable_element("exec");
+                        ifelse_exec_array->elements[5] = create_num_element(3);
+                        ifelse_exec_array->elements[6] = create_executable_element("jmp");
                         ifelse_exec_array->elements[7] = elem_exec_array_2;
-                        ifelse_exec_array->elements[8] = elem_exec;
+                        ifelse_exec_array->elements[8] = create_executable_element("exec");
                         ifelse_exec_array->len = 9;
 
                         eval_exec_array(ifelse_exec_array);
