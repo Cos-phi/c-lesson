@@ -1,12 +1,6 @@
 #include "element.h"
 #include "clesson.h"
 
-
-struct KeyValue {
-    char *key;
-    struct Element value;
-};
-
 struct Node {
     char *key;
     struct Element value;
@@ -14,7 +8,7 @@ struct Node {
 };
 struct Node *array[TABLE_SIZE];
 
-int streq(char *s1,char *s2){
+int streq(char *s1, char *s2){
     if( 0 == strcmp(s1,s2) ){
         return 1;
     }else{
