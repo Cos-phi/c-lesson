@@ -200,7 +200,7 @@ void eval() {
                     } else if( streq("ifelse",token.u.name)){
                         struct Element cur_ifelse_exec_array[MAX_NAME_OP_NUMBERS];
                         struct Emitter emitter;
-                        emitter.elems = cur_ifelse_exec_array;
+                        emitter.elems = cur_ifelse_exec_array; 
                         emitter.pos = 0;
                         ifelse_compile(&emitter);
                         struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*emitter.pos );

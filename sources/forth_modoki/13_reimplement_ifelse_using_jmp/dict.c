@@ -6,7 +6,9 @@ struct Node {
     struct Element value;
     struct Node *next;
 };
-struct Node *eval_dict[TABLE_SIZE];
+
+struct Node* eval_dict[TABLE_SIZE];
+struct Node* compile_dict[TABLE_SIZE];
 
 int streq(char *s1, char *s2){
     if( 0 == strcmp(s1,s2) ){
@@ -48,9 +50,9 @@ void dict_put(char* key, struct Element *value){
     update_or_insert_list(head, key, value);
 }
 
-int dict_get(char* key, struct Element *out_element){
+static int dict_get_common(struct Node* table, char* key, struct Element *out_element){
     int idx = hash(key);
-    struct Node *cur_node = eval_dict[idx];
+    struct Node *cur_node = table[idx];
     while( cur_node != NULL ){
         if( streq(key,cur_node->key) ){
             *out_element = cur_node->value;
@@ -59,6 +61,10 @@ int dict_get(char* key, struct Element *out_element){
         cur_node = cur_node->next;
     }
     return 0;
+}
+
+int dict_get(char* key, struct Element *out_element){
+    return dict_get_common(eval_dict,key,out_element);
 }
 
 void dict_print_all(){
