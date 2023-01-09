@@ -50,7 +50,7 @@ void dict_put(char* key, struct Element *value){
     update_or_insert_list(head, key, value);
 }
 
-static int dict_get_common(struct Node* table, char* key, struct Element *out_element){
+static int dict_get_common(struct Node* table[TABLE_SIZE], char* key, struct Element *out_element){
     int idx = hash(key);
     struct Node *cur_node = table[idx];
     while( cur_node != NULL ){
@@ -64,7 +64,7 @@ static int dict_get_common(struct Node* table, char* key, struct Element *out_el
 }
 
 int dict_get(char* key, struct Element *out_element){
-    return dict_get_common(eval_dict,key,out_element);
+    return dict_get_common(eval_dict, key, out_element);
 }
 
 void dict_print_all(){
