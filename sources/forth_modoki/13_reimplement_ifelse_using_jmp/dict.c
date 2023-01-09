@@ -36,9 +36,9 @@ void update_or_insert_list(struct Node *cur_node, char* key, struct Element *val
     prev_node->next = cur_node;
 }
 
-void dict_put(char* key, struct Element *value){
+void dict_put_common(struct Node* table[TABLE_SIZE],char* key, struct Element *value){
     int idx = hash(key);
-    struct Node *head = eval_dict[idx];
+    struct Node *head = table[idx];
     if( NULL == head ) {
         head = malloc(sizeof(struct Node));
         head->next = NULL;
@@ -48,6 +48,10 @@ void dict_put(char* key, struct Element *value){
         return;
     }
     update_or_insert_list(head, key, value);
+}
+
+void dict_put(char* key, struct Element *value){
+    dict_put_common(eval_dict, key, value);
 }
 
 static int dict_get_common(struct Node* table[TABLE_SIZE], char* key, struct Element *out_element){
@@ -65,6 +69,10 @@ static int dict_get_common(struct Node* table[TABLE_SIZE], char* key, struct Ele
 
 int dict_get(char* key, struct Element *out_element){
     return dict_get_common(eval_dict, key, out_element);
+}
+
+int compile_dict_get(char* key, struct Element *out_element){
+    return dict_get_common(compile_dict, key, out_element);
 }
 
 void dict_print_all(){
