@@ -29,6 +29,7 @@ struct Element {
         char onechar;
         char *name;
         void (*cfunc)();
+        void (*emitter_cfunc)();
         struct ElementArray *byte_codes;
     }u;
 };

@@ -44,14 +44,18 @@ void dict_put_common(struct Node** table, char* key, struct Element *value){
         head->next = NULL;
         head->key = key;
         head->value = *value;
-        eval_dict[idx] = head;
+        table[idx] = head;
         return;
     }
     update_or_insert_list(head, key, value);
 }
 
 void dict_put(char* key, struct Element *value){
-    dict_put_common(&eval_dict, key, value);
+    dict_put_common(eval_dict, key, value);
+}
+
+void compile_dict_put(char* key, struct Element *value){
+    dict_put_common(compile_dict, key, value);
 }
 
 static int dict_get_common(struct Node** table, char* key, struct Element *out_element){
@@ -68,7 +72,7 @@ static int dict_get_common(struct Node** table, char* key, struct Element *out_e
 }
 
 int dict_get(char* key, struct Element *out_element){
-    return dict_get_common(&eval_dict, key, out_element);
+    return dict_get_common(eval_dict, key, out_element);
 }
 
 int compile_dict_get(char* key, struct Element *out_element){

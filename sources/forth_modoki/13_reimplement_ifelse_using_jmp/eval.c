@@ -40,6 +40,7 @@ void ifelse_compile(struct Emitter *emitter){
     emit_elem(emitter, create_executable_element("exec"));
 }
 
+
 struct Element compile_exec_array(int* inout_ch){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
     element.etype = ELEMENT_EXECUTABLE_ARRAY;
@@ -485,6 +486,12 @@ void register_primitive(char* name, void (*func)()) {
     dict_put(name, &primitive);
 }
 
+void register_compile_primitive(char* name, void (*func)(struct Emitter*)) {
+    struct Element primitive = {ELEMENT_C_FUNC, {0} };
+    primitive.u.emitter_cfunc = func;
+    compile_dict_put(name, &primitive);
+}
+
 void register_primitives() {
     register_primitive("def", def);
     register_primitive("add", add_op);
@@ -503,6 +510,8 @@ void register_primitives() {
     register_primitive("dup", dup_op);
     register_primitive("index", index_op);
     register_primitive("roll", roll_op);
+
+    register_compile_primitive("ifelse", ifelse_compile);
     /*
     register_primitive("exec", exec_op);
     register_primitive("if", if_op);
