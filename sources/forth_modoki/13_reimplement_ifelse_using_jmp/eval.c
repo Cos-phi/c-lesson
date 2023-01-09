@@ -198,11 +198,13 @@ void eval() {
                         stack_pop(&ref_element);
                         eval_exec_array(ref_element.u.byte_codes);
                     } else if( streq("ifelse",token.u.name)){
-                        struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*12 );
+                        struct Element cur_ifelse_exec_array[MAX_NAME_OP_NUMBERS];
                         struct Emitter emitter;
-                        emitter.elems = ifelse_exec_array->elements;
+                        emitter.elems = &cur_ifelse_exec_array;
                         emitter.pos = 0;
                         ifelse_compile(&emitter);
+                        struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*emitter.pos );
+                        memcpy( ifelse_exec_array->elements, emitter.elems, sizeof(struct Element)*(emitter.pos));
                         ifelse_exec_array->len = emitter.pos;
                         eval_exec_array(ifelse_exec_array);
                     } else {
