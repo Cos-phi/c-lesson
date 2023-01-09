@@ -195,9 +195,6 @@ void eval() {
                             case ELEMENT_UNKNOWN:
                                 abort();
                         }
-                    } else if( streq("exec",token.u.name) ){
-                        stack_pop(&ref_element);
-                        eval_exec_array(ref_element.u.byte_codes);
                     } else if( compile_dict_get(token.u.name, &ref_element)){
                         struct Element cur_emitter_exec_array[MAX_NAME_OP_NUMBERS];
                         struct Emitter emitter;
@@ -208,6 +205,9 @@ void eval() {
                         memcpy( emitter_exec_array->elements, emitter.elems, sizeof(struct Element)*(emitter.pos));
                         emitter_exec_array->len = emitter.pos;
                         eval_exec_array(emitter_exec_array);
+                    } else if( streq("exec",token.u.name) ){
+                        stack_pop(&ref_element);
+                        eval_exec_array(ref_element.u.byte_codes);
                     } else {
                         abort();
                     }
