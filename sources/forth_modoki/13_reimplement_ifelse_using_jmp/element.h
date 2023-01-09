@@ -60,6 +60,8 @@ void stack_clear();
 
 //dict.c
 int dict_get(char* key, struct Element *out_element);
+int compile_dict_get(char* key, struct Element *out_element);
+void compile_dict_put(char* key, struct Element *element);
 void dict_put(char* key, struct Element *element);
 void dict_print_all();
 void dict_clear();

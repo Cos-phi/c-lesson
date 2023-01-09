@@ -71,11 +71,11 @@ struct Element compile_exec_array(int* inout_ch){
                 return element;
                 }
             case TOKEN_EXECUTABLE_NAME:
-                if( streq("ifelse",token.u.name) ) {
+                if( compile_dict_get(token.u.name, &ref_element) ) {
                     struct Emitter emitter;
                     emitter.elems = cur_exec_array;
                     emitter.pos = cur_index;
-                    ifelse_compile(&emitter);
+                    ref_element.u.emitter_cfunc(&emitter);
                     cur_index = emitter.pos;
                 } else {
                     ref_element = create_executable_element(token.u.name);
