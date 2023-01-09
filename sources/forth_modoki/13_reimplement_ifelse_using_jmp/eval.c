@@ -198,16 +198,16 @@ void eval() {
                     } else if( streq("exec",token.u.name) ){
                         stack_pop(&ref_element);
                         eval_exec_array(ref_element.u.byte_codes);
-                    } else if( streq("ifelse",token.u.name)){
-                        struct Element cur_ifelse_exec_array[MAX_NAME_OP_NUMBERS];
+                    } else if( compile_dict_get(token.u.name, &ref_element)){
+                        struct Element cur_emitter_exec_array[MAX_NAME_OP_NUMBERS];
                         struct Emitter emitter;
-                        emitter.elems = cur_ifelse_exec_array; 
+                        emitter.elems = cur_emitter_exec_array; 
                         emitter.pos = 0;
-                        ifelse_compile(&emitter);
-                        struct ElementArray *ifelse_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*emitter.pos );
-                        memcpy( ifelse_exec_array->elements, emitter.elems, sizeof(struct Element)*(emitter.pos));
-                        ifelse_exec_array->len = emitter.pos;
-                        eval_exec_array(ifelse_exec_array);
+                        ref_element.u.emitter_cfunc(&emitter);
+                        struct ElementArray *emitter_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray) + sizeof(struct Element)*emitter.pos );
+                        memcpy( emitter_exec_array->elements, emitter.elems, sizeof(struct Element)*(emitter.pos));
+                        emitter_exec_array->len = emitter.pos;
+                        eval_exec_array(emitter_exec_array);
                     } else {
                         abort();
                     }
