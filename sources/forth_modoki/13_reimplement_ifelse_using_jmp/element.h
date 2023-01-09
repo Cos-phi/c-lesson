@@ -16,6 +16,13 @@ enum ElementType {
     ELEMENT_UNKNOWN
 };
 
+enum ControlOperator {
+    OP_EXEC,
+    OP_JMP,
+    OP_JMP_NOT_IF,
+    OP_IFELSE
+};
+
 struct Element {
     enum ElementType etype;
     union {

@@ -6,7 +6,7 @@ struct Node {
     struct Element value;
     struct Node *next;
 };
-struct Node *array[TABLE_SIZE];
+struct Node *eval_dict[TABLE_SIZE];
 
 int streq(char *s1, char *s2){
     if( 0 == strcmp(s1,s2) ){
@@ -36,13 +36,13 @@ void update_or_insert_list(struct Node *cur_node, char* key, struct Element *val
 
 void dict_put(char* key, struct Element *value){
     int idx = hash(key);
-    struct Node *head = array[idx];
+    struct Node *head = eval_dict[idx];
     if( NULL == head ) {
         head = malloc(sizeof(struct Node));
         head->next = NULL;
         head->key = key;
         head->value = *value;
-        array[idx] = head;
+        eval_dict[idx] = head;
         return;
     }
     update_or_insert_list(head, key, value);
@@ -50,7 +50,7 @@ void dict_put(char* key, struct Element *value){
 
 int dict_get(char* key, struct Element *out_element){
     int idx = hash(key);
-    struct Node *cur_node = array[idx];
+    struct Node *cur_node = eval_dict[idx];
     while( cur_node != NULL ){
         if( streq(key,cur_node->key) ){
             *out_element = cur_node->value;
@@ -64,7 +64,7 @@ int dict_get(char* key, struct Element *out_element){
 void dict_print_all(){
     int i;
     for(i = 0; i < TABLE_SIZE ; i++) {
-        struct Node *cur_node = array[i];
+        struct Node *cur_node = eval_dict[i];
         printf("hash %d :",i);
         while( cur_node != NULL ){
             printf(" %s => %d ",cur_node->key, cur_node->value.u.number);
@@ -77,7 +77,7 @@ void dict_print_all(){
 void dict_clear(){
     int i;
     for(i = 0; i < TABLE_SIZE ; i++) {
-        array[i] = NULL;
+        eval_dict[i] = NULL;
     }
 }
 
