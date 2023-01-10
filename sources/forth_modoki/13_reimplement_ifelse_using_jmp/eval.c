@@ -20,6 +20,12 @@ struct Element create_executable_element(char* input){
     element.u.name = input;
     return element;
 }
+struct Element create_func_element(enum ControlOperator input){
+    struct Element element = {ELEMENT_UNKNOWN, {0} };
+    element.etype = ELEMENT_FUNC;
+    element.u.op = input;
+    return element;
+}
 
 void emit_elem(struct Emitter *emitter, struct Element elem){
     emitter->elems[emitter->pos++] = elem;

@@ -12,6 +12,7 @@ enum ElementType {
     ELEMENT_LITERAL_NAME,
     ELEMENT_EXECUTABLE_NAME,
     ELEMENT_C_FUNC,
+    ELEMENT_FUNC,
     ELEMENT_EXECUTABLE_ARRAY,
     ELEMENT_UNKNOWN
 };
@@ -29,8 +30,9 @@ struct Element {
         char onechar;
         char *name;
         void (*cfunc)();
-        void (*emitter_cfunc)();
+        void (*emitter_cfunc)(struct Emitter*);
         struct ElementArray *byte_codes;
+        enum ControlOperator op;
     }u;
 };
 
