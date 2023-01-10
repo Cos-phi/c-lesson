@@ -36,14 +36,14 @@ void ifelse_compile(struct Emitter *emitter){
     emit_elem(emitter, create_num_element(2));
     emit_elem(emitter, create_executable_element("roll"));
     emit_elem(emitter, create_num_element(5));
-    emit_elem(emitter, create_executable_element("jmp_not_if"));
+    emit_elem(emitter, create_func_element(OP_JMP_NOT_IF));
     emit_elem(emitter, create_executable_element("pop"));
-    emit_elem(emitter, create_executable_element("exec"));
+    emit_elem(emitter, create_func_element(OP_EXEC));
     emit_elem(emitter, create_num_element(4));
-    emit_elem(emitter, create_executable_element("jmp"));
+    emit_elem(emitter, create_func_element(OP_JMP));
     emit_elem(emitter, create_executable_element("exch"));
     emit_elem(emitter, create_executable_element("pop"));
-    emit_elem(emitter, create_executable_element("exec"));
+    emit_elem(emitter, create_func_element(OP_EXEC));
 }
 
 
@@ -111,6 +111,36 @@ void eval_exec_array(struct ElementArray *exec_array) {
         if( ELEMENT_NUMBER == cur_etype || ELEMENT_LITERAL_NAME == cur_etype || ELEMENT_EXECUTABLE_ARRAY == cur_etype){
             ref_element = cur_cont.exec_array->elements[cur_cont.pc];
             stack_push(&ref_element);
+        }else if( ELEMENT_FUNC == cur_etype ){
+            int jmp_num;
+            int cond;
+            switch(cur_cont.exec_array->elements[cur_cont.pc].u.op){
+                case OP_EXEC:
+                    cur_cont.pc++;
+                    if( cur_cont.pc < cur_cont.exec_array->len ){
+                        co_push(&cur_cont);
+                    }
+                    stack_pop(&ref_element);
+                    assert(ELEMENT_EXECUTABLE_ARRAY == ref_element.etype);
+                    cur_cont.exec_array = ref_element.u.byte_codes;
+                    cur_cont.pc = 0;
+                    continue;
+                case OP_JMP:
+                    jmp_num = stack_pop_int();
+                    cur_cont.pc += jmp_num;
+                    cur_cont.pc--;
+                    break;
+                case OP_JMP_NOT_IF:
+                    jmp_num = stack_pop_int();
+                    cond = stack_pop_int();
+                    if( 0 == cond ){
+                        cur_cont.pc += jmp_num;
+                        cur_cont.pc--;
+                    }
+                    break;
+                default:
+                    break;
+            }
         }else if( ELEMENT_EXECUTABLE_NAME == cur_etype){
             char* executable_name = cur_cont.exec_array->elements[cur_cont.pc].u.name;
             enum ElementType ref_etype = ELEMENT_UNKNOWN;
