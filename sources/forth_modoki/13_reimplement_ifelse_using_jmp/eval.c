@@ -22,7 +22,7 @@ struct Element create_executable_element(char* input){
 }
 struct Element create_func_element(enum ControlOperator input){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
-    element.etype = ELEMENT_FUNC;
+    element.etype = ELEMENT_OPERATOR;
     element.u.op = input;
     return element;
 }
@@ -111,7 +111,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
         if( ELEMENT_NUMBER == cur_etype || ELEMENT_LITERAL_NAME == cur_etype || ELEMENT_EXECUTABLE_ARRAY == cur_etype){
             ref_element = cur_cont.exec_array->elements[cur_cont.pc];
             stack_push(&ref_element);
-        }else if( ELEMENT_FUNC == cur_etype ){
+        }else if( ELEMENT_OPERATOR == cur_etype ){
             int jmp_num;
             int cond;
             switch(cur_cont.exec_array->elements[cur_cont.pc].u.op){
