@@ -168,17 +168,6 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 cur_cont.exec_array = ref_element.u.byte_codes;
                 cur_cont.pc = 0;
                 continue;
-            }else if( streq("jmp",executable_name)){
-                int jmp_num = stack_pop_int();
-                cur_cont.pc += jmp_num;
-                cur_cont.pc--;
-            }else if( streq("jmp_not_if",executable_name)){
-                int jmp_num = stack_pop_int();
-                int cond = stack_pop_int();
-                if( 0 == cond ){
-                    cur_cont.pc += jmp_num;
-                    cur_cont.pc--;
-                }
             }else{
                 abort();
             }
@@ -852,6 +841,7 @@ static void test_eval_control_operators_eval_exec_array_exec() {
     assert(expect == actual);
 }
 
+/*
 static void test_eval_jmp() {
     char *input = "{1 2 3 jmp 4 5 add} exec";
     int expect = 1 + 2;
@@ -882,7 +872,6 @@ static void test_eval_jmp_not_if() {
     assert(expect == actual);
 }
 
-/*
 static void test_eval_control_operators3() {
     char *input = "1 {2} {3} ifelse 4 add";
     int expect = 2 + 4;
@@ -1123,8 +1112,8 @@ static void unit_tests(){
     test_eval_def_and_4_arithmetic_operators();
     test_eval_compile_executable_array();
     test_eval_compile_executable_array_nest();
-    test_eval_jmp();
-    test_eval_jmp_not_if(); 
+    //test_eval_jmp();
+    //test_eval_jmp_not_if(); 
     test_eval_ifelse();
     test_eval_eq();
 
