@@ -1,0 +1,17 @@
+{
+  "configurations": [
+    {
+      "name": "(Windows) 起動",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/test.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "console": "externalTerminal",
+      "preLaunchTask": "build with cl.exe"
+    },
+    
+  ]
+}
