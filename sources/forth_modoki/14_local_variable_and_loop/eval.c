@@ -928,6 +928,7 @@ static void test_eval_jmp_not_if() {
 
     assert(expect == actual);
 }
+*/
 
 static void test_eval_control_operators3() {
     char *input = "1 {2} {3} ifelse 4 add";
@@ -1121,7 +1122,7 @@ static void test_cl_getc_set_file_fizzbuzz() {
 
 static void test_cl_getc_set_file_primeseries() {
     char *input_file = "ps/primeseries.ps";
-    int* expect = 97;
+    int expect = 97;
 
     init_test_eval();
     FILE *file;
@@ -1134,11 +1135,10 @@ static void test_cl_getc_set_file_primeseries() {
 
     struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
     stack_pop(&actual_element);
-    int* actual = actual_element.u.number;
+    int actual = actual_element.u.number;
 
     assert(expect == actual);
 }
-*/
 
 static void unit_tests(){
     test_eval_num_one();
@@ -1164,21 +1164,19 @@ static void unit_tests(){
     test_eval_control_operators();
     test_eval_control_operators_eval_exec_array_exec();
     test_eval_while();
-    /*
     test_eval_control_operators3();
     test_eval_control_operators4();
     test_eval_control_operators5();
-    test_eval_control_operators6();
+    //test_eval_control_operators6(); ifがありませんの
 
     test_cl_getc_set_file();
     test_cl_getc_set_file_factorial();
     test_cl_getc_set_file_sum_k();
-    test_cl_getc_set_file_repeat();
+    //test_cl_getc_set_file_repeat(); repeatがまだありませんの
     test_cl_getc_set_file_sum_k2();
     test_cl_getc_set_file_fibo();
     test_cl_getc_set_file_fizzbuzz();
-    test_cl_getc_set_file_primeseries();
-    */
+    //test_cl_getc_set_file_primeseries(); ifがまだありませんの
 }
 
 int main() {
