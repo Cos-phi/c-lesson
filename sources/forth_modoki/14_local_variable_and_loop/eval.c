@@ -258,7 +258,23 @@ void eval() {
                         stack_pop(&ref_element);
                         eval_exec_array(ref_element.u.byte_codes);
                     } else if( streq("while",token.u.name) ){
-                        abort();
+                        struct Element cond_element = {ELEMENT_UNKNOWN, {0}};
+                        struct Element proc_element = {ELEMENT_UNKNOWN, {0}};
+                        stack_pop(&proc_element);
+                        stack_pop(&cond_element);
+                        struct ElementArray *while_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray)+sizeof(struct Element)*8 );
+
+                        while_exec_array->elements[0] = cond_element;
+                        while_exec_array->elements[1] = create_func_element(OP_EXEC);
+                        while_exec_array->elements[2] = create_num_element(5);
+                        while_exec_array->elements[3] = create_func_element(OP_JMP_NOT_IF);
+                        while_exec_array->elements[4] = proc_element;
+                        while_exec_array->elements[5] = create_func_element(OP_EXEC);
+                        while_exec_array->elements[6] = create_num_element(-7);
+                        while_exec_array->elements[7] = create_func_element(OP_JMP);
+                        while_exec_array->len = 8;
+
+                        eval_exec_array(while_exec_array);
                     } else {
                         abort();
                     }
@@ -868,7 +884,7 @@ static void test_eval_control_operators_eval_exec_array_exec() {
 }
 
 static void test_eval_while() {
-    char *input = "{/hoge 1 def {16 hoge gt} {/hoge 2 hoge mul def} while hoge} exec";
+    char *input = "/hoge 1 def {16 hoge gt} {/hoge 2 hoge mul def} while hoge";
     int expect = 16;
 
     init_test_eval();
