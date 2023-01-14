@@ -170,8 +170,8 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 continue;
             }else if( streq("while",executable_name)){
                 struct Element cond_element = {ELEMENT_UNKNOWN, {0}};
-                struct Element proc_element = {ELEMENT_UNKNOWN, {0}};
-                stack_pop(&proc_element);
+                struct Element body_element = {ELEMENT_UNKNOWN, {0}};
+                stack_pop(&body_element);
                 stack_pop(&cond_element);
                 struct ElementArray *while_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray)+sizeof(struct Element)*8 );
 
@@ -179,7 +179,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 while_exec_array->elements[1] = create_func_element(OP_EXEC);
                 while_exec_array->elements[2] = create_num_element(5);
                 while_exec_array->elements[3] = create_func_element(OP_JMP_NOT_IF);
-                while_exec_array->elements[4] = proc_element;
+                while_exec_array->elements[4] = body_element;
                 while_exec_array->elements[5] = create_func_element(OP_EXEC);
                 while_exec_array->elements[6] = create_num_element(-7);
                 while_exec_array->elements[7] = create_func_element(OP_JMP);
@@ -259,8 +259,8 @@ void eval() {
                         eval_exec_array(ref_element.u.byte_codes);
                     }else if( streq("while",token.u.name) ){
                         struct Element cond_element = {ELEMENT_UNKNOWN, {0}};
-                        struct Element proc_element = {ELEMENT_UNKNOWN, {0}};
-                        stack_pop(&proc_element);
+                        struct Element body_element = {ELEMENT_UNKNOWN, {0}};
+                        stack_pop(&body_element);
                         stack_pop(&cond_element);
                         struct ElementArray *while_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray)+sizeof(struct Element)*8 );
 
@@ -268,7 +268,7 @@ void eval() {
                         while_exec_array->elements[1] = create_func_element(OP_EXEC);
                         while_exec_array->elements[2] = create_num_element(5);
                         while_exec_array->elements[3] = create_func_element(OP_JMP_NOT_IF);
-                        while_exec_array->elements[4] = proc_element;
+                        while_exec_array->elements[4] = body_element;
                         while_exec_array->elements[5] = create_func_element(OP_EXEC);
                         while_exec_array->elements[6] = create_num_element(-7);
                         while_exec_array->elements[7] = create_func_element(OP_JMP);
