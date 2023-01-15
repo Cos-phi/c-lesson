@@ -46,6 +46,19 @@ struct Continuation {
     int pc;
 };
 
+enum CoStackType {
+    COSTACK_CONTINUATION,
+    COSTACK_ELEMENT,
+};
+
+struct CoStackElement {
+    enum CoStackType;
+    union {
+        struct Continuation continuation;
+        struct Element local_variablble;
+    }u;
+};
+
 struct Emitter {
     struct Element *elems;    
     int pos;
