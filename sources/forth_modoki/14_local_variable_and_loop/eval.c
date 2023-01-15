@@ -106,7 +106,7 @@ struct Element compile_exec_array(int* inout_ch){
 void co_push_continuation(struct Continuation* in_cont){
     struct CoStackElement cur_costackelem;
     cur_costackelem.ctype = COSTACK_CONTINUATION;
-    cur_costackelem.u.cont = in_cont;
+    cur_costackelem.u.cont = *in_cont;
     co_push(&cur_costackelem);
 }
 
@@ -217,7 +217,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
             if( 0 == co_pop(&cur_coelem) ){
                 break;
             }
-            cur_cont = *(cur_coelem.u.cont);
+            cur_cont = (cur_coelem.u.cont);
         }
     }
 }
