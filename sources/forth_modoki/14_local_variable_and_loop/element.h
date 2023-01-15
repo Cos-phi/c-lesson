@@ -52,10 +52,10 @@ enum CoStackType {
 };
 
 struct CoStackElement {
-    enum CoStackType;
+    enum CoStackType ctype;
     union {
-        struct Continuation continuation;
-        struct Element local_variablble;
+        struct Continuation *cont;
+        struct Element *local_var;
     }u;
 };
 
@@ -86,5 +86,5 @@ int streq(char *s1,char *s2);
 int hash(char* str);
 
 //continuation_stack
-void co_push(struct Continuation *in_cont);
-int co_pop(struct Continuation *out_cont);
+void co_push(struct CoStackElement *in_cont);
+int co_pop(struct CoStackElement *out_cont);

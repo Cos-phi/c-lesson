@@ -103,6 +103,13 @@ struct Element compile_exec_array(int* inout_ch){
     abort();
 }
 
+void co_push_continuation(struct Continuation* in_cont){
+    struct CoStackElement cur_costackelem;
+    cur_costackelem.ctype = COSTACK_CONTINUATION;
+    cur_costackelem.u.cont = in_cont;
+    co_push(&cur_costackelem);
+}
+
 void eval_exec_array(struct ElementArray *exec_array) {
     struct Continuation cur_cont = {exec_array, 0};
     while(1){
@@ -118,7 +125,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 case OP_EXEC:
                     cur_cont.pc++;
                     if( cur_cont.pc < cur_cont.exec_array->len ){
-                        co_push(&cur_cont);
+                        co_push_continuation(&cur_cont);
                     }
                     stack_pop(&ref_element);
                     assert(ELEMENT_EXECUTABLE_ARRAY == ref_element.etype);
@@ -153,7 +160,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
             }else if( ELEMENT_EXECUTABLE_ARRAY == ref_etype ){
                 cur_cont.pc++;
                 if( cur_cont.pc < cur_cont.exec_array->len ){
-                    co_push(&cur_cont);
+                    co_push_continuation(&cur_cont);
                 }
                 cur_cont.exec_array = ref_element.u.byte_codes;
                 cur_cont.pc = 0;
@@ -161,7 +168,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
             }else if( streq("exec",executable_name) ){
                 cur_cont.pc++;
                 if( cur_cont.pc < cur_cont.exec_array->len ){
-                    co_push(&cur_cont);
+                    co_push_continuation(&cur_cont);
                 }
                 stack_pop(&ref_element);
                 assert(ELEMENT_EXECUTABLE_ARRAY == ref_element.etype);
@@ -187,7 +194,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
 
                 cur_cont.pc++;
                 if( cur_cont.pc < cur_cont.exec_array->len ){
-                    co_push(&cur_cont);
+                    co_push_continuation(&cur_cont);
                 }
                 cur_cont.exec_array = while_exec_array;
                 cur_cont.pc = 0;
@@ -200,9 +207,17 @@ void eval_exec_array(struct ElementArray *exec_array) {
         }
         cur_cont.pc++;
         if( cur_cont.pc >= cur_cont.exec_array->len ){
-            if( 0 == co_pop(&cur_cont) ){
+            struct CoStackElement cur_coelem;
+            /*
+            int co_stack_isnt_empty;
+            do {
+                co_stack_isnt_empty = co_pop(&cur_coelem);
+            } while( 1 == co_stack_isnt_empty && COSTACK_CONTINUATION != cur_coelem.ctype );
+            */
+            if( 0 == co_pop(&cur_coelem) ){
                 break;
             }
+            cur_cont = *(cur_coelem.u.cont);
         }
     }
 }
