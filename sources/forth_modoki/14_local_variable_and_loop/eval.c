@@ -152,6 +152,10 @@ void eval_exec_array(struct ElementArray *exec_array) {
                         cur_cont.pc--;
                     }
                     break;
+                case OP_STORE:
+                    break;
+                case OP_LOAD:
+                    break;
                 default:
                     break;
             }
