@@ -208,13 +208,11 @@ void eval_exec_array(struct ElementArray *exec_array) {
         cur_cont.pc++;
         if( cur_cont.pc >= cur_cont.exec_array->len ){
             struct CoStackElement cur_coelem;
-            /*
             int co_stack_isnt_empty;
             do {
                 co_stack_isnt_empty = co_pop(&cur_coelem);
             } while( 1 == co_stack_isnt_empty && COSTACK_CONTINUATION != cur_coelem.ctype );
-            */
-            if( 0 == co_pop(&cur_coelem) ){
+            if( 0 == co_stack_isnt_empty ){
                 break;
             }
             cur_cont = (cur_coelem.u.cont);
@@ -1182,16 +1180,16 @@ static void unit_tests(){
     test_eval_control_operators3();
     test_eval_control_operators4();
     test_eval_control_operators5();
-    //test_eval_control_operators6(); ifがありませんの
+    //test_eval_control_operators6(); if縺後≠繧翫∪縺帙ｓ縺ｮ
 
     test_cl_getc_set_file();
     test_cl_getc_set_file_factorial();
     test_cl_getc_set_file_sum_k();
-    //test_cl_getc_set_file_repeat(); repeatがまだありませんの
+    //test_cl_getc_set_file_repeat(); repeat縺後∪縺�縺ゅｊ縺ｾ縺帙ｓ縺ｮ
     test_cl_getc_set_file_sum_k2();
     test_cl_getc_set_file_fibo();
     test_cl_getc_set_file_fizzbuzz();
-    //test_cl_getc_set_file_primeseries(); ifがまだありませんの
+    //test_cl_getc_set_file_primeseries(); if縺後∪縺�縺ゅｊ縺ｾ縺帙ｓ縺ｮ
 }
 
 int main() {
