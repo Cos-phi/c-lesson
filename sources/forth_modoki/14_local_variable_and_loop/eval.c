@@ -158,7 +158,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
                     break;
                 case OP_LOAD:
                     int load_index = stack_pop_int();
-                    struct CoStackElement ref_co_stack[load_index+1];
+                    struct CoStackElement ref_co_stack[1024];
                     for(int i=0; i<=load_index; i++){
                         co_pop(&ref_co_stack[i]);
                     }
@@ -166,7 +166,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
                     ref_element.u.byte_codes = ref_co_stack[load_index].u.local_var;
                     stack_push(&ref_element);
                     for(int i=load_index-1; i>=0; i--){
-                        co_push(ref_co_stack[i]);
+                        co_push(&ref_co_stack[i]);
                     }
                     break;
                 default:
