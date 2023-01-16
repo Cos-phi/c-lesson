@@ -213,6 +213,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 cur_cont.exec_array = ref_element.u.byte_codes;
                 cur_cont.pc = 0;
                 continue;
+                /*
             }else if( streq("while",executable_name)){
                 struct Element cond_element = {ELEMENT_UNKNOWN, {0}};
                 struct Element body_element = {ELEMENT_UNKNOWN, {0}};
@@ -237,6 +238,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 cur_cont.exec_array = while_exec_array;
                 cur_cont.pc = 0;
                 continue;
+                */
             }else{
                 abort();
             }
@@ -308,6 +310,7 @@ void eval() {
                     }else if( streq("exec",token.u.name) ){
                         stack_pop(&ref_element);
                         eval_exec_array(ref_element.u.byte_codes);
+                    /*
                     }else if( streq("while",token.u.name) ){
                         struct Element cond_element = {ELEMENT_UNKNOWN, {0}};
                         struct Element body_element = {ELEMENT_UNKNOWN, {0}};
@@ -326,6 +329,7 @@ void eval() {
                         while_exec_array->len = 8;
 
                         eval_exec_array(while_exec_array);
+                    */
                     }else {
                         abort();
                     }
@@ -630,6 +634,7 @@ void register_primitives() {
     register_primitive("roll", roll_op);
 
     register_compile_primitive("ifelse", ifelse_compile);
+    register_compile_primitive("while", while_compile);
     /*
     register_primitive("exec", exec_op);
     register_primitive("if", if_op);
