@@ -46,6 +46,20 @@ void ifelse_compile(struct Emitter *emitter){
     emit_elem(emitter, create_func_element(OP_EXEC));
 }
 
+void while_compile(struct Emitter *emitter){
+    emit_elem(emitter, create_func_element(OP_STORE));
+    emit_elem(emitter, create_func_element(OP_STORE));
+    emit_elem(emitter, create_num_element(0));
+    emit_elem(emitter, create_func_element(OP_LOAD));
+    emit_elem(emitter, create_func_element(OP_EXEC));
+    emit_elem(emitter, create_num_element(6));
+    emit_elem(emitter, create_func_element(OP_JMP_NOT_IF));
+    emit_elem(emitter, create_num_element(1));
+    emit_elem(emitter, create_func_element(OP_LOAD));
+    emit_elem(emitter, create_func_element(OP_EXEC));
+    emit_elem(emitter, create_num_element(-9));
+    emit_elem(emitter, create_func_element(OP_JMP));
+}
 
 struct Element compile_exec_array(int* inout_ch){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
