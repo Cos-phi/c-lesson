@@ -153,6 +153,8 @@ void eval_exec_array(struct ElementArray *exec_array) {
                     }
                     break;
                 case OP_STORE:
+                    stack_pop(&ref_element);
+                    co_push_exec_array(ref_element.u.byte_codes);
                     break;
                 case OP_LOAD:
                     break;
