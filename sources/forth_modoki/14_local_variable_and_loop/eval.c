@@ -179,7 +179,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
                     ref_element.etype = ELEMENT_EXECUTABLE_ARRAY;
                     ref_element.u.byte_codes = ref_co_stack[load_index].u.local_var;
                     stack_push(&ref_element);
-                    for(int i=load_index-1; i>=0; i--){
+                    for(int i=load_index; i>=0; i--){
                         co_push(&ref_co_stack[i]);
                     }
                     break;
