@@ -213,32 +213,6 @@ void eval_exec_array(struct ElementArray *exec_array) {
                 cur_cont.exec_array = ref_element.u.byte_codes;
                 cur_cont.pc = 0;
                 continue;
-                /*
-            }else if( streq("while",executable_name)){
-                struct Element cond_element = {ELEMENT_UNKNOWN, {0}};
-                struct Element body_element = {ELEMENT_UNKNOWN, {0}};
-                stack_pop(&body_element);
-                stack_pop(&cond_element);
-                struct ElementArray *while_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray)+sizeof(struct Element)*8 );
-
-                while_exec_array->elements[0] = cond_element;
-                while_exec_array->elements[1] = create_func_element(OP_EXEC);
-                while_exec_array->elements[2] = create_num_element(5);
-                while_exec_array->elements[3] = create_func_element(OP_JMP_NOT_IF);
-                while_exec_array->elements[4] = body_element;
-                while_exec_array->elements[5] = create_func_element(OP_EXEC);
-                while_exec_array->elements[6] = create_num_element(-7);
-                while_exec_array->elements[7] = create_func_element(OP_JMP);
-                while_exec_array->len = 8;
-
-                cur_cont.pc++;
-                if( cur_cont.pc < cur_cont.exec_array->len ){
-                    co_push_continuation(&cur_cont);
-                }
-                cur_cont.exec_array = while_exec_array;
-                cur_cont.pc = 0;
-                continue;
-                */
             }else{
                 abort();
             }
@@ -310,26 +284,6 @@ void eval() {
                     }else if( streq("exec",token.u.name) ){
                         stack_pop(&ref_element);
                         eval_exec_array(ref_element.u.byte_codes);
-                    /*
-                    }else if( streq("while",token.u.name) ){
-                        struct Element cond_element = {ELEMENT_UNKNOWN, {0}};
-                        struct Element body_element = {ELEMENT_UNKNOWN, {0}};
-                        stack_pop(&body_element);
-                        stack_pop(&cond_element);
-                        struct ElementArray *while_exec_array = (struct ElementArray*)malloc( sizeof(struct ElementArray)+sizeof(struct Element)*8 );
-
-                        while_exec_array->elements[0] = cond_element;
-                        while_exec_array->elements[1] = create_func_element(OP_EXEC);
-                        while_exec_array->elements[2] = create_num_element(5);
-                        while_exec_array->elements[3] = create_func_element(OP_JMP_NOT_IF);
-                        while_exec_array->elements[4] = body_element;
-                        while_exec_array->elements[5] = create_func_element(OP_EXEC);
-                        while_exec_array->elements[6] = create_num_element(-7);
-                        while_exec_array->elements[7] = create_func_element(OP_JMP);
-                        while_exec_array->len = 8;
-
-                        eval_exec_array(while_exec_array);
-                    */
                     }else {
                         abort();
                     }
@@ -544,63 +498,6 @@ void roll_op(){
         stack_push(&arr->elements[i]);
     }
 }
-/*
-void exec_op(){
-    struct Element proc1;
-    stack_pop(&proc1);
-
-    eval_exec_array(proc1.u.byte_codes);
-}
-
-void if_op(){
-    struct Element bool1, proc1;
-    stack_pop(&proc1);
-    stack_pop(&bool1);
-
-    if(1 == bool1.u.number){
-        eval_exec_array(proc1.u.byte_codes);
-    }
-}
-
-void ifelse_op(){
-    struct Element bool1, proc1, proc2;
-    stack_pop(&proc2);
-    stack_pop(&proc1);
-    stack_pop(&bool1);
-
-    if(1 == bool1.u.number){
-        eval_exec_array(proc1.u.byte_codes);
-    }else if(0 == bool1.u.number){
-        eval_exec_array(proc2.u.byte_codes);
-    }else{
-        abort();
-    }
-}
-
-void repeat_op(){
-    struct Element proc1;
-    stack_pop(&proc1);
-    int n = stack_pop_int();
-
-    int i;
-    for(i=0; i<n; i++){
-        eval_exec_array(proc1.u.byte_codes);
-    }
-}
-
-void while_op(){
-    struct Element body, cond;
-    stack_pop(&body);
-    stack_pop(&cond);
-    eval_exec_array(cond.u.byte_codes);
-    int bool1 = stack_pop_int();
-    while(1 == bool1){
-        eval_exec_array(body.u.byte_codes);
-        eval_exec_array(cond.u.byte_codes);
-        bool1 = stack_pop_int();
-    }
-}
-*/
 
 void register_primitive(char* name, void (*func)()) {
     struct Element primitive = {ELEMENT_C_FUNC, {0} };
@@ -636,11 +533,7 @@ void register_primitives() {
     register_compile_primitive("ifelse", ifelse_compile);
     register_compile_primitive("while", while_compile);
     /*
-    register_primitive("exec", exec_op);
-    register_primitive("if", if_op);
-    register_primitive("ifelse", ifelse_op);
     register_primitive("repeat", repeat_op);
-    register_primitive("while", while_op);
     */
 }
 
@@ -954,38 +847,6 @@ static void test_eval_while() {
     assert(expect == actual);
 }
 
-/*
-static void test_eval_jmp() {
-    char *input = "{1 2 3 jmp 4 5 add} exec";
-    int expect = 1 + 2;
-
-    init_test_eval();
-    cl_getc_set_src(input);
-    eval();
-
-    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
-    stack_pop(&actual_element);
-    int actual = actual_element.u.number;
-
-    assert(expect == actual);
-}
-
-static void test_eval_jmp_not_if() {
-    char *input = "{1 2 5 5 neq 3 jmp_not_if 4 5 add} exec";
-    int expect = 1 + 2;
-
-    init_test_eval();
-    cl_getc_set_src(input);
-    eval();
-
-    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
-    stack_pop(&actual_element);
-    int actual = actual_element.u.number;
-
-    assert(expect == actual);
-}
-*/
-
 static void test_eval_control_operators3() {
     char *input = "1 {2} {3} ifelse 4 add";
     int expect = 2 + 4;
@@ -1210,8 +1071,6 @@ static void unit_tests(){
     test_eval_def_and_4_arithmetic_operators();
     test_eval_compile_executable_array();
     test_eval_compile_executable_array_nest();
-    //test_eval_jmp();
-    //test_eval_jmp_not_if(); 
     test_eval_ifelse();
     test_eval_eq();
 
@@ -1223,16 +1082,16 @@ static void unit_tests(){
     test_eval_control_operators3();
     test_eval_control_operators4();
     test_eval_control_operators5();
-    //test_eval_control_operators6(); if縺後≠繧翫∪縺帙ｓ縺ｮ
+    //test_eval_control_operators6();
 
     test_cl_getc_set_file();
     test_cl_getc_set_file_factorial();
     test_cl_getc_set_file_sum_k();
-    //test_cl_getc_set_file_repeat(); repeat縺後∪縺�縺ゅｊ縺ｾ縺帙ｓ縺ｮ
+    //test_cl_getc_set_file_repeat();
     test_cl_getc_set_file_sum_k2();
     test_cl_getc_set_file_fibo();
     test_cl_getc_set_file_fizzbuzz();
-    //test_cl_getc_set_file_primeseries(); if縺後∪縺�縺ゅｊ縺ｾ縺帙ｓ縺ｮ
+    //test_cl_getc_set_file_primeseries();
 }
 
 int main() {
