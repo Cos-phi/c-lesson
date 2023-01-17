@@ -31,6 +31,7 @@ void emit_elem(struct Emitter *emitter, struct Element elem){
     emitter->elems[emitter->pos++] = elem;
 }
 
+/*
 void ifelse_compile(struct Emitter *emitter){
     emit_elem(emitter, create_num_element(3));
     emit_elem(emitter, create_num_element(2));
@@ -43,6 +44,21 @@ void ifelse_compile(struct Emitter *emitter){
     emit_elem(emitter, create_func_element(OP_JMP));
     emit_elem(emitter, create_executable_element("exch"));
     emit_elem(emitter, create_executable_element("pop"));
+    emit_elem(emitter, create_func_element(OP_EXEC));
+}
+*/
+void ifelse_compile(struct Emitter *emitter){
+    emit_elem(emitter, create_func_element(OP_STORE));
+    emit_elem(emitter, create_func_element(OP_STORE));
+    emit_elem(emitter, create_num_element(6));
+    emit_elem(emitter, create_func_element(OP_JMP_NOT_IF));
+    emit_elem(emitter, create_num_element(0));
+    emit_elem(emitter, create_func_element(OP_LOAD));
+    emit_elem(emitter, create_func_element(OP_EXEC));
+    emit_elem(emitter, create_num_element(5));
+    emit_elem(emitter, create_func_element(OP_JMP));
+    emit_elem(emitter, create_num_element(1));
+    emit_elem(emitter, create_func_element(OP_LOAD));
     emit_elem(emitter, create_func_element(OP_EXEC));
 }
 
