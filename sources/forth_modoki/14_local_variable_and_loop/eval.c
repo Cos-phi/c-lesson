@@ -31,22 +31,6 @@ void emit_elem(struct Emitter *emitter, struct Element elem){
     emitter->elems[emitter->pos++] = elem;
 }
 
-/*
-void ifelse_compile(struct Emitter *emitter){
-    emit_elem(emitter, create_num_element(3));
-    emit_elem(emitter, create_num_element(2));
-    emit_elem(emitter, create_executable_element("roll"));
-    emit_elem(emitter, create_num_element(5));
-    emit_elem(emitter, create_func_element(OP_JMP_NOT_IF));
-    emit_elem(emitter, create_executable_element("pop"));
-    emit_elem(emitter, create_func_element(OP_EXEC));
-    emit_elem(emitter, create_num_element(4));
-    emit_elem(emitter, create_func_element(OP_JMP));
-    emit_elem(emitter, create_executable_element("exch"));
-    emit_elem(emitter, create_executable_element("pop"));
-    emit_elem(emitter, create_func_element(OP_EXEC));
-}
-*/
 void ifelse_compile(struct Emitter *emitter){
     emit_elem(emitter, create_func_element(OP_STORE));
     emit_elem(emitter, create_func_element(OP_STORE));
@@ -58,6 +42,15 @@ void ifelse_compile(struct Emitter *emitter){
     emit_elem(emitter, create_num_element(4));
     emit_elem(emitter, create_func_element(OP_JMP));
     emit_elem(emitter, create_num_element(1));
+    emit_elem(emitter, create_func_element(OP_LOAD));
+    emit_elem(emitter, create_func_element(OP_EXEC));
+}
+
+void if_compile(struct Emitter *emitter){
+    emit_elem(emitter, create_func_element(OP_STORE));
+    emit_elem(emitter, create_num_element(4));
+    emit_elem(emitter, create_func_element(OP_JMP_NOT_IF));
+    emit_elem(emitter, create_num_element(0));
     emit_elem(emitter, create_func_element(OP_LOAD));
     emit_elem(emitter, create_func_element(OP_EXEC));
 }
@@ -602,6 +595,7 @@ void register_primitives() {
     register_primitive("roll", roll_op);
 
     register_compile_primitive("ifelse", ifelse_compile);
+    register_compile_primitive("if", if_compile);
     register_compile_primitive("while", while_compile);
     register_compile_primitive("repeat", repeat_compile);
     /*
@@ -1135,7 +1129,7 @@ static void test_cl_getc_set_file_primeseries() {
     eval();
     fclose(file);
 
-    stack_print_all();
+    //stack_print_all();
 
     struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
     stack_pop(&actual_element);
@@ -1169,7 +1163,7 @@ static void unit_tests(){
     test_eval_control_operators3();
     test_eval_control_operators4();
     test_eval_control_operators5();
-    //test_eval_control_operators6();
+    test_eval_control_operators6();
     test_eval_control_op_repeat();
 
     test_cl_getc_set_file();
@@ -1179,7 +1173,7 @@ static void unit_tests(){
     test_cl_getc_set_file_sum_k2();
     test_cl_getc_set_file_fibo();
     test_cl_getc_set_file_fizzbuzz();
-    //test_cl_getc_set_file_primeseries();
+    test_cl_getc_set_file_primeseries();
 }
 
 int main() {
