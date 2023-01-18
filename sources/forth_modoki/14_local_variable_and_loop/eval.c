@@ -31,6 +31,19 @@ void emit_elem(struct Emitter *emitter, struct Element elem){
     emitter->elems[emitter->pos++] = elem;
 }
 
+
+void emit_elem_number(struct Emitter *emitter, int input){
+    emit_elem(emitter, create_num_element(input));
+}
+
+void emit_elem_executable(struct Emitter *emitter, char* input){
+    emit_elem(emitter, create_executable_element(input));
+}
+
+void emit_elem_func(struct Emitter *emitter, enum ControlOperator input){
+    emit_elem(emitter, create_func_element(input));
+}
+
 void ifelse_compile(struct Emitter *emitter){
     emit_elem(emitter, create_func_element(OP_STORE));
     emit_elem(emitter, create_func_element(OP_STORE));
