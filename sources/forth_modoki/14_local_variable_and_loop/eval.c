@@ -77,6 +77,26 @@ void while_compile(struct Emitter *emitter){
     emit_elem(emitter, create_func_element(OP_JMP));
 }
 
+void repeat_compile(struct Emitter *emitter){
+    emit_elem(emitter, create_func_element(OP_STORE));
+    emit_elem(emitter, create_func_element(OP_STORE));
+    emit_elem(emitter, create_num_element(0));
+    emit_elem(emitter, create_func_element(OP_LOAD));
+    emit_elem(emitter, create_num_element(12));
+    emit_elem(emitter, create_func_element(OP_JMP_NOT_IF));
+    emit_elem(emitter, create_num_element(1));
+    emit_elem(emitter, create_func_element(OP_LOAD));
+    emit_elem(emitter, create_func_element(OP_EXEC));
+    emit_elem(emitter, create_num_element(0));
+    emit_elem(emitter, create_func_element(OP_LOAD));
+    emit_elem(emitter, create_func_element(OP_LPOP));
+    emit_elem(emitter, create_num_element(1));
+    emit_elem(emitter, create_executable_element("sub"));
+    emit_elem(emitter, create_func_element(OP_STORE));
+    emit_elem(emitter, create_num_element(-14));
+    emit_elem(emitter, create_func_element(OP_JMP));
+}
+
 struct Element compile_exec_array(int* inout_ch){
     struct Element element = {ELEMENT_UNKNOWN, {0} };
     element.etype = ELEMENT_EXECUTABLE_ARRAY;
@@ -192,7 +212,21 @@ void eval_exec_array(struct ElementArray *exec_array) {
                     break;
                 case OP_STORE:
                     stack_pop(&ref_element);
-                    co_push_exec_array(ref_element.u.byte_codes);
+                    switch(ref_element.etype){
+                        case ELEMENT_EXECUTABLE_ARRAY:
+                            co_push_exec_array(ref_element.u.byte_codes);
+                            break;
+                        case ELEMENT_NUMBER:
+                            co_push_number(ref_element.u.number);
+                            break;
+                        case ELEMENT_C_FUNC:
+                        case ELEMENT_EXECUTABLE_NAME:
+                        case ELEMENT_LITERAL_NAME:
+                        case ELEMENT_OPERATOR:
+                        case ELEMENT_UNKNOWN:
+                        default:
+                            break;
+                    }
                     break;
                 case OP_LOAD:
                     int load_index = stack_pop_int();
@@ -569,6 +603,7 @@ void register_primitives() {
 
     register_compile_primitive("ifelse", ifelse_compile);
     register_compile_primitive("while", while_compile);
+    register_compile_primitive("repeat", repeat_compile);
     /*
     register_primitive("repeat", repeat_op);
     */
@@ -944,6 +979,21 @@ static void test_eval_control_operators6() {
     assert(expect == actual);
 }
 
+static void test_eval_control_op_repeat() {
+    char *input = "/a 1 def 8 {a 2 mul /a exch def} repeat a";
+    int expect = 256;
+
+    init_test_eval();
+    cl_getc_set_src(input);
+    eval();
+
+    struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
+    stack_pop(&actual_element);
+    int actual = actual_element.u.number;
+
+    assert(expect == actual);
+}
+
 static void test_cl_getc_set_file() {
     char *input_file = "ps/test.ps";
     int expect = 42;
@@ -1085,7 +1135,7 @@ static void test_cl_getc_set_file_primeseries() {
     eval();
     fclose(file);
 
-    //stack_print_all();
+    stack_print_all();
 
     struct Element actual_element = {ELEMENT_UNKNOWN, {0} };
     stack_pop(&actual_element);
@@ -1120,11 +1170,12 @@ static void unit_tests(){
     test_eval_control_operators4();
     test_eval_control_operators5();
     //test_eval_control_operators6();
+    test_eval_control_op_repeat();
 
     test_cl_getc_set_file();
     test_cl_getc_set_file_factorial();
     test_cl_getc_set_file_sum_k();
-    //test_cl_getc_set_file_repeat();
+    test_cl_getc_set_file_repeat();
     test_cl_getc_set_file_sum_k2();
     test_cl_getc_set_file_fibo();
     test_cl_getc_set_file_fizzbuzz();
