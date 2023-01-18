@@ -55,7 +55,7 @@ void ifelse_compile(struct Emitter *emitter){
     emit_elem(emitter, create_num_element(0));
     emit_elem(emitter, create_func_element(OP_LOAD));
     emit_elem(emitter, create_func_element(OP_EXEC));
-    emit_elem(emitter, create_num_element(5));
+    emit_elem(emitter, create_num_element(4));
     emit_elem(emitter, create_func_element(OP_JMP));
     emit_elem(emitter, create_num_element(1));
     emit_elem(emitter, create_func_element(OP_LOAD));
