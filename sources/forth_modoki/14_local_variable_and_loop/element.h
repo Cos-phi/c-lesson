@@ -58,7 +58,8 @@ struct CoStackElement {
     enum CoStackType ctype;
     union {
         struct Continuation cont;
-        struct ElementArray *local_var;
+        struct ElementArray *local_var_exec_array;
+        int local_var_number;
     }u;
 };
 

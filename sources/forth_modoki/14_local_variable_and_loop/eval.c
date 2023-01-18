@@ -143,7 +143,7 @@ void co_push_continuation(struct Continuation* in_cont){
 void co_push_exec_array(struct ElementArray* in_exec_array){
     struct CoStackElement cur_costackelem;
     cur_costackelem.ctype = COSTACK_ELEMENT_EXEC_ARRAY;
-    cur_costackelem.u.local_var = in_exec_array;
+    cur_costackelem.u.local_var_exec_array = in_exec_array;
     co_push(&cur_costackelem);
 }
 
@@ -193,7 +193,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
                         co_pop(&ref_co_stack[i]);
                     }
                     ref_element.etype = ELEMENT_EXECUTABLE_ARRAY;
-                    ref_element.u.byte_codes = ref_co_stack[load_index].u.local_var;
+                    ref_element.u.byte_codes = ref_co_stack[load_index].u.local_var_exec_array;
                     stack_push(&ref_element);
                     for(int i=load_index; i>=0; i--){
                         co_push(&ref_co_stack[i]);
