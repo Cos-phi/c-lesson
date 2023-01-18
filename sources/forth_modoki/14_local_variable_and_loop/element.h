@@ -50,7 +50,8 @@ struct Continuation {
 
 enum CoStackType {
     COSTACK_CONTINUATION,
-    COSTACK_ELEMENT,
+    COSTACK_ELEMENT_EXEC_ARRAY,
+    COSTACK_ELEMENT_NUMBER
 };
 
 struct CoStackElement {

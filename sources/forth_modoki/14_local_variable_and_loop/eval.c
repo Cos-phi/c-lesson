@@ -142,7 +142,7 @@ void co_push_continuation(struct Continuation* in_cont){
 
 void co_push_exec_array(struct ElementArray* in_exec_array){
     struct CoStackElement cur_costackelem;
-    cur_costackelem.ctype = COSTACK_ELEMENT;
+    cur_costackelem.ctype = COSTACK_ELEMENT_EXEC_ARRAY;
     cur_costackelem.u.local_var = in_exec_array;
     co_push(&cur_costackelem);
 }
