@@ -31,7 +31,6 @@ void emit_elem(struct Emitter *emitter, struct Element elem){
     emitter->elems[emitter->pos++] = elem;
 }
 
-
 void emit_elem_number(struct Emitter *emitter, int input){
     emit_elem(emitter, create_num_element(input));
 }
@@ -45,62 +44,62 @@ void emit_elem_func(struct Emitter *emitter, enum ControlOperator input){
 }
 
 void ifelse_compile(struct Emitter *emitter){
-    emit_elem(emitter, create_func_element(OP_STORE));
-    emit_elem(emitter, create_func_element(OP_STORE));
-    emit_elem(emitter, create_num_element(6));
-    emit_elem(emitter, create_func_element(OP_JMP_NOT_IF));
-    emit_elem(emitter, create_num_element(0));
-    emit_elem(emitter, create_func_element(OP_LOAD));
-    emit_elem(emitter, create_func_element(OP_EXEC));
-    emit_elem(emitter, create_num_element(4));
-    emit_elem(emitter, create_func_element(OP_JMP));
-    emit_elem(emitter, create_num_element(1));
-    emit_elem(emitter, create_func_element(OP_LOAD));
-    emit_elem(emitter, create_func_element(OP_EXEC));
+    emit_elem_func(emitter, OP_STORE);
+    emit_elem_func(emitter, OP_STORE);
+    emit_elem_number(emitter,6);
+    emit_elem_func(emitter, OP_JMP_NOT_IF);
+    emit_elem_number(emitter,0);
+    emit_elem_func(emitter, OP_LOAD);
+    emit_elem_func(emitter, OP_EXEC);
+    emit_elem_number(emitter,4);
+    emit_elem_func(emitter, OP_JMP);
+    emit_elem_number(emitter,1);
+    emit_elem_func(emitter, OP_LOAD);
+    emit_elem_func(emitter, OP_EXEC);
 }
 
 void if_compile(struct Emitter *emitter){
-    emit_elem(emitter, create_func_element(OP_STORE));
-    emit_elem(emitter, create_num_element(4));
-    emit_elem(emitter, create_func_element(OP_JMP_NOT_IF));
-    emit_elem(emitter, create_num_element(0));
-    emit_elem(emitter, create_func_element(OP_LOAD));
-    emit_elem(emitter, create_func_element(OP_EXEC));
+    emit_elem_func(emitter, OP_STORE);
+    emit_elem_number(emitter, 4);
+    emit_elem_func(emitter, OP_JMP_NOT_IF);
+    emit_elem_number(emitter, 0);
+    emit_elem_func(emitter, OP_LOAD);
+    emit_elem_func(emitter, OP_EXEC);
 }
 
 void while_compile(struct Emitter *emitter){
-    emit_elem(emitter, create_func_element(OP_STORE));
-    emit_elem(emitter, create_func_element(OP_STORE));
-    emit_elem(emitter, create_num_element(0));
-    emit_elem(emitter, create_func_element(OP_LOAD));
-    emit_elem(emitter, create_func_element(OP_EXEC));
-    emit_elem(emitter, create_num_element(6));
-    emit_elem(emitter, create_func_element(OP_JMP_NOT_IF));
-    emit_elem(emitter, create_num_element(1));
-    emit_elem(emitter, create_func_element(OP_LOAD));
-    emit_elem(emitter, create_func_element(OP_EXEC));
-    emit_elem(emitter, create_num_element(-9));
-    emit_elem(emitter, create_func_element(OP_JMP));
+    emit_elem_func(emitter, OP_STORE);
+    emit_elem_func(emitter, OP_STORE);
+    emit_elem_number(emitter,0);
+    emit_elem_func(emitter, OP_LOAD);
+    emit_elem_func(emitter, OP_EXEC);
+    emit_elem_number(emitter,6);
+    emit_elem_func(emitter, OP_JMP_NOT_IF);
+    emit_elem_number(emitter,1);
+    emit_elem_func(emitter, OP_LOAD);
+    emit_elem_func(emitter, OP_EXEC);
+    emit_elem_number(emitter,-9);
+    emit_elem_func(emitter, OP_JMP);
 }
 
 void repeat_compile(struct Emitter *emitter){
-    emit_elem(emitter, create_func_element(OP_STORE));
-    emit_elem(emitter, create_func_element(OP_STORE));
-    emit_elem(emitter, create_num_element(0));
-    emit_elem(emitter, create_func_element(OP_LOAD));
-    emit_elem(emitter, create_num_element(12));
-    emit_elem(emitter, create_func_element(OP_JMP_NOT_IF));
-    emit_elem(emitter, create_num_element(1));
-    emit_elem(emitter, create_func_element(OP_LOAD));
-    emit_elem(emitter, create_func_element(OP_EXEC));
-    emit_elem(emitter, create_num_element(0));
-    emit_elem(emitter, create_func_element(OP_LOAD));
-    emit_elem(emitter, create_func_element(OP_LPOP));
-    emit_elem(emitter, create_num_element(1));
-    emit_elem(emitter, create_executable_element("sub"));
-    emit_elem(emitter, create_func_element(OP_STORE));
-    emit_elem(emitter, create_num_element(-14));
-    emit_elem(emitter, create_func_element(OP_JMP));
+    emit_elem_func(emitter, OP_STORE);
+    emit_elem_func(emitter, OP_STORE);
+    emit_elem_number(emitter,0);
+    emit_elem_func(emitter, OP_LOAD);
+    emit_elem_number(emitter,12);
+    emit_elem_func(emitter, OP_JMP_NOT_IF);
+    emit_elem_number(emitter,1);
+    emit_elem_func(emitter, OP_LOAD);
+    emit_elem_func(emitter, OP_EXEC);
+    emit_elem_number(emitter,0);
+    emit_elem_func(emitter, OP_LOAD);
+    emit_elem_func(emitter, OP_LPOP);
+    emit_elem_number(emitter,1);
+    emit_elem_executable(emitter, "sub");
+    emit_elem_func(emitter, OP_STORE);
+    emit_elem_number(emitter,-14);
+    emit_elem_func(emitter, OP_JMP);
 }
 
 struct Element compile_exec_array(int* inout_ch){
