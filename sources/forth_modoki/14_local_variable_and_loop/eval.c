@@ -165,6 +165,7 @@ void eval_exec_array(struct ElementArray *exec_array) {
         }else if( ELEMENT_OPERATOR == cur_etype ){
             int jmp_num;
             int cond;
+            struct CoStackElement ref_co_stack[1024];
             switch(cur_cont.exec_array->elements[cur_cont.pc].u.op){
                 case OP_EXEC:
                     cur_cont.pc++;
@@ -195,7 +196,6 @@ void eval_exec_array(struct ElementArray *exec_array) {
                     break;
                 case OP_LOAD:
                     int load_index = stack_pop_int();
-                    struct CoStackElement ref_co_stack[1024];
                     for(int i=0; i<=load_index; i++){
                         co_pop(&ref_co_stack[i]);
                     }
@@ -216,6 +216,9 @@ void eval_exec_array(struct ElementArray *exec_array) {
                     for(int i=load_index; i>=0; i--){
                         co_push(&ref_co_stack[i]);
                     }
+                    break;
+                case OP_LPOP:
+                    assert(1 == co_pop(&ref_co_stack[0]));
                     break;
                 default:
                     break;
