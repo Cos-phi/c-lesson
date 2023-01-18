@@ -147,6 +147,13 @@ void co_push_exec_array(struct ElementArray* in_exec_array){
     co_push(&cur_costackelem);
 }
 
+void co_push_number(int in_number){
+    struct CoStackElement cur_costackelem;
+    cur_costackelem.ctype = COSTACK_ELEMENT_NUMBER;
+    cur_costackelem.u.local_var_number = in_number;
+    co_push(&cur_costackelem);
+}
+
 void eval_exec_array(struct ElementArray *exec_array) {
     struct Continuation cur_cont = {exec_array, 0};
     while(1){
@@ -192,8 +199,19 @@ void eval_exec_array(struct ElementArray *exec_array) {
                     for(int i=0; i<=load_index; i++){
                         co_pop(&ref_co_stack[i]);
                     }
-                    ref_element.etype = ELEMENT_EXECUTABLE_ARRAY;
-                    ref_element.u.byte_codes = ref_co_stack[load_index].u.local_var_exec_array;
+                    switch(ref_co_stack[load_index].ctype){
+                        case COSTACK_ELEMENT_EXEC_ARRAY:
+                            ref_element.etype = ELEMENT_EXECUTABLE_ARRAY;
+                            ref_element.u.byte_codes = ref_co_stack[load_index].u.local_var_exec_array;
+                            break;
+                        case COSTACK_ELEMENT_NUMBER:
+                            ref_element.etype = ELEMENT_NUMBER;
+                            ref_element.u.number = ref_co_stack[load_index].u.local_var_number;
+                            break;
+                        case COSTACK_CONTINUATION:
+                        default:
+                            abort();
+                    }
                     stack_push(&ref_element);
                     for(int i=load_index; i>=0; i--){
                         co_push(&ref_co_stack[i]);
