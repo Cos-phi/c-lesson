@@ -16,11 +16,9 @@ loop:
     lsr r2,r1,r3
     and r2,r2,#0x0F
     cmp r2,#10
-    blt arabicnum
-    add r2,r2,#55
-    b print
-arabicnum:
     add r2,r2,#48
+    blt print
+    add r2,r2,#7
 print:
     str r2,[r0]
     sub r3,#4
