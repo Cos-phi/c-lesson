@@ -16,7 +16,6 @@ loop:
     lsr r2,r1,r3
     and r2,r2,#0x0F
     cmp r2,#10
-    bge alphabet
     blt arabicnum
 alphabet:
     add r2,r2,#55
@@ -31,7 +30,6 @@ arabicnum:
     sub r3,#4
     cmp r3,#0
     bge loop
-    b newline
 newline:
     mov r4,#0x0D
     str r4,[r0]
