@@ -17,7 +17,6 @@ loop:
     and r2,r2,#0x0F
     cmp r2,#10
     blt arabicnum
-alphabet:
     add r2,r2,#55
     b print
 arabicnum:
