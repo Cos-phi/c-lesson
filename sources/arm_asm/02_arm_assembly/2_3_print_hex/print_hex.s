@@ -19,18 +19,14 @@ loop:
     blt arabicnum
 alphabet:
     add r2,r2,#55
-    str r2,[r0]
-    sub r3,#4
-    cmp r3,#0
-    bge loop
-    b newline
+    b print
 arabicnum:
     add r2,r2,#48
+print:
     str r2,[r0]
     sub r3,#4
     cmp r3,#0
     bge loop
-newline:
     mov r4,#0x0D
     str r4,[r0]
     mov r4,#0x0A
