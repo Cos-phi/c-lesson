@@ -6,7 +6,7 @@
 */
 .globl _start
 _start:
-    ldr r1,=0xdeadbeaf
+    ldr r1,=0xdead1234
     b print_hex
 print_hex:
     // TODO: implement here
@@ -15,12 +15,24 @@ print_hex:
 loop:
     lsr r2,r1,r3
     and r2,r2,#0x0F
+    cmp r2,#10
+    bge alphabet
+    blt arabicnum
+alphabet:
     add r2,r2,#55
     str r2,[r0]
     sub r3,#4
     cmp r3,#0
     bge loop
-
+    b newline
+arabicnum:
+    add r2,r2,#48
+    str r2,[r0]
+    sub r3,#4
+    cmp r3,#0
+    bge loop
+    b newline
+newline:
     mov r4,#0x0D
     str r4,[r0]
     mov r4,#0x0A
