@@ -10,5 +10,14 @@ _start:
     b print_hex
 print_hex:
     // TODO: implement here
+    ldr r0,=0x101f1000
+    lsr r2,r1,#28
+    and r2,r2,#0x0F
+    add r2,r2,#55
+    str r2,[r0]
+    mov r4,#0x0D
+    str r4,[r0]
+    mov r4,#0x0A
+    str r4,[r0]
 end:
     b end
