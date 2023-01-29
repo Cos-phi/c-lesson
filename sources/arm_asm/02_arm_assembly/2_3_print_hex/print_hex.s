@@ -11,10 +11,16 @@ _start:
 print_hex:
     // TODO: implement here
     ldr r0,=0x101f1000
-    lsr r2,r1,#28
+    mov r3,#28
+loop:
+    lsr r2,r1,r3
     and r2,r2,#0x0F
     add r2,r2,#55
     str r2,[r0]
+    sub r3,#4
+    cmp r3,#0
+    bge loop
+
     mov r4,#0x0D
     str r4,[r0]
     mov r4,#0x0A
