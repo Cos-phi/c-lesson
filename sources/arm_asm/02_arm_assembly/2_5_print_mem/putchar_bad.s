@@ -15,7 +15,7 @@ end:
 */
 putchar:
   ldr r1,=0x101f1000
-  str r0, [r1]
+  str r2, [r1]
   mov r15, r14
 
 
@@ -25,10 +25,16 @@ putchar:
     used internal register: r0, r1, r3.
 */
 print:
-  ldrb r3,[r0]
+  ldrb r3,[r0] // load one char
 _loop:
   // TODO: use putchar here someway.
-  //
+  /*
+  str r3,[r0]
+  */
+  mov r2,r3
+  mov r4,r14
+  bl putchar
+  mov r14,r4
 
   add r0, r0, #1
   ldrb r3,[r0]
