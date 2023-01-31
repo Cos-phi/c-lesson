@@ -1,6 +1,7 @@
 .globl _start
 _start:
 
+  ldr r13,=0x08000000
   ldr r0,=msg1
   bl print
   ldr r0,=msg2
@@ -32,9 +33,10 @@ _loop:
   str r3,[r0]
   */
   mov r2,r3
-  mov r4,r14
+  sub r13,r13,#4
+  str r14,[r13]
   bl putchar
-  mov r14,r4
+  ldr r14,[r13]
 
   add r0, r0, #1
   ldrb r3,[r0]
