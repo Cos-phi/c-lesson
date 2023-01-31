@@ -37,6 +37,7 @@ _loop:
   str r14,[r13]
   bl putchar
   ldr r14,[r13]
+  add r13,r13,#4
 
   add r0, r0, #1
   ldrb r3,[r0]
