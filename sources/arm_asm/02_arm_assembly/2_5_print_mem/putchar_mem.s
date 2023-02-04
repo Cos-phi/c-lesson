@@ -34,17 +34,15 @@ putchar:
 */
 print:
   stmdb r13!,{r0,r1,r3,r14}
-  ldrb r3,[r0] // load one char
+  mov r1,r0
+  ldrb r0,[r1] // load one char
 _loop:  
 
-  stmdb r13!,{r0}
-  mov r0,r3
   bl putchar
-  ldmia r13!,{r0}
 
-  add r0, r0, #1
-  ldrb r3,[r0] // load one char
-  cmp r3,#0  // if the char is \0 ..
+  add r1, r1, #1
+  ldrb r0,[r1] // load one char
+  cmp r0,#0  // if the char is \0 ..
   bne _loop
   ldmia r13!,{r0,r1,r3,r14}
   mov r15, r14
