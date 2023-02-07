@@ -1,8 +1,9 @@
 .globl _start
 _start:
 
-//  mov r0, r15
-  ldr r0, =0xdeadbeaf
+  ldr r13,=0x08000000
+
+  mov r0, r15
   bl print_hex
 
   mov r0, #0x68
@@ -20,8 +21,7 @@ end:
    r3 is counter 
 */
 print_hex:
-  stmdb r13!,{r0,r1,r3}
-  ldr r4,=0x101f1000
+  stmdb r13!,{r0,r1,r3,r14}
   mov r1,r0
   mov r3,#28 
 _loop:
@@ -32,18 +32,15 @@ _loop:
   blt _print
   add r0,r0,#7
 _print:
-//  bl putchar
-  str r0,[r4]
+  bl putchar
   sub r3,#4
   cmp r3,#0
   bge _loop
   mov r0,#0x0D
-//  bl putchar
-  str r0,[r4]
+  bl putchar
   mov r0,#0x0A
-  str r0,[r4]
-//  bl putchar
-  ldmia r13!,{r0,r1,r3}
+  bl putchar
+  ldmia r13!,{r0,r1,r3,r14}
   mov r15,r14
 
 /*
