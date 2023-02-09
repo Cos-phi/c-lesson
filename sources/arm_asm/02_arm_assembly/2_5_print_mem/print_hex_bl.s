@@ -8,6 +8,11 @@ _start:
 
   mov r0, #0x68
   bl print_hex
+  mov r0, r15
+  bl print_hex
+
+  bl tekitou_label
+
 
 end:
   b end
@@ -55,3 +60,7 @@ putchar:
   ldmia r13!,{r1,r14}
   mov r15,r14
 
+tekitou_label:
+  mov r0, r14
+  bl print_hex
+  mov r15,r14
