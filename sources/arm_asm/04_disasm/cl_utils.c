@@ -77,7 +77,18 @@ int print_asm(int word){
 
 static void test_disasm_mov(){
     int input = 0xE3A01068;
-    //int input = 0x64646464;
+    char* expect = "mov r1, #0x68\n";
+
+    cl_enable_buffer_mode();
+    print_asm(input);
+
+    char* actual = cl_get_all_result();
+    assert(0 == strcmp(actual,expect));
+    cl_clear_output();
+}
+
+static void test_disasm_mov_fail(){
+    int input = 0x64646464;
     char* expect = "mov r1, #0x68\n";
 
     cl_enable_buffer_mode();
@@ -90,6 +101,7 @@ static void test_disasm_mov(){
 
 static void unit_tests(){
     test_disasm_mov();
+    test_disasm_mov_fail();
 }
 
 void main(){
