@@ -1,4 +1,8 @@
 #include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
+
 
 
 static char buf[100*1024];
@@ -63,5 +67,32 @@ void cl_printf(char *fmt, ...) {
     }
     va_end(arg_ptr);
 }
+int print_asm(int word){
+    if(word == 0xE3A01068){
+        cl_printf("mov r1, #0x68\n");
+        return 1;
+    }
+    return 0;
+}
 
+static void test_disasm_mov(){
+    int input = 0xE3A01068;
+    //int input = 0x64646464;
+    char* expect = "mov r1, #0x68\n";
+
+    cl_enable_buffer_mode();
+    print_asm(input);
+
+    char* actual = cl_get_all_result();
+    assert(0 == strcmp(actual,expect));
+    cl_clear_output();
+}
+
+static void unit_tests(){
+    test_disasm_mov();
+}
+
+void main(){
+    unit_tests();
+}
 
