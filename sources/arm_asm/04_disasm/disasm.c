@@ -39,9 +39,24 @@ static void test_disasm_mov_fail(){
     cl_clear_output();
 }
 
+static void test_disasm_b(){
+    int input = 0xEAFFFFFE;
+    int expect = 1;
+    char* expect_str = "b [r15, #-0x8]\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
+    test_disasm_b();
 }
 
 void main(){
