@@ -9,6 +9,10 @@ int print_asm(int word){
         int immediate_value  = (word & 0x000000ff); //00000000000000000000000011111111
         cl_printf("mov r%d, #0x%x\n",destination_register, immediate_value); 
         return 1;
+    }else if(0xEAFFFFFE == word ){
+        cl_printf("b [r15, #-0x8]\n"); 
+        return 1;
+
     }else{
         return 0;
     }
