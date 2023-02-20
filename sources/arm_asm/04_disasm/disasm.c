@@ -89,7 +89,7 @@ static void test_disasm_str(){
 }
 
 static void test_disasm_str2(){
-    int input = 0xE5802000; // 1110 0101 1000 0000 0001 0000 0000 0000 
+    int input = 0xE5802000; // 1110 0101 1000 0000 0002 0000 0000 0000 
     int expect = 1;
     char* expect_str = "str r2, [r0]\n";
 
