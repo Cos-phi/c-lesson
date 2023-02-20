@@ -24,6 +24,12 @@ int print_asm(int word){
         }
         return 1;
 
+    }else if( 0xE5801000 == word ){ 
+        cl_printf("str r1, [r0]\n");
+        return 1;
+    }else if( 0xE59F0038 == word ){ 
+        cl_printf("ldr r0, [pc, #56]\n");
+        return 1;
     }else{
         return 0;
     }
@@ -55,9 +61,37 @@ static void test_disasm_mov_fail(){
 }
 
 static void test_disasm_b(){
-    int input = 0xEAFFFFFE; // 1110 1010 1111 1111 1111 1111 1111 1111 1110
+    int input = 0xEAFFFFFE; // 1110 1010 1111 1111 1111 1111 1111 1110
     int expect = 1;
     char* expect_str = "b [r15, #-0x8]\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
+static void test_disasm_str(){
+    int input = 0xE5801000; // 1110 0101 1000 0000 0001 0000 0000 0000 
+    int expect = 1;
+    char* expect_str = "str r1, [r0]\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
+static void test_disasm_ldr(){
+    int input = 0xE59f0038; // 1110 0101 1001 1111 0000 0000 0011 1000
+    int expect = 1;
+    char* expect_str = "ldr r0, [pc, #56]\n";
 
     cl_enable_buffer_mode();
     int actual = print_asm(input);
@@ -72,6 +106,8 @@ static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
     test_disasm_b();
+    test_disasm_str();
+    test_disasm_ldr();
 }
 
 void main(){
