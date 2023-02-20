@@ -5,16 +5,16 @@ int print_asm(int word){
     int operation_code       = (word & 0x01e00000) >> 21; //00000001111000000000000000000000
     int destination_register = (word & 0x0000f000) >> 12; //00000000000000001111000000000000
          
-    int branch               = (word & 0x0E000000) >> 25; 
+    int branch_opecode       = (word & 0x0E000000) >> 25; 
     int link_bit             = (word & 0x01000000) >> 24; 
     int branch_offset    = (word<<2) & 0x00ffffff; 
 
-    if( 0xD == operation_code && 1 == immediate_operand ){ 
+    if( 0xD == operation_code && 1 == immediate_operand ){ // operation code 0xD means 'mov'
         int immediate_value  = (word & 0x000000ff); 
         cl_printf("mov r%d, #0x%x\n",destination_register, immediate_value); 
         return 1;
-    }else if( 0x5 == branch && 0 == link_bit){
-        if( 0x100000 < branch_offset ){
+    }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit? 1:b, 0:bl
+        if( 0x00800000 < branch_offset ){
             branch_offset = branch_offset - 0x1000000;
             branch_offset *= -1;
             cl_printf("b [r15, #-0x%d]\n",branch_offset); 
