@@ -23,9 +23,9 @@ int print_asm(int word){
             cl_printf("b [r15, #0x%d]\n",branch_offset); 
         }
         return 1;
-
-    }else if( 0xE5801000 == word ){ 
-        cl_printf("str r1, [r0]\n");
+    }else if( 0x05800000 == (word & 0x0ff00000) ){ // 01IPUBWL = 01011000  L? 0:str, 1:ldr
+        destination_register = (word & 0x0000f000) >> 12; 
+        cl_printf("str r%d, [r0]\n",destination_register);
         return 1;
     }else if( 0xE59F0038 == word ){ 
         cl_printf("ldr r0, [pc, #56]\n");
@@ -88,6 +88,20 @@ static void test_disasm_str(){
     cl_clear_output();
 }
 
+static void test_disasm_str2(){
+    int input = 0xE5802000; // 1110 0101 1000 0000 0001 0000 0000 0000 
+    int expect = 1;
+    char* expect_str = "str r2, [r0]\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void test_disasm_ldr(){
     int input = 0xE59f0038; // 1110 0101 1001 1111 0000 0000 0011 1000
     int expect = 1;
@@ -107,6 +121,7 @@ static void unit_tests(){
     test_disasm_mov_fail();
     test_disasm_b();
     test_disasm_str();
+    test_disasm_str2();
     test_disasm_ldr();
 }
 
