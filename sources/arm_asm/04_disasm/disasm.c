@@ -14,7 +14,7 @@ int print_asm(int word){
         return 1;
     }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit is 0? b : 1? bl
         int branch_offset    = (word<<2) & 0x00ffffff; 
-        if( 0x00800000 == branch_offset & 0x00800000 ){
+        if( 0x00800000 == (branch_offset & 0x00800000) ){
         //if( 1 ==  (branch_offset & 0x00800000) >> 23 ){
             branch_offset = branch_offset - 0x1000000;
             branch_offset *= -1;
