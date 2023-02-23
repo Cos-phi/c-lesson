@@ -14,12 +14,11 @@ int print_asm(int word){
         return 1;
     }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit is 0? b : 1? bl
         int branch_offset    = (word<<2) & 0x00ffffff; 
-        if( 0x00800000 < branch_offset ){
+        if( 1 ==  (branch_offset & 0x00800000) >> 23 ){
             branch_offset = branch_offset - 0x1000000;
             branch_offset *= -1;
-            cl_printf("b [r15, #-0x%d]\n",branch_offset); 
+            cl_printf("b [r15, #0x-%d]\n",branch_offset); 
         }else{
-            printf("0x%x\n",branch_offset);
             cl_printf("b [r15, #0x%d]\n",branch_offset); 
         }
         return 1;
@@ -63,7 +62,7 @@ static void test_disasm_mov_fail(){
 static void test_disasm_b(){
     int input = 0xEAFFFFFE; // 1110 1010 1111 1111 1111 1111 1111 1110
     int expect = 1;
-    char* expect_str = "b [r15, #-0x8]\n";
+    char* expect_str = "b [r15, #0x-8]\n";
 
     cl_enable_buffer_mode();
     int actual = print_asm(input);
