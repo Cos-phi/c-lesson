@@ -13,7 +13,7 @@ int print_asm(int word){
         int immediate_value  = (word & 0x000000ff); 
         cl_printf("mov r%d, #0x%x\n",destination_register, immediate_value); 
         return 1;
-    }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit? 1:b, 0:bl
+    }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit is 0? b : 1? bl
         if( 0x00800000 < branch_offset ){
             branch_offset = branch_offset - 0x1000000;
             branch_offset *= -1;
@@ -23,7 +23,7 @@ int print_asm(int word){
             cl_printf("b [r15, #0x%d]\n",branch_offset); 
         }
         return 1;
-    }else if( 0x05800000 == (word & 0x0ff00000) ){ // 01IPUBWL = 01011000  L? 0:str, 1:ldr
+    }else if( 0x05800000 == (word & 0x0ff00000) ){ // 01IPUBWL = 01011000  L is 0? str: 1? ldr
         destination_register = (word & 0x0000f000) >> 12; 
         cl_printf("str r%d, [r0]\n",destination_register);
         return 1;
