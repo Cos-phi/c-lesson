@@ -3,17 +3,17 @@
 int print_asm(int word){
     int immediate_operand    = (word & 0x02000000) >> 25; //00000010000000000000000000000000
     int operation_code       = (word & 0x01e00000) >> 21; //00000001111000000000000000000000
-    int destination_register = (word & 0x0000f000) >> 12; //00000000000000001111000000000000
          
     int branch_opecode       = (word & 0x0E000000) >> 25; 
     int link_bit             = (word & 0x01000000) >> 24; 
-    int branch_offset    = (word<<2) & 0x00ffffff; 
 
     if( 0xD == operation_code && 1 == immediate_operand ){ // operation code 0xD means 'mov'
         int immediate_value  = (word & 0x000000ff); 
+        int destination_register = (word & 0x0000f000) >> 12;
         cl_printf("mov r%d, #0x%x\n",destination_register, immediate_value); 
         return 1;
     }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit is 0? b : 1? bl
+        int branch_offset    = (word<<2) & 0x00ffffff; 
         if( 0x00800000 < branch_offset ){
             branch_offset = branch_offset - 0x1000000;
             branch_offset *= -1;
@@ -24,7 +24,7 @@ int print_asm(int word){
         }
         return 1;
     }else if( 0x05800000 == (word & 0x0ff00000) ){ // 01IPUBWL = 01011000  L is 0? str: 1? ldr
-        destination_register = (word & 0x0000f000) >> 12; 
+        int destination_register = (word & 0x0000f000) >> 12; 
         cl_printf("str r%d, [r0]\n",destination_register);
         return 1;
     }else if( 0xE59F0038 == word ){ 
