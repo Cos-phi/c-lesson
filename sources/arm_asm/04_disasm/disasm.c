@@ -1,9 +1,27 @@
 #include "cl_utils.h"
+#include <errno.h>
+
+int read_binary_file(char* filename){
+    // バイナリ読み込みの練習です
+    int test_val[256];
+
+    FILE *filepointer;
+    filepointer = fopen(filename, "rb");
+    if( NULL == filepointer ){
+        printf("fopen failed (%s)\n", strerror( errno ) );
+    }
+    fread(&test_val,sizeof(test_val),3,filepointer);
+    fclose(filepointer);
+
+    for(int i=0;i<3;i++){
+        printf("0x%x\n",test_val[i]);
+    }
+    return 0;
+}
 
 int print_asm(int word){
     int immediate_operand    = (word & 0x02000000) >> 25; //00000010000000000000000000000000
     int operation_code       = (word & 0x01e00000) >> 21; //00000001111000000000000000000000
-         
     int branch_opecode       = (word & 0x0E000000) >> 25; 
     int link_bit             = (word & 0x01000000) >> 24; 
 
@@ -12,10 +30,9 @@ int print_asm(int word){
         int destination_register = (word & 0x0000f000) >> 12;
         cl_printf("mov r%d, #0x%x\n",destination_register, immediate_value); 
         return 1;
-    }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit is 0? b : 1? bl
+    }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit = 0? b: 1? bl
         int branch_offset    = (word<<2) & 0x00ffffff; 
         if( 0x00800000 == (branch_offset & 0x00800000) ){
-        //if( 1 ==  (branch_offset & 0x00800000) >> 23 ){
             branch_offset = branch_offset - 0x1000000;
             branch_offset *= -1;
             cl_printf("b [r15, #0x-%d]\n",branch_offset); 
@@ -127,5 +144,6 @@ static void unit_tests(){
 
 void main(){
     unit_tests();
+    read_binary_file("test/test_input/hello_arm.bin");
 }
 
