@@ -36,19 +36,19 @@ int print_asm(int word){
 
 int read_binary_file(char* filename, int wordnum){
     cl_disable_buffer_mode();
-    int test_val[wordnum];
+    int words[wordnum];
 
     FILE *filepointer;
     filepointer = fopen(filename, "rb");
     if( NULL == filepointer ){
         printf("fopen failed (%s)\n", strerror( errno ) );
     }
-    fread(&test_val,sizeof(test_val),wordnum,filepointer);
+    fread(&words,sizeof(words),wordnum,filepointer);
     fclose(filepointer);
 
     for(int i=0;i<wordnum;i++){
-        printf("0x%x  ",test_val[i]);
-        if( 0 == print_asm(test_val[i]) ){
+        printf("0x%x  ",words[i]);
+        if( 0 == print_asm(words[i]) ){
             printf("\n");
         }
     }
