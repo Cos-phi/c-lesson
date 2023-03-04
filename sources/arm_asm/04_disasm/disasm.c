@@ -1,24 +1,6 @@
 #include "cl_utils.h"
 #include <errno.h>
 
-int read_binary_file(char* filename){
-    // バイナリ読み込みの練習です
-    int test_val[256];
-
-    FILE *filepointer;
-    filepointer = fopen(filename, "rb");
-    if( NULL == filepointer ){
-        printf("fopen failed (%s)\n", strerror( errno ) );
-    }
-    fread(&test_val,sizeof(test_val),3,filepointer);
-    fclose(filepointer);
-
-    for(int i=0;i<3;i++){
-        printf("0x%x\n",test_val[i]);
-    }
-    return 0;
-}
-
 int print_asm(int word){
     int immediate_operand    = (word & 0x02000000) >> 25; //00000010000000000000000000000000
     int operation_code       = (word & 0x01e00000) >> 21; //00000001111000000000000000000000
@@ -50,6 +32,27 @@ int print_asm(int word){
     }else{
         return 0;
     }
+}
+
+int read_binary_file(char* filename, int wordnum){
+    cl_disable_buffer_mode();
+    int test_val[wordnum];
+
+    FILE *filepointer;
+    filepointer = fopen(filename, "rb");
+    if( NULL == filepointer ){
+        printf("fopen failed (%s)\n", strerror( errno ) );
+    }
+    fread(&test_val,sizeof(test_val),wordnum,filepointer);
+    fclose(filepointer);
+
+    for(int i=0;i<wordnum;i++){
+        printf("0x%x  ",test_val[i]);
+        if( 0 == print_asm(test_val[i]) ){
+            printf("\n");
+        }
+    }
+    return 0;
 }
 
 static void test_disasm_mov(){
@@ -144,6 +147,6 @@ static void unit_tests(){
 
 void main(){
     unit_tests();
-    read_binary_file("test/test_input/hello_arm.bin");
+    read_binary_file("test/test_input/hello_arm.bin",17);
 }
 
