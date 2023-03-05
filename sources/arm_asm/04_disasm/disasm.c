@@ -50,7 +50,7 @@ int read_binary_file(char* filename, int wordnum){
 
     int i=0;
     while(1){
-        printf("0x%x  ",address);
+        printf("0x%08x  ",address);
         address += 4;
         if( 0 == print_asm(words[i]) ){
             break;
@@ -61,13 +61,13 @@ int read_binary_file(char* filename, int wordnum){
         }
     }
     while(1){
-        printf("0x%x\n",words[i]);
+        printf("%02x %02x %02x %02x\n",words[i] & 0x000000FF, (words[i]&0x0000FF00)>>8, (words[i]&0x00FF0000)>>16, (words[i]&0xFF000000)>>24);
         i++;
         if( i == wordnum ){
             return 1;
         }
         address += 4;
-        printf("0x%x  ",address);
+        printf("0x%08x  ",address);
     }
 }
 
