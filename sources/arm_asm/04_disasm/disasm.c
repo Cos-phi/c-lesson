@@ -1,5 +1,6 @@
 #include "cl_utils.h"
 #include <errno.h>
+#define MAX_WORD_NUM 256
 
 int print_asm(int word){
     int immediate_operand    = (word & 0x02000000) >> 25; //00000010000000000000000000000000
@@ -36,7 +37,7 @@ int print_asm(int word){
 
 int read_binary_file(char* filename, int wordnum){
     cl_disable_buffer_mode();
-    int words[wordnum];
+    int words[MAX_WORD_NUM];
     int address = 0x10000;
 
     FILE *filepointer;
