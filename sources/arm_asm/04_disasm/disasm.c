@@ -37,6 +37,7 @@ int print_asm(int word){
 int read_binary_file(char* filename, int wordnum){
     cl_disable_buffer_mode();
     int words[wordnum];
+    int address = 0x10000;
 
     FILE *filepointer;
     filepointer = fopen(filename, "rb");
@@ -47,7 +48,9 @@ int read_binary_file(char* filename, int wordnum){
     fclose(filepointer);
 
     for(int i=0;i<wordnum;i++){
-        printf("0x%x  ",words[i]);
+        //printf("0x%x  ",words[i]);
+        printf("0x%x  ",address);
+        address += 4;
         if( 0 == print_asm(words[i]) ){
             printf("\n");
         }
