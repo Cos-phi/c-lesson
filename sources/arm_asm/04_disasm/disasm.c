@@ -43,6 +43,7 @@ int read_binary_file(char* filename, int wordnum){
     filepointer = fopen(filename, "rb");
     if( NULL == filepointer ){
         printf("fopen failed (%s)\n", strerror( errno ) );
+        abort();
     }
     fread(&words,sizeof(int),wordnum,filepointer);
     fclose(filepointer);
