@@ -43,20 +43,32 @@ int read_binary_file(char* filename, int wordnum){
     filepointer = fopen(filename, "rb");
     if( NULL == filepointer ){
         printf("fopen failed (%s)\n", strerror( errno ) );
-        abort();
+        return 0;
     }
     fread(&words,sizeof(int),wordnum,filepointer);
     fclose(filepointer);
 
-    for(int i=0;i<wordnum;i++){
-        //printf("0x%x  ",words[i]);
+    int i=0;
+    while(1){
         printf("0x%x  ",address);
         address += 4;
         if( 0 == print_asm(words[i]) ){
-            printf("\n");
+            break;
+        }
+        i++;
+        if( i == wordnum ){
+            return 1;
         }
     }
-    return 0;
+    while(1){
+        printf("0x%x\n",words[i]);
+        i++;
+        if( i == wordnum ){
+            return 1;
+        }
+        address += 4;
+        printf("0x%x  ",address);
+    }
 }
 
 static void test_disasm_mov(){
