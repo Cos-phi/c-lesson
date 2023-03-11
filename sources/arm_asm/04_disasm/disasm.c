@@ -162,8 +162,8 @@ static void unit_tests(){
     test_disasm_ldr();
 }
 
-void main(){
+void main(int argc, char *argv[]){
     unit_tests();
-    read_binary_file("test/test_input/hello_arm.bin",17);
+    read_binary_file(argv[1],17);
 }
 
