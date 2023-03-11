@@ -1,5 +1,6 @@
 #include "cl_utils.h"
 #include <errno.h>
+#include <sys/stat.h>
 #define MAX_WORD_NUM 256
 
 int print_asm(int word){
@@ -35,10 +36,16 @@ int print_asm(int word){
     }
 }
 
-int read_binary_file(char* filename, int wordnum){
+int read_binary_file(char* filename){
     cl_disable_buffer_mode();
     int words[MAX_WORD_NUM];
     int address = 0x10000;
+
+    struct stat sb;
+    if(stat(filename, &sb) == -1){
+        return 0;
+    }
+    int wordnum = (int)sb.st_size/4;
 
     FILE *filepointer;
     filepointer = fopen(filename, "rb");
@@ -164,6 +171,6 @@ static void unit_tests(){
 
 void main(int argc, char *argv[]){
     unit_tests();
-    read_binary_file(argv[1],17);
+    read_binary_file(argv[1]);
 }
 
