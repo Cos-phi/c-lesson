@@ -28,8 +28,8 @@ int print_asm(int word){
         int destination_register = (word & 0x0000f000) >> 12; 
         cl_printf("str r%d, [r0]\n",destination_register);
         return 1;
-    }else if( 0xE59F0000 == (word & 0xffffff00) ){ // 01IPUBWL = 01011001  L is 0? str: 1? ldr
-        cl_printf("ldr r0, [pc, #%d]\n",(word & 0x00000fff));
+    }else if( 0xE59F0000 == (word & 0xffff0000) ){ // 01IPUBWL = 01011001  L is 0? str: 1? ldr
+        cl_printf("ldr r%d, [pc, #%d]\n",(word & 0x0000f000)>>12,(word & 0x00000fff));
         return 1;
     }else{
         return 0;
