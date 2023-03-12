@@ -28,8 +28,8 @@ int print_asm(int word){
         int destination_register = (word & 0x0000f000) >> 12; 
         cl_printf("str r%d, [r0]\n",destination_register);
         return 1;
-    }else if( 0xE59F0038 == word ){ 
-        cl_printf("ldr r0, [pc, #56]\n");
+    }else if( 0xE59F0000 == (word & 0xffffff00) ){ // 01IPUBWL = 01011001  L is 0? str: 1? ldr
+        cl_printf("ldr r0, [pc, #%d]\n",(word & 0x00000fff));
         return 1;
     }else{
         return 0;
@@ -160,6 +160,20 @@ static void test_disasm_ldr(){
     cl_clear_output();
 }
 
+static void test_disasm_ldr2(){
+    int input = 0xE59f002C; 
+    int expect = 1;
+    char* expect_str = "ldr r0, [pc, #44]\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -167,10 +181,13 @@ static void unit_tests(){
     test_disasm_str();
     test_disasm_str2();
     test_disasm_ldr();
+    test_disasm_ldr2();
 }
 
 void main(int argc, char *argv[]){
     unit_tests();
-    read_binary_file(argv[1]);
+    if(argc){
+        read_binary_file(argv[1]);
+    }
 }
 
