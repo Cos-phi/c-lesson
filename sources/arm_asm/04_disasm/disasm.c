@@ -32,7 +32,7 @@ int print_asm(int word){
         cl_printf("ldr r%d, [pc, #%d]\n",(word & 0x0000f000)>>12,(word & 0x00000fff));
         return 1;
     }else if( 0xE5D00000 == (word & 0xfff00000) ){ // 01IPUBWL = 01011101 B is 1?byte: 0?word, L is 0?str: 1?ldr 
-        cl_printf("ldrb r%d, [%d]\n",(word & 0x0000f000)>>12,(word & 0x000f0000)>>16);
+        cl_printf("ldrb r%d, [r%d]\n",(word & 0x0000f000)>>12,(word & 0x000f0000)>>16);
         return 1;
     }else{
         return 0;
@@ -177,6 +177,20 @@ static void test_disasm_ldr2(){
     cl_clear_output();
 }
 
+static void test_disasm_ldrb(){
+    int input = 0xE5D13000; 
+    int expect = 1;
+    char* expect_str = "ldrb r3, [r1]\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -185,6 +199,7 @@ static void unit_tests(){
     test_disasm_str2();
     test_disasm_ldr();
     test_disasm_ldr2();
+    test_disasm_ldrb();
 }
 
 void main(int argc, char *argv[]){
