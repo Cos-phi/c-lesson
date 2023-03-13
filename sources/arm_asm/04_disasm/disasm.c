@@ -24,12 +24,15 @@ int print_asm(int word){
             cl_printf("b [r15, #0x%d]\n",branch_offset); 
         }
         return 1;
-    }else if( 0x05800000 == (word & 0x0ff00000) ){ // 01IPUBWL = 01011000  L is 0? str: 1? ldr
+    }else if( 0x05800000 == (word & 0x0ff00000) ){ // 01IPUBWL = 01011000  L is 0?str: 1?ldr
         int destination_register = (word & 0x0000f000) >> 12; 
         cl_printf("str r%d, [r0]\n",destination_register);
         return 1;
-    }else if( 0xE59F0000 == (word & 0xffff0000) ){ // 01IPUBWL = 01011001  L is 0? str: 1? ldr
+    }else if( 0xE5900000 == (word & 0xfff00000) ){ // 01IPUBWL = 01011001  L is 0?str: 1?ldr
         cl_printf("ldr r%d, [pc, #%d]\n",(word & 0x0000f000)>>12,(word & 0x00000fff));
+        return 1;
+    }else if( 0xE5D00000 == (word & 0xfff00000) ){ // 01IPUBWL = 01011101 B is 1?byte: 0?word, L is 0?str: 1?ldr 
+        cl_printf("ldrb r%d, [%d]\n",(word & 0x0000f000)>>12,(word & 0x000f0000)>>16);
         return 1;
     }else{
         return 0;
