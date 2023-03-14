@@ -37,6 +37,9 @@ int print_asm(int word){
     }else if( 0xE2811001 == word ){ // add
         cl_printf("add r1, r1, #1\n");
         return 1;
+    }else if( 0xE3530000 == word ){ // cmp
+        cl_printf("cmp r3, #0\n");
+        return 1;
     }else{
         return 0;
     }
