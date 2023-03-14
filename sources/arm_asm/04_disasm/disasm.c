@@ -191,6 +191,20 @@ static void test_disasm_ldrb(){
     cl_clear_output();
 }
 
+static void test_disasm_add(){
+    int input = 0xE2811001; 
+    int expect = 1;
+    char* expect_str = "add r1, r1, #1\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -200,6 +214,7 @@ static void unit_tests(){
     test_disasm_ldr();
     test_disasm_ldr2();
     test_disasm_ldrb();
+    test_disasm_add();
 }
 
 void main(int argc, char *argv[]){
