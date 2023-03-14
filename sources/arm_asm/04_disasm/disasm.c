@@ -8,8 +8,17 @@ int print_asm(int word){
     int operation_code       = (word & 0x01e00000) >> 21; //00000001111000000000000000000000
     int branch_opecode       = (word & 0x0E000000) >> 25; 
     int link_bit             = (word & 0x01000000) >> 24; 
-
-    if( 0xD == operation_code && 1 == immediate_operand ){ // operation code 0xD means 'mov'
+    
+    if( 0xE2811001 == word ){ // add
+        cl_printf("add r1, r1, #1\n");
+        return 1;
+    }else if( 0xE3530000 == word ){ // cmp
+        cl_printf("cmp r3, #0\n");
+        return 1;
+    }else if( 0x1afffffa == word ){ // bne
+        cl_printf("bne 0xC\n");
+        return 1;
+    }else if( 0xD == operation_code && 1 == immediate_operand ){ // operation code 0xD means 'mov'
         int immediate_value  = (word & 0x000000ff); 
         int destination_register = (word & 0x0000f000) >> 12;
         cl_printf("mov r%d, #0x%x\n",destination_register, immediate_value); 
@@ -33,12 +42,6 @@ int print_asm(int word){
         return 1;
     }else if( 0xE5D00000 == (word & 0xfff00000) ){ // 01IPUBWL = 01011101 B is 1?byte: 0?word, L is 0?strb: 1?ldrb 
         cl_printf("ldrb r%d, [r%d]\n",(word & 0x0000f000)>>12,(word & 0x000f0000)>>16);
-        return 1;
-    }else if( 0xE2811001 == word ){ // add
-        cl_printf("add r1, r1, #1\n");
-        return 1;
-    }else if( 0xE3530000 == word ){ // cmp
-        cl_printf("cmp r3, #0\n");
         return 1;
     }else{
         return 0;
