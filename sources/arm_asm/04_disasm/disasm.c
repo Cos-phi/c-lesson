@@ -225,6 +225,20 @@ static void test_disasm_cmp(){
     cl_clear_output();
 }
 
+static void test_disasm_bne(){
+    int input = 0x1afffffa; 
+    int expect = 1;
+    char* expect_str = "bne 0xC\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -236,6 +250,7 @@ static void unit_tests(){
     test_disasm_ldrb();
     test_disasm_add();
     test_disasm_cmp();
+    test_disasm_bne();
 }
 
 void main(int argc, char *argv[]){
