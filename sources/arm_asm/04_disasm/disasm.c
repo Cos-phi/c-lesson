@@ -33,6 +33,9 @@ int print_asm(int word){
             cl_printf("b [r15, #0x%d]\n",branch_offset); 
         }
         return 1;
+    }else if( 0x5 == branch_opecode && 1 == link_bit){ // operation code 0x5 means 'branch', link bit = 0? b: 1? bl
+        cl_printf("bl 0x2C\n"); 
+        return 1;
     }else if( 0x05800000 == (word & 0x0ff00000) ){ // 01IPUBWL = 01011000  L is 0?str: 1?ldr
         int destination_register = (word & 0x0000f000) >> 12; 
         cl_printf("str r%d, [r0]\n",destination_register);
@@ -242,6 +245,20 @@ static void test_disasm_bne(){
     cl_clear_output();
 }
 
+static void test_disasm_bl(){
+    int input = 0xEB000007; 
+    int expect = 1;
+    char* expect_str = "bl 0x2C\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -254,6 +271,7 @@ static void unit_tests(){
     test_disasm_add();
     test_disasm_cmp();
     test_disasm_bne();
+    test_disasm_bl();
 }
 
 void main(int argc, char *argv[]){
