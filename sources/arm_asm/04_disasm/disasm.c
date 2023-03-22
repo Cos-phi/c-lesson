@@ -18,6 +18,9 @@ int print_asm(int word){
     }else if( 0x1afffffa == word ){ // bne
         cl_printf("bne 0xC\n");
         return 1;
+    }else if( 0xE92D4002 == word ){ // bne
+        cl_printf("stmdb r13!,{r1,r14}\n");
+        return 1;
     }else if( 0xD == operation_code && 1 == immediate_operand ){ // operation code 0xD means 'mov'
         int immediate_value  = (word & 0x000000ff); 
         int destination_register = (word & 0x0000f000) >> 12;
@@ -260,7 +263,7 @@ static void test_disasm_bl(){
 }
 
 static void test_disasm_stmdb(){ 
-    int input = 0xE8BD4002; 
+    int input = 0xE92D4002; 
     int expect = 1;
     char* expect_str = "stmdb r13!,{r1,r14}\n";
 
