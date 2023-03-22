@@ -18,8 +18,11 @@ int print_asm(int word){
     }else if( 0x1afffffa == word ){ // bne
         cl_printf("bne 0xC\n");
         return 1;
-    }else if( 0xE92D4002 == word ){ // bne
+    }else if( 0xE92D4002 == word ){ // stmdb
         cl_printf("stmdb r13!,{r1,r14}\n");
+        return 1;
+    }else if( 0xE8BD4002 == word ){ // ldmia
+        cl_printf("ldmia r13!,{r1,r14}\n");
         return 1;
     }else if( 0xD == operation_code && 1 == immediate_operand ){ // operation code 0xD means 'mov'
         int immediate_value  = (word & 0x000000ff); 
@@ -276,6 +279,20 @@ static void test_disasm_stmdb(){
     cl_clear_output();
 }
 
+static void test_disasm_ldmia(){ 
+    int input = 0xE8BD4002; 
+    int expect = 1;
+    char* expect_str = "ldmia r13!,{r1,r14}\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -290,6 +307,7 @@ static void unit_tests(){
     test_disasm_bne();
     test_disasm_bl();
     test_disasm_stmdb();
+    test_disasm_ldmia();
 }
 
 void main(int argc, char *argv[]){
