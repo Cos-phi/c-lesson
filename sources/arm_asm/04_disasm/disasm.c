@@ -24,11 +24,19 @@ int print_asm(int word){
     }else if( 0xE8BD4002 == word ){ // ldmia
         cl_printf("ldmia r13!,{r1,r14}\n");
         return 1;
-    }else if( 0xD == operation_code && 1 == immediate_operand ){ // operation code 0xD means 'mov'
-        int immediate_value  = (word & 0x000000ff); 
+    }else if( 0xD == operation_code ){ // operation code 0xD means 'mov'
         int destination_register = (word & 0x0000f000) >> 12;
-        cl_printf("mov r%d, #0x%x\n",destination_register, immediate_value); 
-        return 1;
+        if( 1 == immediate_operand ){ // operand 2 is an immediate value
+            int immediate_value  = (word & 0x000000ff); 
+            cl_printf("mov r%d, #0x%x\n",destination_register, immediate_value); 
+            return 1;
+        }else if( 0 == immediate_operand ){ // operand 2 is a register
+            int second_operand_register  = (word & 0x0000000f); 
+            cl_printf("mov r%d, r%d\n",destination_register, second_operand_register); 
+            return 1;
+        }else{
+            return 0;
+        }
     }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit = 0? b: 1? bl
         int branch_offset    = (word<<2) & 0x00ffffff; 
         if( 0x00800000 == (branch_offset & 0x00800000) ){
@@ -293,6 +301,20 @@ static void test_disasm_ldmia(){
     cl_clear_output();
 }
 
+static void test_disasm_mov2(){
+    int input = 0xE1A0F00E;
+    int expect = 1;
+    char* expect_str = "mov r15, r14\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -308,6 +330,7 @@ static void unit_tests(){
     test_disasm_bl();
     test_disasm_stmdb();
     test_disasm_ldmia();
+    test_disasm_mov2();
 }
 
 void main(int argc, char *argv[]){
