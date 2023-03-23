@@ -1,3 +1,3 @@
 #!/usr/bin/sh
-gcc *.c -o disasm
+gcc *.c -o disasm -Wall
 ./disasm

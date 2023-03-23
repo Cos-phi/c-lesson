@@ -362,7 +362,7 @@ static void unit_tests(){
     test_disasm_stmdb2();
 }
 
-void main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
     unit_tests();
     if(argc){
         read_binary_file(argv[1]);
