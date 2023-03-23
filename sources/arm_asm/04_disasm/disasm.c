@@ -21,11 +21,17 @@ int print_asm(int word){
         return 1;
     }else if( 0xE92D0000 == (word & 0xffff0000) ){ // stmdb
         int register_list = (word & 0x0000ffff);
+        int dummy = 0x103;
+        if(dummy&0x13){printf ("mue-\n");}
+        if(dummy&0x13==3){printf ("ume-\n");}
+        if((dummy&0x13)==3){printf ("umee-\n");}
+        if(3==dummy&0x13){printf ("meu-\n");}
+        if(3==(dummy&0x13)){printf ("meuu-\n");}
         cl_printf("stmdb r13!,{");
         for(int i=0; i<15; i++){
 //          printf("r%d:%x\n",i,register_list&0x0001); // register_list&0x0001 が1の時、↓のif文の内側に入ってほしいのですけれど、printfすると1になっているときでも
-//          if( 1 == register_list&0x0001 ){           // こうすると上手くいかなくて（なぜか最後r14だけif文の内側に入れますの）
-            if( register_list&0x0001 ){                // こうすると上手くいきますの
+          if( register_list&0x0001 == 1 ){           // こうすると上手くいかなくて（なぜか最後r14だけif文の内側に入れますの）
+//            if( register_list&0x0001 ){                // こうすると上手くいきますの
                 cl_printf("r%d",i);
                 register_list--;
                 if( 0 == register_list ){
