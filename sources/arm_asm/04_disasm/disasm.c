@@ -1,6 +1,7 @@
 #include "cl_utils.h"
 #include <errno.h>
 #include <sys/stat.h>
+#include <math.h>
 #define MAX_WORD_NUM 256
 
 int print_asm(int word){
@@ -18,8 +19,23 @@ int print_asm(int word){
     }else if( 0x1afffffa == word ){ // bne
         cl_printf("bne 0xC\n");
         return 1;
-    }else if( 0xE92D4002 == word ){ // stmdb
-        cl_printf("stmdb r13!,{r1,r14}\n");
+    }else if( 0xE92D0000 == (word & 0xffff0000) ){ // stmdb
+        int register_list = (word & 0x0000ffff);
+        cl_printf("stmdb r13!,{");
+        for(int i=0; i<15; i++){
+//          printf("r%d:%x\n",i,register_list&0x0001); // register_list&0x0001 が1の時、↓のif文の内側に入ってほしいのですけれど、printfすると1になっているときでも
+//          if( 1 == register_list&0x0001 ){           // こうすると上手くいかなくて（なぜか最後r14だけif文の内側に入れますの）
+            if( register_list&0x0001 ){                // こうすると上手くいきますの
+                cl_printf("r%d",i);
+                register_list--;
+                if( 0 == register_list ){
+                    break;
+                }
+                cl_printf(",");
+            }
+            register_list >>=1;
+        }
+        cl_printf("}\n");
         return 1;
     }else if( 0xE8BD4002 == word ){ // ldmia
         cl_printf("ldmia r13!,{r1,r14}\n");
@@ -315,6 +331,20 @@ static void test_disasm_mov2(){
     cl_clear_output();
 }
 
+static void test_disasm_stmdb2(){ 
+    int input = 0xE92D400b; 
+    int expect = 1;
+    char* expect_str = "stmdb r13!,{r0,r1,r3,r14}\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -331,6 +361,7 @@ static void unit_tests(){
     test_disasm_stmdb();
     test_disasm_ldmia();
     test_disasm_mov2();
+    test_disasm_stmdb2();
 }
 
 void main(int argc, char *argv[]){
