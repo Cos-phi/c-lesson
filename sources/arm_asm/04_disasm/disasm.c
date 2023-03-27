@@ -13,8 +13,10 @@ int print_asm(int word){
     if( 0xE2811001 == word ){ // add
         cl_printf("add r1, r1, #1\n");
         return 1;
-    }else if( 0xE3530000 == word ){ // cmp
-        cl_printf("cmp r3, #0\n");
+    }else if( 0xE3500000 == (word & 0xfff00000) ){ // cmp
+        int first_operand_register = (word & 0x000f0000) >> 16;
+        int immediate_value = word & 0x000000ff;
+        cl_printf("cmp r%d, #%d\n",first_operand_register,immediate_value);
         return 1;
     }else if( 0x1afffffa == word ){ // bne
         cl_printf("bne 0xC\n");
