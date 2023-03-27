@@ -37,8 +37,21 @@ int print_asm(int word){
         }
         cl_printf("}\n");
         return 1;
-    }else if( 0xE8BD4002 == word ){ // ldmia
-        cl_printf("ldmia r13!,{r1,r14}\n");
+    }else if( 0xE8BD0000 == (word & 0xffff0000) ){ // ldmia
+        int register_list = (word & 0x0000ffff);
+        cl_printf("ldmia r13!,{");
+        for(int i=0; i<15; i++){
+          if( (register_list&0x0001) == 1 ){ 
+                cl_printf("r%d",i);
+                register_list--;
+                if( 0 == register_list ){
+                    break;
+                }
+                cl_printf(",");
+            }
+            register_list >>=1;
+        }
+        cl_printf("}\n");
         return 1;
     }else if( 0xD == operation_code ){ // operation code 0xD means 'mov'
         int destination_register = (word & 0x0000f000) >> 12;
@@ -345,6 +358,20 @@ static void test_disasm_stmdb2(){
     cl_clear_output();
 }
 
+static void test_disasm_ldmia2(){ 
+    int input = 0xE8BD400B; 
+    int expect = 1;
+    char* expect_str = "ldmia r13!,{r0,r1,r3,r14}\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -362,6 +389,7 @@ static void unit_tests(){
     test_disasm_ldmia();
     test_disasm_mov2();
     test_disasm_stmdb2();
+    test_disasm_ldmia2();
 }
 
 int main(int argc, char *argv[]){
