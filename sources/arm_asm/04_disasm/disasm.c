@@ -21,6 +21,9 @@ int print_asm(int word){
     }else if( 0x1afffffa == word ){ // bne
         cl_printf("bne 0xC\n");
         return 1;
+    }else if( 0xE1a02331 == word ){ // bne
+        cl_printf("lsr r2, r1, r3\n");
+        return 1;
     }else if( 0xE92D0000 == (word & 0xffff0000) ){ // stmdb
         int register_list = (word & 0x0000ffff);
         cl_printf("stmdb r13!,{");
@@ -372,6 +375,20 @@ static void test_disasm_ldmia2(){
     cl_clear_output();
 }
 
+static void test_disasm_lsr(){ 
+    int input = 0xE1A02331; 
+    int expect = 1;
+    char* expect_str = "lsr r2, r1, r3\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -390,6 +407,7 @@ static void unit_tests(){
     test_disasm_mov2();
     test_disasm_stmdb2();
     test_disasm_ldmia2();
+    test_disasm_lsr();
 }
 
 int main(int argc, char *argv[]){
