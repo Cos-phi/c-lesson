@@ -10,12 +10,7 @@ int print_asm(int word){
     int branch_opecode       = (word & 0x0E000000) >> 25; 
     int link_bit             = (word & 0x01000000) >> 24; 
     
-    if( 0xE3500000 == (word & 0xfff00000) ){ // cmp
-        int first_operand_register = (word & 0x000f0000) >> 16;
-        int immediate_value = word & 0x000000ff;
-        cl_printf("cmp r%d, #%d\n",first_operand_register,immediate_value);
-        return 1;
-    }else if( 0x1afffffa == word ){ // bne
+    if( 0x1afffffa == word ){ // bne
         cl_printf("bne 0xC\n");
         return 1;
     }else if( 0xE1a02331 == word ){ // lsr
@@ -23,6 +18,14 @@ int print_asm(int word){
         return 1;
     }else if( 0xE202200F == word ){ // and
         cl_printf("and r2, r2, #15\n");
+        return 1;
+    }else if( 0xE2433004 == word ){ // sub
+        cl_printf("sub r3, r3, #4\n");
+        return 1;
+    }else if( 0xE3500000 == (word & 0xfff00000) ){ // cmp
+        int first_operand_register = (word & 0x000f0000) >> 16;
+        int immediate_value = word & 0x000000ff;
+        cl_printf("cmp r%d, #%d\n",first_operand_register,immediate_value);
         return 1;
     }else if( 0xE92D0000 == (word & 0xffff0000) ){ // stmdb
         int register_list = (word & 0x0000ffff);
@@ -69,7 +72,7 @@ int print_asm(int word){
         }else{
             return 0;
         }
-    }else if( 0x4 == operation_code ){ // add
+    }else if( 0x4 == operation_code ){ // operation code 0x4 means 'add'
         int destination_register   = (word & 0x0000f000) >> 12;
         int first_operand_register = (word & 0x000f0000) >> 16;
         int immediate_value  = (word & 0x000000ff); 
@@ -423,6 +426,20 @@ static void test_disasm_add2(){
     cl_clear_output();
 }
 
+static void test_disasm_sub(){
+    int input = 0xE2433004; 
+    int expect = 1;
+    char* expect_str = "sub r3, r3, #4\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -444,6 +461,7 @@ static void unit_tests(){
     test_disasm_lsr();
     test_disasm_and();
     test_disasm_add2();
+    test_disasm_sub();
 }
 
 int main(int argc, char *argv[]){
