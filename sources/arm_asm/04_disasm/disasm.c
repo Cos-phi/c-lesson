@@ -78,7 +78,7 @@ int print_asm(int word){
         int immediate_value  = (word & 0x000000ff); 
         cl_printf("add r%d, r%d, #%d\n",destination_register,first_operand_register,immediate_value);
         return 1;
-    }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit = 0? b: 1? bl
+    }else if( 0x5 == branch_opecode && 0 == link_bit){ // operation code 0x5 means 'branch', link bit = 0? b
         int branch_offset    = (word<<2) & 0x00ffffff; 
         if( 0x00800000 == (branch_offset & 0x00800000) ){
             branch_offset = branch_offset - 0x1000000;
@@ -88,8 +88,15 @@ int print_asm(int word){
             cl_printf("b [r15, #0x%d]\n",branch_offset); 
         }
         return 1;
-    }else if( 0x5 == branch_opecode && 1 == link_bit){ // operation code 0x5 means 'branch', link bit = 0? b: 1? bl
-        cl_printf("bl 0x2C\n"); 
+    }else if( 0x5 == branch_opecode && 1 == link_bit){ // operation code 0x5 means 'branch', link bit = 1? bl
+        int branch_offset    = (word<<2) & 0x00ffffff ; 
+        if( 0x00800000 == (branch_offset & 0x00800000) ){
+            branch_offset = branch_offset - 0x1000000;
+            branch_offset *= -1;
+            cl_printf("bl [r15, #0x-%x]\n",branch_offset); 
+        }else{
+            cl_printf("bl [r15, #0x%x]\n",branch_offset); 
+        }
         return 1;
     }else if( 0x05800000 == (word & 0x0ff00000) ){ // 01IPUBWL = 01011000  L is 0?str: 1?ldr
         int destination_register = (word & 0x0000f000) >> 12; 
@@ -303,7 +310,7 @@ static void test_disasm_bne(){
 static void test_disasm_bl(){
     int input = 0xEB000007; 
     int expect = 1;
-    char* expect_str = "bl 0x2C\n";
+    char* expect_str = "bl [r15, #0x1c]\n";
 
     cl_enable_buffer_mode();
     int actual = print_asm(input);
@@ -440,6 +447,21 @@ static void test_disasm_sub(){
     cl_clear_output();
 }
 
+static void test_disasm_bl2(){
+    int input = 0xEBFFFFF6; 
+    int expect = 1;
+    //char* expect_str = "bl 0x18\n";
+    char* expect_str = "bl [r15, #0x-28]\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -462,6 +484,7 @@ static void unit_tests(){
     test_disasm_and();
     test_disasm_add2();
     test_disasm_sub();
+    test_disasm_bl2();
 }
 
 int main(int argc, char *argv[]){
