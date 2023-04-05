@@ -21,7 +21,7 @@ int print_asm(int word){
     }else if( 0x1afffffa == word ){ // bne
         cl_printf("bne 0xC\n");
         return 1;
-    }else if( 0xE1a02331 == word ){ // bne
+    }else if( 0xE1a02331 == word ){ // lsr
         cl_printf("lsr r2, r1, r3\n");
         return 1;
     }else if( 0xE92D0000 == (word & 0xffff0000) ){ // stmdb
