@@ -62,7 +62,9 @@ int print_asm(int word){
     }else if( 0xD == operation_code ){ // operation code 0xD means 'mov'
         int destination_register = (word & 0x0000f000) >> 12;
         if( 1 == immediate_operand ){ // operand 2 is an immediate value
-            int immediate_value  = (word & 0x000000ff); 
+            int imm  = (word & 0x000000ff);
+            int rotate = ((word & 0x00000f00)>>8)*2;
+            int immediate_value = (imm >> rotate) | (imm << (32-rotate) ); 
             cl_printf("mov r%d, #0x%x\n",destination_register, immediate_value); 
             return 1;
         }else if( 0 == immediate_operand ){ // operand 2 is a register
@@ -462,6 +464,20 @@ static void test_disasm_bl2(){
     cl_clear_output();
 }
 
+static void test_disasm_mov3(){
+    int input = 0xE3A015D7;
+    int expect = 1;
+    char* expect_str = "mov r1, #0x35c00000\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -485,6 +501,7 @@ static void unit_tests(){
     test_disasm_add2();
     test_disasm_sub();
     test_disasm_bl2();
+    test_disasm_mov3();
 }
 
 int main(int argc, char *argv[]){
