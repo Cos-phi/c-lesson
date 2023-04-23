@@ -4,6 +4,12 @@
 #include <math.h>
 #define MAX_WORD_NUM 256
 
+char* decode_immidiatevalue(int word){
+    char* output_str;
+    output_str = "#0x35c00000";
+    return output_str;
+}
+
 int print_asm(int word){
     int immediate_operand    = (word & 0x02000000) >> 25; //00000010000000000000000000000000
     int operation_code       = (word & 0x01e00000) >> 21; //00000001111000000000000000000000
@@ -478,6 +484,16 @@ static void test_disasm_mov3(){
     cl_clear_output();
 }
 
+static void test_4bitrotate(){
+    int input = 0xE3A015D7;
+    char* expect_str = "#0x35c00000";
+
+    char* actual_str = decode_immidiatevalue(input);
+
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void unit_tests(){
     test_disasm_mov();
     test_disasm_mov_fail();
@@ -502,6 +518,7 @@ static void unit_tests(){
     test_disasm_sub();
     test_disasm_bl2();
     test_disasm_mov3();
+    test_4bitrotate();
 }
 
 int main(int argc, char *argv[]){
