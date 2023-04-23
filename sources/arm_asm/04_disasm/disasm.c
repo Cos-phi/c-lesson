@@ -1,12 +1,16 @@
 #include "cl_utils.h"
 #include <errno.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <math.h>
 #define MAX_WORD_NUM 256
 
 char* decode_immidiatevalue(int word){
-    char* output_str;
-    output_str = "#0x35c00000";
+    int imm  = (word & 0x000000ff);
+    int rotate = ((word & 0x00000f00)>>8)*2;
+    int immediate_value = (imm >> rotate) | (imm << (32-rotate) ); 
+    char* output_str = (char *)malloc(sizeof(char)*16);
+    sprintf(output_str,"#0x%x",immediate_value); 
     return output_str;
 }
 
