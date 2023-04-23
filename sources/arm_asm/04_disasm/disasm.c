@@ -5,7 +5,7 @@
 #include <math.h>
 #define MAX_WORD_NUM 256
 
-char* decode_immidiatevalue(int word){
+char* decode_immediatevalue(int word){
     int imm  = (word & 0x000000ff);
     int rotate = ((word & 0x00000f00)>>8)*2;
     int immediate_value = (imm >> rotate) | (imm << (32-rotate) ); 
@@ -72,10 +72,8 @@ int print_asm(int word){
     }else if( 0xD == operation_code ){ // operation code 0xD means 'mov'
         int destination_register = (word & 0x0000f000) >> 12;
         if( 1 == immediate_operand ){ // operand 2 is an immediate value
-            int imm  = (word & 0x000000ff);
-            int rotate = ((word & 0x00000f00)>>8)*2;
-            int immediate_value = (imm >> rotate) | (imm << (32-rotate) ); 
-            cl_printf("mov r%d, #0x%x\n",destination_register, immediate_value); 
+            char* immediate_value_str = decode_immediatevalue(word);
+            cl_printf("mov r%d, %s\n",destination_register, immediate_value_str); 
             return 1;
         }else if( 0 == immediate_operand ){ // operand 2 is a register
             int second_operand_register  = (word & 0x0000000f); 
@@ -492,7 +490,7 @@ static void test_4bitrotate(){
     int input = 0xE3A015D7;
     char* expect_str = "#0x35c00000";
 
-    char* actual_str = decode_immidiatevalue(input);
+    char* actual_str = decode_immediatevalue(input);
 
     assert(0 == strcmp(actual_str,expect_str));
     cl_clear_output();
