@@ -2,24 +2,26 @@
 #include <assert.h>
 #include <string.h>
 
-#define BUF_SIZE 256
+#define BUF_SIZE 64
 
 static char buf[BUF_SIZE];
 static int pos;
 static const char* input = "123\n4567\n89ABC\n";
 
 int cl_getline(char **out_buf){
-    input[pos];
-    // bufにつめる
-    
+    int len = 0;
+    while('\n' != input[pos]){
+        buf[len++] = input[pos++]; // bufにつめる
+    }
+    pos++;
+    buf[len] = '\0';
+
     *out_buf = buf;
     return len;
 }
 
-
 static void test_cl_getline(){
     //関数の外で、次のように宣言して代入済  static const char* input = "123\n4567\n89ABC\n";
-    
     char* expect_str1 = "123";
     char* expect_str2 = "4567";
     char* expect_str3 = "89ABC";
