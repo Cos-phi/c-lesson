@@ -20,6 +20,11 @@ int cl_getline(char **out_buf){
     return len;
 }
 
+void cl_getline_set_src(char* str){
+    input = str;
+    pos = 0;
+}
+
 static void test_cl_getline(){
     //関数の外で、次のように宣言して代入済  static const char* input = "123\n4567\n89ABC\n";
     char* expect_str1 = "123";
@@ -46,8 +51,29 @@ static void test_cl_getline(){
     assert(0 == strcmp(expect_str3, actual_str3));
 }
 
+static void test_cl_getline_set_src(){
+    char* input = "abc\n1234\n";
+    char* expect_str1 = "abc";
+    char* expect_str2 = "1234";
+    int expect_len1 = 3;
+    int expect_len2 = 4;
+     
+    char* actual_str1;
+    char* actual_str2;
+
+    cl_getline_set_src(input);
+    int actual_len1 = cl_getline(&actual_str1);
+    assert(expect_len1 == actual_len1);
+    assert(0 == strcmp(expect_str1, actual_str1));
+    
+    int actual_len2 = cl_getline(&actual_str2);
+    assert(expect_len2 == actual_len2);
+    assert(0 == strcmp(expect_str2, actual_str2));
+}
+
 static void unit_tests(){
     test_cl_getline();
+    test_cl_getline_set_src();
 }
 int main(){
     unit_tests();
