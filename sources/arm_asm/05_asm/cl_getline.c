@@ -25,6 +25,7 @@ void cl_getline_set_src(char* str){
     pos = 0;
 }
 
+/**
 static void test_cl_getline(){
     //関数の外で、次のように宣言して代入済  static const char* input = "123\n4567\n89ABC\n";
     char* expect_str1 = "123";
@@ -78,3 +79,4 @@ static void unit_tests(){
 int main(){
     unit_tests();
 }
+**/

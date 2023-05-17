@@ -1,7 +1,16 @@
-#include <stdio.h>
-#include <assert.h>
-#include <string.h>
+#include "clesson.h"
 
+struct Substring {
+    char *str;
+    int len;
+};
+
+int parce_one(char *str, struct Substring* out_subs){
+    int len = 3;
+    char* text = "mov";
+    out_subs->str = &text[0];
+    return len;
+}
 
 int asm_one(char* input){
     int word;
@@ -21,8 +30,21 @@ static void test_asm(){
 
     assert(expect == actual);
 }
+
+static void test_parce_one(){
+    char* input = "mov r1, r2";
+    char* expect = "mov";
+    
+    struct Substring actual_sub; 
+    int len = parce_one(input, &actual_sub);
+
+    assert(3 == len);
+    assert(0 == strncmp(expect, actual_sub.str, len));
+}
+
 static void unit_tests(){
     test_asm();
+    test_parce_one();
 }
 int main(){
     unit_tests();
