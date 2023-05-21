@@ -6,11 +6,35 @@ struct Substring {
 };
 
 int parce_one(char *str, struct Substring* out_subs){
+    int pos = 0;
+    while( ' ' == str[pos] ){ // 先頭の空白は無視
+        pos++;
+    }
+    if( '\0' == str[pos] ){ // 空白のまま終わった場合
+        out_subs->str = str;
+        out_subs->len = pos;
+        return pos;
+    }
 
-    //とりあえずハードコード
-    int word_len = 3;
-    out_subs->str = &str[0];
-    return word_len;
+    if( ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
+        out_subs->str = &str[pos];
+        int start_pos = pos;
+        while( EOF != str[pos++] ){
+            if( ('0'<=str[pos] && '9'>=str[pos]) || ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
+                continue;
+            }else if( ' ' == str[pos]){
+                out_subs->len = (pos - start_pos);
+                return pos;
+            }else if( ':' == str[pos]){
+                pos++;
+                out_subs->len = (pos - start_pos);
+                return pos;
+            }else{
+                return -1;
+            }
+        } 
+    }
+    return -1;
 }
 
 int asm_one(char* input){
@@ -33,19 +57,79 @@ static void test_asm(){
 }
 
 static void test_parce_one(){
-    char* input = "mov r1, r2\n";
-    char* expect = "mov";
+    char* input = "mov r1, r2";
+    char* expect_str = "mov";
+    int expect_pos = 3;
+    int expect_len = 3;
     
     struct Substring actual_sub; 
-    int len = parce_one(input, &actual_sub);
+    int pos = parce_one(input, &actual_sub);
 
-    assert(3 == len);
-    assert(0 == strncmp(expect, actual_sub.str, len));
+    assert(expect_pos == pos);
+    assert(expect_len == actual_sub.len);
+    assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
 }
+
+static void test_parce_one_indent(){
+    char* input = "    mov r1, r2";
+    char* expect_str = "mov";
+    int expect_len = 3;
+    int expect_pos = 7;
+    
+    struct Substring actual_sub; 
+    int pos = parce_one(input, &actual_sub);
+
+    assert(expect_pos == pos);
+    assert(expect_len == actual_sub.len);
+    assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
+}
+
+static void test_parce_one_label(){
+    char* input = "loop:";
+    char* expect_str = "loop:";
+    int expect_len = 5;
+    int expect_pos = 5;
+    
+    struct Substring actual_sub; 
+    int pos = parce_one(input, &actual_sub);
+
+    assert(expect_pos == pos);
+    assert(expect_len == actual_sub.len);
+    assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
+}
+
+static void test_parce_one_error(){
+    char* input = "abc{}";
+    int expect_pos = -1;
+    
+    struct Substring actual_sub; 
+    int pos = parce_one(input, &actual_sub);
+
+    assert(expect_pos == pos);
+}
+
+static void test_parce_one_nothing(){
+    char* input = "    ";
+    char* expect_str = "    ";
+    int expect_len = 4;
+    int expect_pos = 4;
+    
+    struct Substring actual_sub; 
+    int pos = parce_one(input, &actual_sub);
+
+    assert(expect_pos == pos);
+    assert(expect_len == actual_sub.len);
+    assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
+}
+
 
 static void unit_tests(){
     test_asm();
     test_parce_one();
+    test_parce_one_indent();
+    test_parce_one_label();
+    test_parce_one_error();
+    test_parce_one_nothing();
 }
 int main(){
     unit_tests();
