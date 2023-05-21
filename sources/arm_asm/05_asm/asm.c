@@ -6,13 +6,10 @@ struct Substring {
 };
 
 int parce_one(char *str, struct Substring* out_subs){
-    char* text;
-    int len = cl_getline(&text);
-    assert( -1 != len );
 
     //とりあえずハードコード
     int word_len = 3;
-    out_subs->str = &text[0];
+    out_subs->str = &str[0];
     return word_len;
 }
 
@@ -39,10 +36,8 @@ static void test_parce_one(){
     char* input = "mov r1, r2\n";
     char* expect = "mov";
     
-    cl_getline_set_src(input);
     struct Substring actual_sub; 
-    char* str = "???";
-    int len = parce_one(str, &actual_sub);
+    int len = parce_one(input, &actual_sub);
 
     assert(3 == len);
     assert(0 == strncmp(expect, actual_sub.str, len));
