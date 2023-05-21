@@ -6,8 +6,10 @@ struct Substring {
 };
 
 int parce_one(char *str, struct Substring* out_subs){
+    char* text;
+    cl_getline(&text);
+
     int len = 3;
-    char* text = "mov";
     out_subs->str = &text[0];
     return len;
 }
@@ -32,9 +34,10 @@ static void test_asm(){
 }
 
 static void test_parce_one(){
-    char* input = "mov r1, r2";
+    char* input = "mov r1, r2\n";
     char* expect = "mov";
     
+    cl_getline_set_src(input);
     struct Substring actual_sub; 
     int len = parce_one(input, &actual_sub);
 
