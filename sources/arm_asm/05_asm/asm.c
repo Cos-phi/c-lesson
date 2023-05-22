@@ -1,5 +1,7 @@
 #include "clesson.h"
-//testtest
+
+#define PARCE_FAIL -1
+
 struct Substring {
     char *str;
     int len;
@@ -7,11 +9,29 @@ struct Substring {
 
 int parce_register(char* str, int* out_register){
     int pos = 0;
-
-    //ハードコード
-    pos = 6;
-    *out_register = 4;
-
+    while( ' ' == str[pos] ){ // 先頭の空白は無視
+        pos++;
+    }
+    if( 'r' == str[pos] ){
+        pos++;
+        if( ('0'==str[pos]) ){
+            *out_register = 0;
+            pos++;
+        }else if( ('2'<=str[pos] && '9'>=str[pos]) ){
+            *out_register = str[pos]-'0';
+            pos++;
+        }else if( '1' == str[pos]){
+            pos++;
+            if( '0'<=str[pos] && '5'>=str[pos] ){
+                *out_register = 10 + str[pos] - '0';
+                pos++;
+            }else{
+                *out_register = 1;
+            }
+        }else{
+            return PARCE_FAIL;
+        }
+    }
     return pos;
 }
 
@@ -40,11 +60,11 @@ int parce_one(char *str, struct Substring* out_subs){
                 out_subs->len = (pos - start_pos);
                 return pos;
             }else{
-                return -1;
+                return PARCE_FAIL;
             }
         } 
     }
-    return -1;
+    return PARCE_FAIL;
 }
 
 int asm_one(char* input){
@@ -110,7 +130,7 @@ static void test_parce_one_label(){
 
 static void test_parce_one_error(){
     char* input = "abc{}";
-    int expect_pos = -1;
+    int expect_pos = PARCE_FAIL;
     
     struct Substring actual_sub; 
     int pos = parce_one(input, &actual_sub);
@@ -144,7 +164,22 @@ static void test_parce_register(){
     read_len = parce_register(input, &actual_r1);
     
     assert(expect_r1 == actual_r1);
-    assert(6 == read_len);
+    assert(3 == read_len);
+}
+
+static void test_parce_register2(){
+    char* input = "mov r12, r2";
+    int expect_r1 = 12;
+    
+    struct Substring actual_sub; 
+    int read_len = parce_one(input, &actual_sub);
+    input += read_len;
+
+    int actual_r1;
+    read_len = parce_register(input, &actual_r1);
+    
+    assert(expect_r1 == actual_r1);
+    assert(4 == read_len);
 }
 
 static void unit_tests(){
@@ -155,6 +190,7 @@ static void unit_tests(){
     test_parce_one_error();
     test_parce_one_nothing();
     test_parce_register();
+    test_parce_register2();
 }
 int main(){
     unit_tests();
