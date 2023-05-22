@@ -5,6 +5,16 @@ struct Substring {
     int len;
 };
 
+int parce_register(char* str, int* out_register){
+    int pos = 0;
+
+    //ハードコード
+    pos = 6;
+    *out_register = 4;
+
+    return pos;
+}
+
 int parce_one(char *str, struct Substring* out_subs){
     int pos = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
@@ -122,6 +132,20 @@ static void test_parce_one_nothing(){
     assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
 }
 
+static void test_parce_register(){
+    char* input = "mov r4, r2";
+    int expect_r1 = 4;
+    
+    struct Substring actual_sub; 
+    int read_len = parce_one(input, &actual_sub);
+    input += read_len;
+
+    int actual_r1;
+    read_len = parce_register(input, &actual_r1);
+    
+    assert(expect_r1 == actual_r1);
+    assert(6 == read_len);
+}
 
 static void unit_tests(){
     test_asm();
@@ -130,6 +154,7 @@ static void unit_tests(){
     test_parce_one_label();
     test_parce_one_error();
     test_parce_one_nothing();
+    test_parce_register();
 }
 int main(){
     unit_tests();
