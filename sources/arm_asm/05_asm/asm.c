@@ -14,13 +14,10 @@ int parce_register(char* str, int* out_register){
     }
     if( 'r' == str[pos] ){
         pos++;
-        if( ('0'==str[pos]) ){
-            *out_register = 0;
-            pos++;
-        }else if( ('2'<=str[pos] && '9'>=str[pos]) ){
+        if( '0'==str[pos]||('2'<=str[pos] && '9'>=str[pos]) ){
             *out_register = str[pos]-'0';
             pos++;
-        }else if( '1' == str[pos]){
+        }else if( '1' == str[pos] ){
             pos++;
             if( '0'<=str[pos] && '5'>=str[pos] ){
                 *out_register = 10 + str[pos] - '0';
