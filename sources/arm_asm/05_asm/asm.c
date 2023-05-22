@@ -31,6 +31,8 @@ int parce_register(char* str, int* out_register){
         }else{
             return PARCE_FAIL;
         }
+    }else{
+        return PARCE_FAIL;
     }
     return pos;
 }
