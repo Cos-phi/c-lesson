@@ -1,5 +1,5 @@
 #include "clesson.h"
-//test
+//testtest
 struct Substring {
     char *str;
     int len;
