@@ -7,6 +7,19 @@ struct Substring {
     int len;
 };
 
+int skip_comma(char* str){
+    int pos = 0;
+    while( ' ' == str[pos] ){ // 先頭の空白は無視
+        pos++;
+    }
+    if( ',' == str[pos] ){
+        pos++;
+        return pos;
+    }else{
+        return PARCE_FAIL;
+    }
+}
+
 int parce_register(char* str, int* out_register){
     int pos = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
@@ -181,6 +194,30 @@ static void test_parce_register2(){
     assert(4 == read_len);
 }
 
+static void test_parce_register_and_skip_comma(){
+    char* input = "mov r12, r3";
+    int expect_r1 = 12;
+    int expect_r2 = 3;
+    
+    struct Substring actual_sub; 
+    int read_len = parce_one(input, &actual_sub);
+    input += read_len;
+
+    int actual_r1;
+    read_len = parce_register(input, &actual_r1);
+    input += read_len;
+    
+    read_len = skip_comma(input);
+    input += read_len;
+
+    int actual_r2;
+    read_len = parce_register(input, &actual_r2);
+    
+    assert(expect_r1 == actual_r1);
+    assert(expect_r2 == actual_r2);
+    assert(3 == read_len);
+}
+
 static void unit_tests(){
     test_asm();
     test_parce_one();
@@ -190,6 +227,7 @@ static void unit_tests(){
     test_parce_one_nothing();
     test_parce_register();
     test_parce_register2();
+    test_parce_register_and_skip_comma();
 }
 int main(){
     unit_tests();
