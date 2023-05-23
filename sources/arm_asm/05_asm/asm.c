@@ -1,5 +1,5 @@
 #include "clesson.h"
-#define PARCE_FAIL -1
+#define PARSE_FAIL -1
 
 struct Substring {
     char *str;
@@ -23,11 +23,11 @@ int skip_comma(char* str){
         pos++;
         return pos;
     }else{
-        return PARCE_FAIL;
+        return PARSE_FAIL;
     }
 }
 
-int parce_register(char* str, int* out_register){
+int parse_register(char* str, int* out_register){
     int pos = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
         pos++;
@@ -46,15 +46,15 @@ int parce_register(char* str, int* out_register){
                 *out_register = 1;
             }
         }else{
-            return PARCE_FAIL;
+            return PARSE_FAIL;
         }
     }else{
-        return PARCE_FAIL;
+        return PARSE_FAIL;
     }
     return pos;
 }
 
-int parce_one(char *str, struct Substring* out_subs){
+int parse_one(char *str, struct Substring* out_subs){
     int pos = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
         pos++;
@@ -79,11 +79,11 @@ int parce_one(char *str, struct Substring* out_subs){
                 out_subs->len = (pos - start_pos);
                 return pos;
             }else{
-                return PARCE_FAIL;
+                return PARSE_FAIL;
             }
         } 
     }
-    return PARCE_FAIL;
+    return PARSE_FAIL;
 }
 
 int asm_one(char* input){
@@ -107,120 +107,120 @@ static void test_asm(){
     assert(expect == actual);
 }
 
-static void test_parce_one(){
+static void test_parse_one(){
     char* input = "mov r1, r2";
     char* expect_str = "mov";
     int expect_pos = 3;
     int expect_len = 3;
     
     struct Substring actual_sub; 
-    int pos = parce_one(input, &actual_sub);
+    int pos = parse_one(input, &actual_sub);
 
     assert(expect_pos == pos);
     assert(expect_len == actual_sub.len);
     assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
 }
 
-static void test_parce_one_indent(){
+static void test_parse_one_indent(){
     char* input = "    mov r1, r2";
     char* expect_str = "mov";
     int expect_len = 3;
     int expect_pos = 7;
     
     struct Substring actual_sub; 
-    int pos = parce_one(input, &actual_sub);
+    int pos = parse_one(input, &actual_sub);
 
     assert(expect_pos == pos);
     assert(expect_len == actual_sub.len);
     assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
 }
 
-static void test_parce_one_label(){
+static void test_parse_one_label(){
     char* input = "loop:";
     char* expect_str = "loop:";
     int expect_len = 5;
     int expect_pos = 5;
     
     struct Substring actual_sub; 
-    int pos = parce_one(input, &actual_sub);
+    int pos = parse_one(input, &actual_sub);
 
     assert(expect_pos == pos);
     assert(expect_len == actual_sub.len);
     assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
 }
 
-static void test_parce_one_error(){
+static void test_parse_one_error(){
     char* input = "abc{}";
-    int expect_pos = PARCE_FAIL;
+    int expect_pos = PARSE_FAIL;
     
     struct Substring actual_sub; 
-    int pos = parce_one(input, &actual_sub);
+    int pos = parse_one(input, &actual_sub);
 
     assert(expect_pos == pos);
 }
 
-static void test_parce_one_nothing(){
+static void test_parse_one_nothing(){
     char* input = "    ";
     char* expect_str = "    ";
     int expect_len = 4;
     int expect_pos = 4;
     
     struct Substring actual_sub; 
-    int pos = parce_one(input, &actual_sub);
+    int pos = parse_one(input, &actual_sub);
 
     assert(expect_pos == pos);
     assert(expect_len == actual_sub.len);
     assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
 }
 
-static void test_parce_register(){
+static void test_parse_register(){
     char* input = "mov r4, r2";
     int expect_r1 = 4;
     
     struct Substring actual_sub; 
-    int read_len = parce_one(input, &actual_sub);
+    int read_len = parse_one(input, &actual_sub);
     input += read_len;
 
     int actual_r1;
-    read_len = parce_register(input, &actual_r1);
+    read_len = parse_register(input, &actual_r1);
     
     assert(expect_r1 == actual_r1);
     assert(3 == read_len);
 }
 
-static void test_parce_register2(){
+static void test_parse_register2(){
     char* input = "mov r12, r2";
     int expect_r1 = 12;
     
     struct Substring actual_sub; 
-    int read_len = parce_one(input, &actual_sub);
+    int read_len = parse_one(input, &actual_sub);
     input += read_len;
 
     int actual_r1;
-    read_len = parce_register(input, &actual_r1);
+    read_len = parse_register(input, &actual_r1);
     
     assert(expect_r1 == actual_r1);
     assert(4 == read_len);
 }
 
-static void test_parce_register_and_skip_comma(){
+static void test_parse_register_and_skip_comma(){
     char* input = "mov r12, r3";
     int expect_r1 = 12;
     int expect_r2 = 3;
     
     struct Substring actual_sub; 
-    int read_len = parce_one(input, &actual_sub);
+    int read_len = parse_one(input, &actual_sub);
     input += read_len;
 
     int actual_r1;
-    read_len = parce_register(input, &actual_r1);
+    read_len = parse_register(input, &actual_r1);
     input += read_len;
     
     read_len = skip_comma(input);
     input += read_len;
 
     int actual_r2;
-    read_len = parce_register(input, &actual_r2);
+    read_len = parse_register(input, &actual_r2);
     
     assert(expect_r1 == actual_r1);
     assert(expect_r2 == actual_r2);
@@ -229,14 +229,14 @@ static void test_parce_register_and_skip_comma(){
 
 static void unit_tests(){
     test_asm();
-    test_parce_one();
-    test_parce_one_indent();
-    test_parce_one_label();
-    test_parce_one_error();
-    test_parce_one_nothing();
-    test_parce_register();
-    test_parce_register2();
-    test_parce_register_and_skip_comma();
+    test_parse_one();
+    test_parse_one_indent();
+    test_parse_one_label();
+    test_parse_one_error();
+    test_parse_one_nothing();
+    test_parse_register();
+    test_parse_register2();
+    test_parse_register_and_skip_comma();
 }
 int main(){
     unit_tests();
