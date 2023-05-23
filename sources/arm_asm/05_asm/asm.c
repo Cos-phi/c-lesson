@@ -1,5 +1,4 @@
 #include "clesson.h"
-
 #define PARCE_FAIL -1
 
 struct Substring {
@@ -7,6 +6,14 @@ struct Substring {
     int len;
 };
 
+struct Emitter {
+    int* words;
+    int pos;
+};
+
+struct Emitter emitter;
+emitter.words = (int*)malloc(100*1000); // 100KByte確保
+ 
 int skip_comma(char* str){
     int pos = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
@@ -87,6 +94,8 @@ int asm_one(char* input){
     }else{
         return 0;
     }
+
+
 }
 
 static void test_asm(){
