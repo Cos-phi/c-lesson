@@ -12,7 +12,7 @@ struct Emitter {
 };
 
 struct Emitter emitter;
-emitter.words = (int*)malloc(100*1000); // 100KByte確保
+//emitter.words = (int*)malloc(100*1000); // 100KByte確保
  
 int skip_comma(char* str){
     int pos = 0;
@@ -71,19 +71,21 @@ int parse_one(char *str, struct Substring* out_subs){
         while( EOF != str[pos++] ){
             if( ('0'<=str[pos] && '9'>=str[pos]) || ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
                 continue;
-            }else if( ' ' == str[pos]){
-                out_subs->len = (pos - start_pos);
-                return pos;
-            }else if( ':' == str[pos]){
-                pos++;
+            }else if( (' ' == str[pos]) || (':' == str[pos]) ){
                 out_subs->len = (pos - start_pos);
                 return pos;
             }else{
                 return PARSE_FAIL;
             }
         } 
+    }else if( ':' == str[pos]){
+        out_subs->str = &str[pos];
+        pos++;
+        out_subs->len = pos;
+        return pos;
+    }else{
+        return PARSE_FAIL;
     }
-    return PARSE_FAIL;
 }
 
 int asm_one(char* input){
@@ -136,17 +138,18 @@ static void test_parse_one_indent(){
 }
 
 static void test_parse_one_label(){
-    char* input = "loop:";
-    char* expect_str = "loop:";
-    int expect_len = 5;
-    int expect_pos = 5;
+    char* input = "  loop:";
+    char* expect_str1 = "loop";
+    char* expect_str2 = ":";
     
-    struct Substring actual_sub; 
-    int pos = parse_one(input, &actual_sub);
+    struct Substring actual_sub1; 
+    int read_len = parse_one(input, &actual_sub1);
+    input += read_len;
+    struct Substring actual_sub2; 
+    read_len = parse_one(input, &actual_sub2);
 
-    assert(expect_pos == pos);
-    assert(expect_len == actual_sub.len);
-    assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
+    assert(0 == strncmp(expect_str1, actual_sub1.str, actual_sub1.len));
+    assert(0 == strncmp(expect_str2, actual_sub2.str, actual_sub2.len));
 }
 
 static void test_parse_one_error(){
