@@ -67,17 +67,16 @@ int parse_one(char *str, struct Substring* out_subs){
 
     if( ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
         out_subs->str = &str[pos];
-        int start_pos = pos;
-        while( EOF != str[pos++] ){
-            if( ('0'<=str[pos] && '9'>=str[pos]) || ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
-                continue;
-            }else if( (' ' == str[pos]) || (':' == str[pos]) ){
-                out_subs->len = (pos - start_pos);
-                return pos;
-            }else{
-                return PARSE_FAIL;
-            }
+        int start_pos = pos++;
+        while( ('0'<=str[pos] && '9'>=str[pos]) || ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
+            pos++;
         } 
+        if( (' ' == str[pos]) || (':' == str[pos]) ){
+            out_subs->len = (pos - start_pos);
+            return pos;
+        }else{
+            return PARSE_FAIL;
+        }
     }else if( ':' == str[pos]){
         out_subs->str = &str[pos];
         pos++;
