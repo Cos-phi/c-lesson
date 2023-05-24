@@ -11,9 +11,13 @@ struct Emitter {
     int pos;
 };
 
-struct Emitter emitter;
-//emitter.words = (int*)malloc(100*1000); // 100KByte確保
- 
+int array[250]; 
+struct Emitter emitter = {array,0};
+
+void emit_word(struct Emitter* emitter, int oneword){
+    emitter->words[++(emitter->pos)] = oneword;
+}
+
 int skip_comma(char* str){
     int pos = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
