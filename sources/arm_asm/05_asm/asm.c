@@ -92,7 +92,6 @@ int parse_one(char *str, struct Substring* out_subs){
 }
 
 int asm_one(char* input){
-    
     struct Substring OpCode; 
     int read_len = parse_one(input, &OpCode);
     input += read_len;
@@ -109,8 +108,8 @@ int asm_one(char* input){
     
     if( 0 == strncmp("mov", OpCode.str, OpCode.len) ){
         int word = 0xE1A00000;
-        word |=    0x00001000;
-        word |=    0x00000002;
+        word |= Rd<<12; 
+        word |= Rm;  
         return word;
     }else{
         return 0;
