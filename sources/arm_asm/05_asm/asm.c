@@ -92,15 +92,29 @@ int parse_one(char *str, struct Substring* out_subs){
 }
 
 int asm_one(char* input){
-    int word;
-    if (0 == strcmp("mov r1, r2" ,input)){
-        word = 0xE1A01002;
+    
+    struct Substring OpCode; 
+    int read_len = parse_one(input, &OpCode);
+    input += read_len;
+
+    int Rd; // Destination Register
+    read_len = parse_register(input, &Rd);
+    input += read_len;
+    
+    read_len = skip_comma(input);
+    input += read_len;
+
+    int Rm; // 2nd operand register
+    read_len = parse_register(input, &Rm);
+    
+    if( 0 == strncmp("mov", OpCode.str, OpCode.len) ){
+        int word = 0xE1A00000;
+        word |=    0x00001000;
+        word |=    0x00000002;
         return word;
     }else{
         return 0;
     }
-
-
 }
 
 static void test_asm(){
