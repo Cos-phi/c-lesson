@@ -3,10 +3,11 @@
 #include <string.h>
 
 #define BUF_SIZE 64
+#define S_SIZE 512
 
 static char buf[BUF_SIZE];
-static int pos;
-static const char* input = "123\n4567\n89ABC\n";
+static int pos = 0;
+static char* input = "123\n4567\n89ABC\n";
 
 int cl_getline(char **out_buf){
     int len = 0;

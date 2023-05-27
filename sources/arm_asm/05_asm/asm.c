@@ -265,4 +265,15 @@ static void unit_tests(){
 }
 int main(){
     unit_tests();
+
+    char* input = "mov r1, r2\nmov r3, r4";
+    cl_getline_set_src(input);
+    char* buf;
+    while( -1 != cl_getline(&buf) ){
+        int oneword = asm_one(buf);
+        emit_word(&g_emitter, oneword);
+    }
+    hex_dump(&g_emitter);
+    return 0;
 }
+
