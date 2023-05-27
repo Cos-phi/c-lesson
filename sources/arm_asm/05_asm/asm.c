@@ -12,10 +12,16 @@ struct Emitter {
 };
 
 int array[250]; 
-struct Emitter emitter = {array,0};
+struct Emitter g_emitter = {array,0};
 
 void emit_word(struct Emitter* emitter, int oneword){
     emitter->words[++(emitter->pos)] = oneword;
+}
+
+void hex_dump(struct Emitter* emitter){
+    for (size_t i = 0; i < emitter->pos; i++){
+        printf("0x%x\n",emitter->words[i]);
+    }
 }
 
 int skip_comma(char* str){
