@@ -25,6 +25,24 @@ void hex_dump(struct Emitter* emitter){
     }
 }
 
+int parse_immediate_value(char* str){
+    int pos = 0;
+    int value = 0;
+    while( ' ' == str[pos] ){ // 先頭の空白は無視
+        pos++;
+    }
+    if( ('#' == str[pos++]) && ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
+        while( (str[pos] >= '0')&&(str[pos] <= '9') ){
+            value *= 16;
+            value += str[pos] - '0';
+            pos++;
+        };// まずは数字で決め打ち
+        return value;
+    }else{
+        return PARSE_FAIL;
+    }
+}
+
 int is_register(char* str){
     if( 'r' == str[0] ){
         return 1;
@@ -275,6 +293,15 @@ static void test_is_register(){
     assert(expect2 == actual2);
 }
 
+static void test_parse_immediate_value(){
+    char* input = " #0x68 ";
+    int expect = 0x68;
+    
+    int actual = parse_immediate_value(input);
+
+    assert(expect == actual);
+}
+
 static void unit_tests(){
     test_asm();
     test_parse_one();
@@ -286,6 +313,7 @@ static void unit_tests(){
     test_parse_register2();
     test_parse_register_and_skip_comma();
     test_is_register();
+    test_parse_immediate_value();
 }
 
 int main(){
