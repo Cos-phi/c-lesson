@@ -15,12 +15,13 @@ int array[250];
 struct Emitter g_emitter = {array,0};
 
 void emit_word(struct Emitter* emitter, int oneword){
-    emitter->words[++(emitter->pos)] = oneword;
+    emitter->words[emitter->pos] = oneword;
+    emitter->pos++;
 }
 
 void hex_dump(struct Emitter* emitter){
-    for (size_t i = 0; i < emitter->pos; i++){
-        printf("0x%x\n",emitter->words[i]);
+    for (int i = 0; i < emitter->pos; i++){
+        printf("0x%X\n",emitter->words[i]);
     }
 }
 
@@ -267,15 +268,14 @@ static void unit_tests(){
 int main(){
     unit_tests();
 
-    char* input = "mov r1, r2\nmov r3, r4";
+    char* input = "mov r1, r2\nmov r3, r4\nmov r5, r6\n";
     cl_getline_set_src(input);
     char* buf;
     while( -1 != cl_getline(&buf) ){
         int oneword = asm_one(buf);
-        printf("%x\n",oneword);
         emit_word(&g_emitter, oneword);
     }
-    //hex_dump(&g_emitter);
+    hex_dump(&g_emitter);
     return 0;
 }
 
