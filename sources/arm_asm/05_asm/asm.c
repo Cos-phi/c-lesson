@@ -263,10 +263,11 @@ static void unit_tests(){
     test_parse_register2();
     test_parse_register_and_skip_comma();
 }
+
 int main(){
     unit_tests();
 
-    char* input = "mov r1, r2\nmov r3, r4";
+    char* input = "mov r1, r2\nmov r3, r5";
     cl_getline_set_src(input);
     char* buf;
     while( -1 != cl_getline(&buf) ){
