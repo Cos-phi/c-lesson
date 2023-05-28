@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "./"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"sstream": "c",
+			"string.h": "c",
+			"stdio.h": "c"
+		}
+	}
+}
