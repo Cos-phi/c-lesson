@@ -25,6 +25,14 @@ void hex_dump(struct Emitter* emitter){
     }
 }
 
+int is_register(char* str){
+    if( 'r' == str[0] ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
 int skip_comma(char* str){
     int pos = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
@@ -253,6 +261,20 @@ static void test_parse_register_and_skip_comma(){
     assert(3 == read_len);
 }
 
+static void test_is_register(){
+    char* input1 = "mov"; // is not register
+    int expect1 = 0;
+
+    char* input2 = "r2"; // is register
+    int expect2 = 1;
+
+    int actual1 = is_register(input1);
+    int actual2 = is_register(input2);
+
+    assert(expect1 == actual1);
+    assert(expect2 == actual2);
+}
+
 static void unit_tests(){
     test_asm();
     test_parse_one();
@@ -263,12 +285,13 @@ static void unit_tests(){
     test_parse_register();
     test_parse_register2();
     test_parse_register_and_skip_comma();
+    test_is_register();
 }
 
 int main(){
     unit_tests();
 
-    char* input = "mov r1, r2\nmov r3, r4\nmov r5, r6\n";
+    char* input = "mov r1, r2\nmov r3, r4\nmov r5, r6\n"; // expect: 0xE1A01002 0xE1A03004 0xE1A05006
     cl_getline_set_src(input);
     char* buf;
     while( -1 != cl_getline(&buf) ){
