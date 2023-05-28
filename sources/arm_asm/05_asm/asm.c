@@ -167,7 +167,6 @@ static void test_asm(){
 
     assert(expect == actual);
 }
-
 static void test_parse_one(){
     char* input = "mov r1, r2";
     char* expect_str = "mov";
@@ -181,7 +180,6 @@ static void test_parse_one(){
     assert(expect_len == actual_sub.len);
     assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
 }
-
 static void test_parse_one_indent(){
     char* input = "    mov r1, r2";
     char* expect_str = "mov";
@@ -195,7 +193,6 @@ static void test_parse_one_indent(){
     assert(expect_len == actual_sub.len);
     assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
 }
-
 static void test_parse_one_label(){
     char* input = "  loop:";
     char* expect_str1 = "loop";
@@ -210,7 +207,6 @@ static void test_parse_one_label(){
     assert(0 == strncmp(expect_str1, actual_sub1.str, actual_sub1.len));
     assert(0 == strncmp(expect_str2, actual_sub2.str, actual_sub2.len));
 }
-
 static void test_parse_one_error(){
     char* input = "abc{}";
     int expect_pos = PARSE_FAIL;
@@ -220,7 +216,6 @@ static void test_parse_one_error(){
 
     assert(expect_pos == pos);
 }
-
 static void test_parse_one_nothing(){
     char* input = "    ";
     char* expect_str = "    ";
@@ -234,7 +229,6 @@ static void test_parse_one_nothing(){
     assert(expect_len == actual_sub.len);
     assert(0 == strncmp(expect_str, actual_sub.str, actual_sub.len));
 }
-
 static void test_parse_register(){
     char* input = "mov r4, r2";
     int expect_r1 = 4;
@@ -249,7 +243,6 @@ static void test_parse_register(){
     assert(expect_r1 == actual_r1);
     assert(3 == read_len);
 }
-
 static void test_parse_register2(){
     char* input = "mov r12, r2";
     int expect_r1 = 12;
@@ -264,7 +257,6 @@ static void test_parse_register2(){
     assert(expect_r1 == actual_r1);
     assert(4 == read_len);
 }
-
 static void test_parse_register_and_skip_comma(){
     char* input = "mov r12, r3";
     int expect_r1 = 12;
@@ -288,7 +280,6 @@ static void test_parse_register_and_skip_comma(){
     assert(expect_r2 == actual_r2);
     assert(3 == read_len);
 }
-
 static void test_is_register(){
     char* input1 = "mov"; // is not register
     int expect1 = 0;
@@ -302,7 +293,6 @@ static void test_is_register(){
     assert(expect1 == actual1);
     assert(expect2 == actual2);
 }
-
 static void test_parse_immediate_value(){
     char* input = " #0x68 ";
     int expect = 0x68;
@@ -311,7 +301,6 @@ static void test_parse_immediate_value(){
 
     assert(expect == actual);
 }
-
 static void test_parse_immediate_value2(){
     char* input = " #0xA8 ";
     int expect = 0xA8;
