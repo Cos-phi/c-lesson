@@ -54,7 +54,12 @@ int parse_immediate_value(char* str){
 }
 
 int is_register(char* str){
-    if( 'r' == str[0] ){
+    int pos = 0;
+    while( ' ' == str[pos] ){ // 先頭の空白は無視
+        pos++;
+    }
+
+    if( 'r' == str[pos] ){
         return 1;
     }else{
         return 0;
@@ -146,20 +151,31 @@ int asm_one(char* input){
     read_len = skip_comma(input);
     input += read_len;
 
-    int Rm; // 2nd operand register
-    read_len = parse_register(input, &Rm);
-    
+    int immediate_op;
+    int operand2 = 0;
+    if(1 == is_register(input)){
+        immediate_op = 0;
+        int Rm; // 2nd operand register
+        read_len = parse_register(input, &Rm);
+        operand2 |= Rm;
+    }else{
+        immediate_op = 1;
+        int immediate_value; // unsigned 8bit immediate value ※まだローテートには対応してません
+        immediate_value = parse_immediate_value(input);
+        operand2 |= immediate_value;
+    }
     if( 0 == strncmp("mov", OpCode.str, OpCode.len) ){
         int word = 0xE1A00000;
         word |= Rd<<12; 
-        word |= Rm;  
+        word |= immediate_op<<25;
+        word |= operand2;  
         return word;
     }else{
         return 0;
     }
 }
 
-static void test_asm(){
+static void test_asm_mov(){
     char* input = "mov r1, r2";
     int expect = 0xE1A01002; // 1110 00 0 1101 0 0000 0001 00000000 0002
      
@@ -284,7 +300,7 @@ static void test_is_register(){
     char* input1 = "mov"; // is not register
     int expect1 = 0;
 
-    char* input2 = "r2"; // is register
+    char* input2 = " r2"; // is register
     int expect2 = 1;
 
     int actual1 = is_register(input1);
@@ -309,9 +325,17 @@ static void test_parse_immediate_value2(){
     
     assert(expect == actual);
 }
+static void test_asm_mov_immediate_value(){
+    char* input = "mov r1, #0x68";
+    int expect = 0xE3A01068; // 1110 00 1 1101 0 0000 0001 0000 01101000
+     
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
 
 static void unit_tests(){
-    test_asm();
+    test_asm_mov();
     test_parse_one();
     test_parse_one_indent();
     test_parse_one_label();
@@ -323,6 +347,8 @@ static void unit_tests(){
     test_is_register();
     test_parse_immediate_value();
     test_parse_immediate_value2();
+    test_asm_mov();
+    test_asm_mov_immediate_value();
 }
 
 int main(){
