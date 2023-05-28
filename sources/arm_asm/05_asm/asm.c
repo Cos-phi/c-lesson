@@ -32,11 +32,21 @@ int parse_immediate_value(char* str){
         pos++;
     }
     if( ('#' == str[pos++]) && ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
-        while( (str[pos] >= '0')&&(str[pos] <= '9') ){
-            value *= 16;
-            value += str[pos] - '0';
+        while(1){
+            if( (str[pos] >= '0')&&(str[pos] <= '9') ){
+                value *= 16;
+                value += str[pos] - '0';
+            }else if( (str[pos] >= 'A')&&(str[pos] <= 'F') ){
+                value *= 16;
+                value += str[pos] - 'A' + 0xA;
+            }else if( (str[pos] >= 'a')&&(str[pos] <= 'f') ){
+                value *= 16;
+                value += str[pos] - 'a' + 0xA;
+            }else{
+                break;
+            }
             pos++;
-        };// まずは数字で決め打ち
+        };
         return value;
     }else{
         return PARSE_FAIL;
@@ -296,9 +306,18 @@ static void test_is_register(){
 static void test_parse_immediate_value(){
     char* input = " #0x68 ";
     int expect = 0x68;
-    
+
     int actual = parse_immediate_value(input);
 
+    assert(expect == actual);
+}
+
+static void test_parse_immediate_value2(){
+    char* input = " #0xA8 ";
+    int expect = 0xA8;
+
+    int actual = parse_immediate_value(input);
+    
     assert(expect == actual);
 }
 
@@ -314,6 +333,7 @@ static void unit_tests(){
     test_parse_register_and_skip_comma();
     test_is_register();
     test_parse_immediate_value();
+    test_parse_immediate_value2();
 }
 
 int main(){
