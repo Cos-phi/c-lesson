@@ -365,7 +365,7 @@ static void test_asm_mov_immediate_value(){
 }
 static void test_parse_raw_value(){
     char* input = ".raw 0x12345678";
-    int expect = 12345689;
+    int expect = 0x12345678;
     
     struct Substring actual_sub; 
     int read_len = parse_one(input, &actual_sub);
@@ -391,6 +391,7 @@ static void unit_tests(){
     test_parse_immediate_value2();
     test_asm_mov();
     test_asm_mov_immediate_value();
+    test_parse_raw_value();
 }
 
 int main(){
