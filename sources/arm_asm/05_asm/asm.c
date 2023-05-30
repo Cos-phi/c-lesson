@@ -25,6 +25,34 @@ void hex_dump(struct Emitter* emitter){
     }
 }
 
+int parse_raw_value(char* str, int* out_value){
+    int pos = 0;
+    *out_value = 0;
+    while( ' ' == str[pos] ){ // 先頭の空白は無視
+        pos++;
+    }
+    if( ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
+        while(1){
+            if( (str[pos] >= '0')&&(str[pos] <= '9') ){
+                *out_value *= 16;
+                *out_value += str[pos] - '0';
+            }else if( (str[pos] >= 'A')&&(str[pos] <= 'F') ){
+                *out_value *= 16;
+                *out_value += str[pos] - 'A' + 0xA;
+            }else if( (str[pos] >= 'a')&&(str[pos] <= 'f') ){
+                *out_value *= 16;
+                *out_value += str[pos] - 'a' + 0xA;
+            }else{
+                break;
+            }
+            pos++;
+        };
+        return pos;
+    }else{
+        return PARSE_FAIL;
+    }
+}
+
 int parse_immediate_value(char* str){
     int pos = 0;
     int value = 0;
@@ -333,7 +361,19 @@ static void test_asm_mov_immediate_value(){
 
     assert(expect == actual);
 }
+static void test_parse_raw_value(){
+    char* input = ".raw 0x12345678";
+    int expect = 12345689;
+    
+    struct Substring actual_sub; 
+    int read_len = parse_one(input, &actual_sub);
+    input += read_len;
 
+    int actual;
+    read_len = parse_raw_value(input,&actual);
+    
+    assert(expect == actual);
+}
 static void unit_tests(){
     test_asm_mov();
     test_parse_one();
