@@ -157,7 +157,7 @@ int parse_one(char *str, struct Substring* out_subs){
         }else{
             return PARSE_FAIL;
         }
-    }else if( ':' == str[pos]){
+    }else if( (':' == str[pos])||('.' == str[pos])){
         out_subs->str = &str[pos];
         pos++;
         out_subs->len = pos;
@@ -367,12 +367,16 @@ static void test_parse_raw_value(){
     char* input = ".raw 0x12345678";
     int expect = 0x12345678;
     
-    struct Substring actual_sub; 
-    int read_len = parse_one(input, &actual_sub);
+    struct Substring actual_sub1; 
+    int read_len = parse_one(input, &actual_sub1); // .
+    input += read_len;
+
+    struct Substring actual_sub2; 
+    read_len = parse_one(input, &actual_sub2); // raw
     input += read_len;
 
     int actual;
-    read_len = parse_raw_value(input,&actual);
+    read_len = parse_raw_value(input,&actual); //
     
     assert(expect == actual);
 }
