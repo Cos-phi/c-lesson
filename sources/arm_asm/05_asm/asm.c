@@ -53,29 +53,29 @@ int parse_raw_value(char* str, int* out_value){
     }
 }
 
-int parse_immediate_value(char* str){
+int parse_immediate_value(char* str, int* out_value){
     int pos = 0;
-    int value = 0;
+    *out_value = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
         pos++;
     }
     if( ('#' == str[pos++]) && ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
         while(1){
             if( (str[pos] >= '0')&&(str[pos] <= '9') ){
-                value *= 16;
-                value += str[pos] - '0';
+                *out_value *= 16;
+                *out_value += str[pos] - '0';
             }else if( (str[pos] >= 'A')&&(str[pos] <= 'F') ){
-                value *= 16;
-                value += str[pos] - 'A' + 0xA;
+                *out_value *= 16;
+                *out_value += str[pos] - 'A' + 0xA;
             }else if( (str[pos] >= 'a')&&(str[pos] <= 'f') ){
-                value *= 16;
-                value += str[pos] - 'a' + 0xA;
+                *out_value *= 16;
+                *out_value += str[pos] - 'a' + 0xA;
             }else{
                 break;
             }
             pos++;
         };
-        return value;
+        return pos;
     }else{
         return PARSE_FAIL;
     }
@@ -189,7 +189,7 @@ int asm_one(char* input){
     }else{
         immediate_op = 1;
         int immediate_value; // unsigned 8bit immediate value ※まだローテートには対応してません
-        immediate_value = parse_immediate_value(input);
+        read_len = parse_immediate_value(input, &immediate_value);
         operand2 |= immediate_value;
     }
     if( 0 == strncmp("mov", OpCode.str, OpCode.len) ){
@@ -341,7 +341,8 @@ static void test_parse_immediate_value(){
     char* input = " #0x68 ";
     int expect = 0x68;
 
-    int actual = parse_immediate_value(input);
+    int actual;
+    int read_len = parse_immediate_value(input, &actual);
 
     assert(expect == actual);
 }
@@ -349,7 +350,8 @@ static void test_parse_immediate_value2(){
     char* input = " #0xA8 ";
     int expect = 0xA8;
 
-    int actual = parse_immediate_value(input);
+    int actual;
+    int read_len = parse_immediate_value(input, &actual);
     
     assert(expect == actual);
 }
