@@ -171,33 +171,41 @@ int asm_one(char* input){
     struct Substring OpCode; 
     int read_len = parse_one(input, &OpCode);
     input += read_len;
-
-    int Rd; // Destination Register
-    read_len = parse_register(input, &Rd);
-    input += read_len;
-    
-    read_len = skip_comma(input);
-    input += read_len;
-
-    int immediate_op;
-    int operand2 = 0;
-    if(1 == is_register(input)){
-        immediate_op = 0;
-        int Rm; // 2nd operand register
-        read_len = parse_register(input, &Rm);
-        operand2 |= Rm;
-    }else{
-        immediate_op = 1;
-        int immediate_value; // unsigned 8bit immediate value ※まだローテートには対応してません
-        read_len = parse_immediate_value(input, &immediate_value);
-        operand2 |= immediate_value;
-    }
     if( 0 == strncmp("mov", OpCode.str, OpCode.len) ){
+        int Rd; // Destination Register
+        read_len = parse_register(input, &Rd);
+        input += read_len;
+        
+        read_len = skip_comma(input);
+        input += read_len;
+
+        int immediate_op;
+        int operand2 = 0;
+        if(1 == is_register(input)){
+            immediate_op = 0;
+            int Rm; // 2nd operand register
+            read_len = parse_register(input, &Rm);
+            operand2 |= Rm;
+        }else{
+            immediate_op = 1;
+            int immediate_value; // unsigned 8bit immediate value ※まだローテートには対応してません
+            read_len = parse_immediate_value(input, &immediate_value);
+            operand2 |= immediate_value;
+        }
         int word = 0xE1A00000;
         word |= Rd<<12; 
         word |= immediate_op<<25;
         word |= operand2;  
         return word;
+    }else if( 0 == strncmp(".", OpCode.str, OpCode.len)){
+        struct Substring substr_raw; 
+        read_len = parse_one(input, &substr_raw); // raw
+        assert( 0 == strncmp("raw",substr_raw.str, substr_raw.len) );
+        input += read_len;
+
+        int raw_value;
+        read_len = parse_raw_value(input,&raw_value); 
+        return raw_value;
     }else{
         return 0;
     }
@@ -380,6 +388,15 @@ static void test_parse_raw_value(){
     
     assert(expect == actual);
 }
+static void test_asm_raw(){
+    char* input = ".raw 0x12345678";
+    int expect = 0x12345678; 
+     
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
+
 static void unit_tests(){
     test_asm_mov();
     test_parse_one();
@@ -396,6 +413,7 @@ static void unit_tests(){
     test_asm_mov();
     test_asm_mov_immediate_value();
     test_parse_raw_value();
+    test_asm_raw();
 }
 
 int main(){
