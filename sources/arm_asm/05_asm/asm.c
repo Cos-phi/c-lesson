@@ -206,6 +206,9 @@ int asm_one(char* input){
         int raw_value;
         read_len = parse_raw_value(input,&raw_value); 
         return raw_value;
+    }else  if( 0 == strncmp("ldr", OpCode.str, OpCode.len)){
+        int word = 0xE59F0038;
+        return word;
     }else{
         return 0;
     }
@@ -392,6 +395,14 @@ static void test_asm_raw(){
     char* input = ".raw 0x12345678";
     int expect = 0x12345678; 
      
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
+static void test_asm_ldr(){
+    char* input = "ldr, [r15, #0x30]";
+    int expect = 0xE59F0030;
+
     int actual = asm_one(input);
 
     assert(expect == actual);
