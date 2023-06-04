@@ -25,6 +25,19 @@ void hex_dump(struct Emitter* emitter){
     }
 }
 
+int is_sbracket(char* str){
+    int pos = 0;
+    while( ' ' == str[pos] ){ // 先頭の空白は無視
+        pos++;
+    }
+
+    if( ('[' == str[pos])||(']' == str[pos]) ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
 int parse_raw_value(char* str, int* out_value){
     int pos = 0;
     *out_value = 0;
@@ -407,6 +420,19 @@ static void test_asm_ldr(){
 
     assert(expect == actual);
 }
+static void test_is_sbracket(){
+    char* input1 = " ["; // is not register
+    int expect1 = 1;
+
+    char* input2 = "r2"; // is register
+    int expect2 = 0;
+
+    int actual1 = is_sbracket(input1);
+    int actual2 = is_sbracket(input2);
+
+    assert(expect1 == actual1);
+    assert(expect2 == actual2);
+}
 
 static void unit_tests(){
     test_asm_mov();
@@ -425,6 +451,7 @@ static void unit_tests(){
     test_asm_mov_immediate_value();
     test_parse_raw_value();
     test_asm_raw();
+    test_is_sbracket();
 }
 
 int main(){
