@@ -107,6 +107,19 @@ int is_register(char* str){
     }
 }
 
+int skip_sbracket(char* str){
+    int pos = 0;
+    while( ' ' == str[pos] ){ // 先頭の空白は無視
+        pos++;
+    }
+    if( ('[' == str[pos])||(']' == str[pos]) ){
+        pos++;
+        return pos;
+    }else{
+        return PARSE_FAIL;
+    }
+}
+
 int skip_comma(char* str){
     int pos = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
@@ -220,7 +233,35 @@ int asm_one(char* input){
         read_len = parse_raw_value(input,&raw_value); 
         return raw_value;
     }else  if( 0 == strncmp("ldr", OpCode.str, OpCode.len)){
-        int word = 0xE59F0038;
+        int Rd; // Destination Register
+        read_len = parse_register(input, &Rd);
+        input += read_len;
+        
+        read_len = skip_comma(input);
+        input += read_len;
+        
+        assert(1 == is_sbracket(input));
+        read_len = skip_sbracket(input);
+        input += read_len;
+        
+        assert(1 == is_register(input));
+        int Rn; // Base Register
+        read_len = parse_register(input, &Rn);
+        input += read_len;
+        
+        read_len = skip_comma(input);
+        input += read_len;
+
+        int immediate_value;
+        read_len = parse_immediate_value(input, &immediate_value);
+        input += read_len;
+        
+        int word = 0xE5900000;
+        word |= Rd<<12;
+        word |= Rn<<16;
+        word |= immediate_value;
+
+        //word = 0xE59F0038; // 1110 01 0 1 1001 1111 0000 000000111000   ldr, [r15, #0x38]
         return word;
     }else{
         return 0;
@@ -413,18 +454,18 @@ static void test_asm_raw(){
     assert(expect == actual);
 }
 static void test_asm_ldr(){
-    char* input = "ldr, [r15, #0x30]";
-    int expect = 0xE59F0030;
+    char* input = "ldr r0,[r15, #0x38]";
+    int expect = 0xE59F0038;
 
     int actual = asm_one(input);
 
     assert(expect == actual);
 }
 static void test_is_sbracket(){
-    char* input1 = " ["; // is not register
+    char* input1 = " ["; 
     int expect1 = 1;
 
-    char* input2 = "r2"; // is register
+    char* input2 = "r2"; 
     int expect2 = 0;
 
     int actual1 = is_sbracket(input1);
@@ -451,6 +492,7 @@ static void unit_tests(){
     test_asm_mov_immediate_value();
     test_parse_raw_value();
     test_asm_raw();
+    test_asm_ldr();
     test_is_sbracket();
 }
 
