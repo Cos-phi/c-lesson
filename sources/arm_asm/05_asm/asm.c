@@ -259,21 +259,28 @@ int asm_one(char* input){
         read_len = parse_register(input, &Rn);
         input += read_len;
         
-        read_len = skip_comma(input);
-        input += read_len;
+        int word;
+        if( 1 == is_sbracket(input) ){
+            word = 0xE7100000 ;//xE71F0001; // 1110 01 1 1 0001 1111 0000 00000000 0001
+            word |= Rn<<16;
+            word |= Rd; //Rm
+        }else{
+            read_len = skip_comma(input);
+            input += read_len;
 
-        int immediate_value;
-        read_len = parse_immediate_value(input, &immediate_value);
-        input += read_len;
-    
-        int word = 0xE5900000;
+            int immediate_value;
+            read_len = parse_immediate_value(input, &immediate_value);
+            input += read_len;
 
-        if( 0 > immediate_value ){ //負の場合
-            word &= 0xFF7FFFFF;
+            word = 0xE5900000;
+
+            if( 0 > immediate_value ){ //負の場合
+                word &= 0xFF7FFFFF;
+            }
+            word |= Rn<<16;
+            word |= Rd<<12;
+            word |= abs(immediate_value);
         }
-        word |= Rd<<12;
-        word |= Rn<<16;
-        word |= abs(immediate_value);
         return word;
     }else{
         return 0;
@@ -497,7 +504,15 @@ static void test_is_sbracket(){
 }
 static void test_asm_ldr2(){
     char* input = "ldr r1,[r15, #-0x30]";
-    int expect = 0xE51F1030; //word = 0xE59F0038; // 1110 01 0 1 0001 1111 0000 000000110000   ldr, [r15, #-0x30]
+    int expect = 0xE51F1030; //word = 0xE59F0038; // 1110 01 0 1 0001 1111 0000 000000110000   ldr r1, [r15, #-0x30]
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
+static void test_asm_ldr3(){
+    char* input = "ldr r1,[r15]";
+    int expect = 0xE71F0001; // 1110 01 1 1 0001 1111 0000 00000000 0001
 
     int actual = asm_one(input);
 
@@ -525,6 +540,7 @@ static void unit_tests(){
     test_asm_ldr();
     test_is_sbracket();
     test_asm_ldr2();
+    test_asm_ldr3();
 }
 
 int main(){
