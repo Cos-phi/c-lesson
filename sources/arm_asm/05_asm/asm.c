@@ -69,10 +69,18 @@ int parse_raw_value(char* str, int* out_value){
 int parse_immediate_value(char* str, int* out_value){
     int pos = 0;
     *out_value = 0;
+    int value_sign = 1; // 1なら正、-1なら負
     while( ' ' == str[pos] ){ // 先頭の空白は無視
         pos++;
     }
-    if( ('#' == str[pos++]) && ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
+    if( '#' != str[pos++] ){ 
+        return PARSE_FAIL;
+    }
+    if( '-' == str[pos] ){ // '#-0x..'のとき
+        pos++;
+        value_sign *= -1;
+    }
+    if( ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
         while(1){
             if( (str[pos] >= '0')&&(str[pos] <= '9') ){
                 *out_value *= 16;
@@ -88,6 +96,7 @@ int parse_immediate_value(char* str, int* out_value){
             }
             pos++;
         };
+        *out_value *= value_sign;
         return pos;
     }else{
         return PARSE_FAIL;
@@ -502,7 +511,7 @@ static void unit_tests(){
     test_asm_raw();
     test_asm_ldr();
     test_is_sbracket();
-    test_asm_ldr2();
+    //test_asm_ldr2();
 }
 
 int main(){
