@@ -264,10 +264,15 @@ int asm_one(char* input){
         int immediate_value;
         read_len = parse_immediate_value(input, &immediate_value);
         input += read_len;
-        
+        /*
         int word = 0xE5100000;
-        if ( 0 < immediate_value ){
+        if( 0 < immediate_value ){
             word |= 0x00800000;
+        }
+        */
+        int word = 0xE5900000;
+        if( 0 > immediate_value ){ //負の場合
+            word &= 0xFF7FFFFF;
         }
         word |= Rd<<12;
         word |= Rn<<16;
