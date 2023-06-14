@@ -265,10 +265,13 @@ int asm_one(char* input){
         read_len = parse_immediate_value(input, &immediate_value);
         input += read_len;
         
-        int word = 0xE5900000;
+        int word = 0xE5100000;
+        if ( 0 < immediate_value ){
+            word |= 0x00800000;
+        }
         word |= Rd<<12;
         word |= Rn<<16;
-        word |= immediate_value;
+        word |= abs(immediate_value);
 
         //word = 0xE59F0038; // 1110 01 0 1 1001 1111 0000 000000111000   ldr, [r15, #0x38]
         return word;
@@ -429,6 +432,15 @@ static void test_parse_immediate_value2(){
     
     assert(expect == actual);
 }
+static void test_parse_immediate_value3(){
+    char* input = " #-0xA8 ";
+    int expect = -0xA8;
+
+    int actual;
+    int read_len = parse_immediate_value(input, &actual);
+    
+    assert(expect == actual);
+}
 static void test_asm_mov_immediate_value(){
     char* input = "mov r1, #0x68";
     int expect = 0xE3A01068; // 1110 00 1 1101 0 0000 0001 0000 01101000
@@ -505,13 +517,14 @@ static void unit_tests(){
     test_is_register();
     test_parse_immediate_value();
     test_parse_immediate_value2();
+    test_parse_immediate_value3();
     test_asm_mov();
     test_asm_mov_immediate_value();
     test_parse_raw_value();
     test_asm_raw();
     test_asm_ldr();
     test_is_sbracket();
-    //test_asm_ldr2();
+    test_asm_ldr2();
 }
 
 int main(){
