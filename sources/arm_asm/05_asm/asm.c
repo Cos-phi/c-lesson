@@ -76,7 +76,7 @@ int parse_immediate_value(char* str, int* out_value){
     if( '#' != str[pos++] ){ 
         return PARSE_FAIL;
     }
-    if( '-' == str[pos] ){ // '#-0x..'のとき
+    if( '-' == str[pos] ){ // '#-0x..'（即値が負）のとき
         pos++;
         value_sign *= -1;
     }
@@ -105,10 +105,9 @@ int parse_immediate_value(char* str, int* out_value){
 
 int is_register(char* str){
     int pos = 0;
-    while( ' ' == str[pos] ){ // 先頭の空白は無視
+    while( ' ' == str[pos] ){ 
         pos++;
     }
-
     if( 'r' == str[pos] ){
         return 1;
     }else{
@@ -118,7 +117,7 @@ int is_register(char* str){
 
 int skip_sbracket(char* str){
     int pos = 0;
-    while( ' ' == str[pos] ){ // 先頭の空白は無視
+    while( ' ' == str[pos] ){ 
         pos++;
     }
     if( ('[' == str[pos])||(']' == str[pos]) ){
@@ -131,7 +130,7 @@ int skip_sbracket(char* str){
 
 int skip_comma(char* str){
     int pos = 0;
-    while( ' ' == str[pos] ){ // 先頭の空白は無視
+    while( ' ' == str[pos] ){
         pos++;
     }
     if( ',' == str[pos] ){
@@ -223,7 +222,7 @@ int asm_one(char* input){
             operand2 |= Rm;
         }else{
             immediate_op = 1;
-            int immediate_value; // unsigned 8bit immediate value ※まだローテートには対応してません
+            int immediate_value; // unsigned 8bit immediate value ※ローテートには対応してません
             read_len = parse_immediate_value(input, &immediate_value);
             assert( 0 < immediate_value );
             operand2 |= immediate_value;
@@ -260,11 +259,11 @@ int asm_one(char* input){
         input += read_len;
         
         int word;
-        if( 1 == is_sbracket(input) ){
+        if( 1 == is_sbracket(input) ){ // offset is a register
             word = 0xE7100000 ;//xE71F0001; // 1110 01 1 1 0001 1111 0000 00000000 0001
             word |= Rn<<16;
-            word |= Rd; //Rm
-        }else{
+            word |= Rd; // Offset register
+        }else{ // offset is an immediate value
             read_len = skip_comma(input);
             input += read_len;
 
@@ -504,7 +503,7 @@ static void test_is_sbracket(){
 }
 static void test_asm_ldr2(){
     char* input = "ldr r1,[r15, #-0x30]";
-    int expect = 0xE51F1030; //word = 0xE59F0038; // 1110 01 0 1 0001 1111 0000 000000110000   ldr r1, [r15, #-0x30]
+    int expect = 0xE51F1030; // 1110 01 0 1 0001 1111 0000 000000110000 
 
     int actual = asm_one(input);
 
