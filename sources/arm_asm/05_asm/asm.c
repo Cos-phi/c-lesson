@@ -225,6 +225,7 @@ int asm_one(char* input){
             immediate_op = 1;
             int immediate_value; // unsigned 8bit immediate value ※まだローテートには対応してません
             read_len = parse_immediate_value(input, &immediate_value);
+            assert( 0 < immediate_value );
             operand2 |= immediate_value;
         }
         int word = 0xE1A00000;
@@ -264,21 +265,15 @@ int asm_one(char* input){
         int immediate_value;
         read_len = parse_immediate_value(input, &immediate_value);
         input += read_len;
-        /*
-        int word = 0xE5100000;
-        if( 0 < immediate_value ){
-            word |= 0x00800000;
-        }
-        */
+    
         int word = 0xE5900000;
+
         if( 0 > immediate_value ){ //負の場合
             word &= 0xFF7FFFFF;
         }
         word |= Rd<<12;
         word |= Rn<<16;
         word |= abs(immediate_value);
-
-        //word = 0xE59F0038; // 1110 01 0 1 1001 1111 0000 000000111000   ldr, [r15, #0x38]
         return word;
     }else{
         return 0;
