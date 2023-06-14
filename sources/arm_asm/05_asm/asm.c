@@ -454,8 +454,8 @@ static void test_asm_raw(){
     assert(expect == actual);
 }
 static void test_asm_ldr(){
-    char* input = "ldr r0,[r15, #0x38]";
-    int expect = 0xE59F0038;
+    char* input = "ldr r1,[r15, #0x30]";
+    int expect = 0xE59F1030;
 
     int actual = asm_one(input);
 
@@ -473,6 +473,14 @@ static void test_is_sbracket(){
 
     assert(expect1 == actual1);
     assert(expect2 == actual2);
+}
+static void test_asm_ldr2(){
+    char* input = "ldr r1,[r15, #-0x30]";
+    int expect = 0xE51F1030; //word = 0xE59F0038; // 1110 01 0 1 0001 1111 0000 000000110000   ldr, [r15, #-0x30]
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
 }
 
 static void unit_tests(){
@@ -494,6 +502,7 @@ static void unit_tests(){
     test_asm_raw();
     test_asm_ldr();
     test_is_sbracket();
+    test_asm_ldr2();
 }
 
 int main(){
