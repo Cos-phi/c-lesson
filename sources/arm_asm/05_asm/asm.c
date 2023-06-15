@@ -517,6 +517,14 @@ static void test_asm_ldr3(){
 
     assert(expect == actual);
 }
+static void test_asm_str(){
+    char* input = "str r0,[r1]";
+    int expect = 0xE5810000; // 1110 01 1 0 1000 0001 0000 00000000 0000
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
 
 static void unit_tests(){
     test_asm_mov();
@@ -540,6 +548,7 @@ static void unit_tests(){
     test_is_sbracket();
     test_asm_ldr2();
     test_asm_ldr3();
+    test_asm_str();
 }
 
 int main(){
