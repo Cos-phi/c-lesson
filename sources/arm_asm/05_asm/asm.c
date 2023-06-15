@@ -241,7 +241,7 @@ int asm_one(char* input){
         int raw_value;
         read_len = parse_raw_value(input,&raw_value); 
         return raw_value;
-    }else  if( 0 == strncmp("ldr", OpCode.str, OpCode.len)){
+    }else  if( (0 == strncmp("ldr", OpCode.str, OpCode.len)) ||  (0 == strncmp("str", OpCode.str, OpCode.len)) ){
         int Rd; // Destination Register
         read_len = parse_register(input, &Rd);
         input += read_len;
@@ -259,8 +259,13 @@ int asm_one(char* input){
         input += read_len;
         
         int word;
-        if( 1 == is_sbracket(input) ){ 
+        if( 0 == strncmp("ldr", OpCode.str, OpCode.len) ) {
             word = 0xE5900000 ; // 1110 01 1 0 1001 0000 0000 00000000 0000
+        }else{ // 'str' == OpCode
+            word = 0xE5800000 ; // 1110 01 1 0 1000 0000 0000 00000000 0000
+        }
+
+        if( 1 == is_sbracket(input) ){ 
             word |= Rn<<16;
             word |= Rd<<12; 
         }else{ // offset is an immediate value
@@ -270,8 +275,6 @@ int asm_one(char* input){
             int immediate_value;
             read_len = parse_immediate_value(input, &immediate_value);
             input += read_len;
-
-            word = 0xE5900000;
 
             if( 0 > immediate_value ){ //負の場合
                 word &= 0xFF7FFFFF;
