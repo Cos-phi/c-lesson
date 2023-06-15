@@ -259,10 +259,10 @@ int asm_one(char* input){
         input += read_len;
         
         int word;
-        if( 1 == is_sbracket(input) ){ // offset is a register
-            word = 0xE7100000 ;//xE71F0001; // 1110 01 1 1 0001 1111 0000 00000000 0001
+        if( 1 == is_sbracket(input) ){ 
+            word = 0xE5900000 ; // 1110 01 1 0 1001 0000 0000 00000000 0000
             word |= Rn<<16;
-            word |= Rd; // Offset register
+            word |= Rd<<12; 
         }else{ // offset is an immediate value
             read_len = skip_comma(input);
             input += read_len;
@@ -511,7 +511,7 @@ static void test_asm_ldr2(){
 }
 static void test_asm_ldr3(){
     char* input = "ldr r1,[r15]";
-    int expect = 0xE71F0001; // 1110 01 1 1 0001 1111 0000 00000000 0001
+    int expect = 0xE59F1000; // 1110 01 1 0 1001 1111 0001 00000000 0000
 
     int actual = asm_one(input);
 
