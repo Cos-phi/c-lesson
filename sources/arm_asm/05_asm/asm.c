@@ -34,9 +34,7 @@ int skip_whitespace(char* str){
 }
 
 int is_sbracket(char* str){
-    int pos = 0;
-    pos = skip_whitespace(str);
-
+    int pos = skip_whitespace(str);
     if( ('[' == str[pos])||(']' == str[pos]) ){
         return 1;
     }else{
@@ -45,8 +43,7 @@ int is_sbracket(char* str){
 }
 
 int parse_raw_value(char* str, int* out_value){ //Ex 0x123
-    int pos = 0;
-    pos = skip_whitespace(str);
+    int pos = skip_whitespace(str);
     *out_value = 0;
     if( ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
         while(1){
@@ -71,8 +68,7 @@ int parse_raw_value(char* str, int* out_value){ //Ex 0x123
 }
 
 int parse_immediate_value(char* str, int* out_value){ //Ex #0x123 || #0x-123
-    int pos = 0;
-    pos = skip_whitespace(str);
+    int pos = skip_whitespace(str);
     *out_value = 0;
     int value_sign = 1; // 1なら正、-1なら負
     if( '#' != str[pos++] ){ 
@@ -106,8 +102,7 @@ int parse_immediate_value(char* str, int* out_value){ //Ex #0x123 || #0x-123
 }
 
 int is_register(char* str){
-    int pos = 0;
-    pos = skip_whitespace(str);
+    int pos = skip_whitespace(str);
     if( 'r' == str[pos] ){
         return 1;
     }else{
@@ -116,8 +111,7 @@ int is_register(char* str){
 }
 
 int skip_sbracket(char* str){
-    int pos = 0;
-    pos = skip_whitespace(str);
+    int pos = skip_whitespace(str);
     if( ('[' == str[pos])||(']' == str[pos]) ){
         pos++;
         return pos;
@@ -127,8 +121,7 @@ int skip_sbracket(char* str){
 }
 
 int skip_comma(char* str){
-    int pos = 0;
-    pos = skip_whitespace(str);
+    int pos = skip_whitespace(str);
     if( ',' == str[pos] ){
         pos++;
         return pos;
@@ -138,8 +131,7 @@ int skip_comma(char* str){
 }
 
 int parse_register(char* str, int* out_register){ 
-    int pos = 0;
-    pos = skip_whitespace(str);
+    int pos = skip_whitespace(str);
     if( 'r' == str[pos] ){
         pos++;
         if( '0'==str[pos]||('2'<=str[pos] && '9'>=str[pos]) ){ //Ex r1 ~ r9
@@ -163,8 +155,7 @@ int parse_register(char* str, int* out_register){
 }
 
 int parse_one(char *str, struct Substring* out_subs){
-    int pos = 0;
-    pos = skip_whitespace(str);
+    int pos = skip_whitespace(str);
     if( '\0' == str[pos] ){ // 空白のまま終わった場合
         out_subs->str = str;
         out_subs->len = pos;
