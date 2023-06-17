@@ -38,7 +38,7 @@ int is_sbracket(char* str){
     }
 }
 
-int parse_raw_value(char* str, int* out_value){
+int parse_raw_value(char* str, int* out_value){ //Ex 0x123
     int pos = 0;
     *out_value = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
@@ -66,7 +66,7 @@ int parse_raw_value(char* str, int* out_value){
     }
 }
 
-int parse_immediate_value(char* str, int* out_value){
+int parse_immediate_value(char* str, int* out_value){ //Ex #0x123 || #0x-123
     int pos = 0;
     *out_value = 0;
     int value_sign = 1; // 1なら正、-1なら負
@@ -76,7 +76,7 @@ int parse_immediate_value(char* str, int* out_value){
     if( '#' != str[pos++] ){ 
         return PARSE_FAIL;
     }
-    if( '-' == str[pos] ){ // '#-0x..'（即値が負）のとき
+    if( '-' == str[pos] ){ //Ex #-0x123 （即値が負のとき）
         pos++;
         value_sign *= -1;
     }
@@ -141,17 +141,17 @@ int skip_comma(char* str){
     }
 }
 
-int parse_register(char* str, int* out_register){
+int parse_register(char* str, int* out_register){ 
     int pos = 0;
     while( ' ' == str[pos] ){ // 先頭の空白は無視
         pos++;
     }
     if( 'r' == str[pos] ){
         pos++;
-        if( '0'==str[pos]||('2'<=str[pos] && '9'>=str[pos]) ){
+        if( '0'==str[pos]||('2'<=str[pos] && '9'>=str[pos]) ){ //Ex r1 ~ r9
             *out_register = str[pos]-'0';
             pos++;
-        }else if( '1' == str[pos] ){
+        }else if( '1' == str[pos] ){ //Ex r10 ~ r15
             pos++;
             if( '0'<=str[pos] && '5'>=str[pos] ){
                 *out_register = 10 + str[pos] - '0';
@@ -179,7 +179,7 @@ int parse_one(char *str, struct Substring* out_subs){
         return pos;
     }
 
-    if( ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
+    if( ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){ //Ex abc123 || _abc123
         out_subs->str = &str[pos];
         int start_pos = pos++;
         while( ('0'<=str[pos] && '9'>=str[pos]) || ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
@@ -191,7 +191,7 @@ int parse_one(char *str, struct Substring* out_subs){
         }else{
             return PARSE_FAIL;
         }
-    }else if( (':' == str[pos])||('.' == str[pos])){
+    }else if( (':' == str[pos])||('.' == str[pos])){ //Ex : || .
         out_subs->str = &str[pos];
         pos++;
         out_subs->len = pos;
@@ -206,7 +206,7 @@ int asm_one(char* input){
     int read_len = parse_one(input, &opcode);
     input += read_len;
     if( 0 == strncmp("mov", opcode.str, opcode.len) ){ //Ex mov ...
-        int Rd; // Destination Register
+        int Rd; 
         read_len = parse_register(input, &Rd); //Ex mov r1
         input += read_len;
         
@@ -217,12 +217,12 @@ int asm_one(char* input){
         int operand2 = 0;
         if(1 == is_register(input)){ //Ex mov r1, r2
             immediate_op = 0;
-            int Rm; // 2nd operand register
+            int Rm; 
             read_len = parse_register(input, &Rm);
             operand2 |= Rm;
         }else{ //Ex mov r1, #123
             immediate_op = 1;
-            int immediate_value; // unsigned 8bit immediate value ※ローテートには対応してません
+            int immediate_value; 
             read_len = parse_immediate_value(input, &immediate_value);
             assert( 0 < immediate_value );
             operand2 |= immediate_value;
@@ -242,7 +242,7 @@ int asm_one(char* input){
         read_len = parse_raw_value(input,&raw_value); 
         return raw_value;
     }else  if( (0 == strncmp("ldr", opcode.str, opcode.len)) ||  (0 == strncmp("str", opcode.str, opcode.len)) ){ //Ex ldr.. || str..
-        int Rd; // Destination Register
+        int Rd; 
         read_len = parse_register(input, &Rd); //Ex ldr r1
         input += read_len;
         
@@ -254,7 +254,7 @@ int asm_one(char* input){
         input += read_len;
         
         assert(1 == is_register(input)); //Ex ldr r1, [r2
-        int Rn; // Base Register
+        int Rn; 
         read_len = parse_register(input, &Rn); 
         input += read_len;
         
@@ -268,7 +268,7 @@ int asm_one(char* input){
         if( 1 == is_sbracket(input) ){ //Ex ldr r1, [r2]
             word |= Rn<<16;
             word |= Rd<<12; 
-        }else{ // offset is an immediate value //Ex ldr r1, [r2,#0x12]
+        }else{ //Ex ldr r1, [r2,#0x12]
             read_len = skip_comma(input);
             input += read_len;
 
@@ -276,7 +276,7 @@ int asm_one(char* input){
             read_len = parse_immediate_value(input, &immediate_value);
             input += read_len;
 
-            if( 0 > immediate_value ){ //負の場合 //Ex ldr r1, [r2,#-0x12]
+            if( 0 > immediate_value ){ //Ex ldr r1, [r2,#-0x12] （負の場合）
                 word &= 0xFF7FFFFF;
             }
             word |= Rn<<16;

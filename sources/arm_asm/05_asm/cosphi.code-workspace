@@ -9,6 +9,7 @@
 			"sstream": "c",
 			"string.h": "c",
 			"stdio.h": "c"
-		}
+		},
+		"editor.fontFamily": "HackGen35, Consolas, 'Courier New', monospace"
 	}
 }
