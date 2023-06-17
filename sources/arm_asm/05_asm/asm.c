@@ -205,22 +205,22 @@ int asm_one(char* input){
     struct Substring opcode; 
     int read_len = parse_one(input, &opcode);
     input += read_len;
-    if( 0 == strncmp("mov", opcode.str, opcode.len) ){
+    if( 0 == strncmp("mov", opcode.str, opcode.len) ){ //Ex mov ...
         int Rd; // Destination Register
-        read_len = parse_register(input, &Rd);
+        read_len = parse_register(input, &Rd); //Ex mov r1
         input += read_len;
         
-        read_len = skip_comma(input);
+        read_len = skip_comma(input); //Ex mov r1,
         input += read_len;
 
         int immediate_op;
         int operand2 = 0;
-        if(1 == is_register(input)){
+        if(1 == is_register(input)){ //Ex mov r1, r2
             immediate_op = 0;
             int Rm; // 2nd operand register
             read_len = parse_register(input, &Rm);
             operand2 |= Rm;
-        }else{
+        }else{ //Ex mov r1, #123
             immediate_op = 1;
             int immediate_value; // unsigned 8bit immediate value ※ローテートには対応してません
             read_len = parse_immediate_value(input, &immediate_value);
@@ -232,43 +232,43 @@ int asm_one(char* input){
         word |= immediate_op<<25;
         word |= operand2;  
         return word;
-    }else if( 0 == strncmp(".", opcode.str, opcode.len)){
+    }else if( 0 == strncmp(".", opcode.str, opcode.len)){ //Ex .raw 0x123456 || .raw "hello\n"
         struct Substring substr_raw; 
-        read_len = parse_one(input, &substr_raw); // raw
+        read_len = parse_one(input, &substr_raw);
         assert( 0 == strncmp("raw",substr_raw.str, substr_raw.len) );
         input += read_len;
 
         int raw_value;
         read_len = parse_raw_value(input,&raw_value); 
         return raw_value;
-    }else  if( (0 == strncmp("ldr", opcode.str, opcode.len)) ||  (0 == strncmp("str", opcode.str, opcode.len)) ){
+    }else  if( (0 == strncmp("ldr", opcode.str, opcode.len)) ||  (0 == strncmp("str", opcode.str, opcode.len)) ){ //Ex ldr.. || str..
         int Rd; // Destination Register
-        read_len = parse_register(input, &Rd);
+        read_len = parse_register(input, &Rd); //Ex ldr r1
         input += read_len;
         
-        read_len = skip_comma(input);
+        read_len = skip_comma(input); //Ex ldr r1,
         input += read_len;
         
-        assert(1 == is_sbracket(input));
-        read_len = skip_sbracket(input);
+        assert(1 == is_sbracket(input)); //Ex ldr r1, [
+        read_len = skip_sbracket(input); 
         input += read_len;
         
-        assert(1 == is_register(input));
+        assert(1 == is_register(input)); //Ex ldr r1, [r2
         int Rn; // Base Register
-        read_len = parse_register(input, &Rn);
+        read_len = parse_register(input, &Rn); 
         input += read_len;
         
         int word;
-        if( 0 == strncmp("ldr", opcode.str, opcode.len) ) {
+        if( 0 == strncmp("ldr", opcode.str, opcode.len) ) { //Ex ldr r1, [r2..
             word = 0xE5900000 ; // 1110 01 1 0 1001 0000 0000 00000000 0000
-        }else{ // 'str' == opcode
+        }else{ // 'str' == opcode //Ex str r1, [r2..
             word = 0xE5800000 ; // 1110 01 1 0 1000 0000 0000 00000000 0000
         }
 
-        if( 1 == is_sbracket(input) ){ 
+        if( 1 == is_sbracket(input) ){ //Ex ldr r1, [r2]
             word |= Rn<<16;
             word |= Rd<<12; 
-        }else{ // offset is an immediate value
+        }else{ // offset is an immediate value //Ex ldr r1, [r2,#0x12]
             read_len = skip_comma(input);
             input += read_len;
 
@@ -276,7 +276,7 @@ int asm_one(char* input){
             read_len = parse_immediate_value(input, &immediate_value);
             input += read_len;
 
-            if( 0 > immediate_value ){ //負の場合
+            if( 0 > immediate_value ){ //負の場合 //Ex ldr r1, [r2,#-0x12]
                 word &= 0xFF7FFFFF;
             }
             word |= Rn<<16;
