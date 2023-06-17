@@ -43,8 +43,8 @@ int is_sbracket(char* str){
 }
 
 int parse_raw_value(char* str, int* out_value){ //Ex 0x123
-    int pos = skip_whitespace(str);
     *out_value = 0;
+    int pos = skip_whitespace(str);
     if( ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
         while(1){
             if( (str[pos] >= '0')&&(str[pos] <= '9') ){
@@ -68,12 +68,12 @@ int parse_raw_value(char* str, int* out_value){ //Ex 0x123
 }
 
 int parse_immediate_value(char* str, int* out_value){ //Ex #0x123 || #0x-123
-    int pos = skip_whitespace(str);
     *out_value = 0;
-    int value_sign = 1; // 1なら正、-1なら負
+    int pos = skip_whitespace(str);
     if( '#' != str[pos++] ){ 
         return PARSE_FAIL;
     }
+    int value_sign = 1; // 1なら正、-1なら負
     if( '-' == str[pos] ){ //Ex #-0x123 （即値が負のとき）
         pos++;
         value_sign *= -1;
