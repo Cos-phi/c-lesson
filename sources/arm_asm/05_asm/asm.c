@@ -202,10 +202,10 @@ int parse_one(char *str, struct Substring* out_subs){
 }
 
 int asm_one(char* input){
-    struct Substring OpCode; 
-    int read_len = parse_one(input, &OpCode);
+    struct Substring opcode; 
+    int read_len = parse_one(input, &opcode);
     input += read_len;
-    if( 0 == strncmp("mov", OpCode.str, OpCode.len) ){
+    if( 0 == strncmp("mov", opcode.str, opcode.len) ){
         int Rd; // Destination Register
         read_len = parse_register(input, &Rd);
         input += read_len;
@@ -232,7 +232,7 @@ int asm_one(char* input){
         word |= immediate_op<<25;
         word |= operand2;  
         return word;
-    }else if( 0 == strncmp(".", OpCode.str, OpCode.len)){
+    }else if( 0 == strncmp(".", opcode.str, opcode.len)){
         struct Substring substr_raw; 
         read_len = parse_one(input, &substr_raw); // raw
         assert( 0 == strncmp("raw",substr_raw.str, substr_raw.len) );
@@ -241,7 +241,7 @@ int asm_one(char* input){
         int raw_value;
         read_len = parse_raw_value(input,&raw_value); 
         return raw_value;
-    }else  if( (0 == strncmp("ldr", OpCode.str, OpCode.len)) ||  (0 == strncmp("str", OpCode.str, OpCode.len)) ){
+    }else  if( (0 == strncmp("ldr", opcode.str, opcode.len)) ||  (0 == strncmp("str", opcode.str, opcode.len)) ){
         int Rd; // Destination Register
         read_len = parse_register(input, &Rd);
         input += read_len;
@@ -259,9 +259,9 @@ int asm_one(char* input){
         input += read_len;
         
         int word;
-        if( 0 == strncmp("ldr", OpCode.str, OpCode.len) ) {
+        if( 0 == strncmp("ldr", opcode.str, opcode.len) ) {
             word = 0xE5900000 ; // 1110 01 1 0 1001 0000 0000 00000000 0000
-        }else{ // 'str' == OpCode
+        }else{ // 'str' == opcode
             word = 0xE5800000 ; // 1110 01 1 0 1000 0000 0000 00000000 0000
         }
 
