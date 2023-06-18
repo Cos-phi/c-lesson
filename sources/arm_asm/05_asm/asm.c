@@ -25,7 +25,7 @@ void hex_dump(struct Emitter* emitter){
     }
 }
 
-int strneq(char* s1, struct Substring s2){
+int substreq(char* s1, struct Substring s2){
     if( 0 == strncmp(s1, s2.str, s2.len) ){
         return 1;
     }else{
@@ -182,7 +182,7 @@ int parse_one(char *str, struct Substring* out_subs){
         }else{
             return PARSE_FAIL;
         }
-    }else if( (':' == str[pos])||('.' == str[pos])){ //Ex : || .
+    }else if( (':' == str[pos])||('.' == str[pos])){ 
         out_subs->str = &str[pos];
         pos++;
         out_subs->len = pos;
@@ -196,7 +196,7 @@ int asm_one(char* input){
     struct Substring opcode; 
     int read_len = parse_one(input, &opcode);
     input += read_len;
-    if( strneq("mov", opcode) ){ //Ex mov ...
+    if( substreq("mov", opcode) ){ //Ex mov ...
         int Rd; 
         read_len = parse_register(input, &Rd); //Ex mov r1
         input += read_len;
@@ -223,16 +223,16 @@ int asm_one(char* input){
         word |= immediate_op<<25;
         word |= operand2;  
         return word;
-    }else if( strneq(".", opcode)){ //Ex .raw 0x123456 || .raw "hello\n"
+    }else if( substreq(".", opcode)){ //Ex .raw 0x123456 || .raw "hello\n"
         struct Substring substr_raw; 
         read_len = parse_one(input, &substr_raw);
-        assert( strneq("raw",substr_raw) );
+        assert( substreq("raw",substr_raw) );
         input += read_len;
 
         int raw_value;
         read_len = parse_raw_value(input,&raw_value); 
         return raw_value;
-    }else  if( strneq("ldr", opcode) || strneq("str", opcode) ){ //Ex ldr.. || str..
+    }else  if( substreq("ldr", opcode) || substreq("str", opcode) ){ //Ex ldr.. || str..
         int Rd; 
         read_len = parse_register(input, &Rd); //Ex ldr r1
         input += read_len;
@@ -250,7 +250,7 @@ int asm_one(char* input){
         input += read_len;
         
         int word;
-        if( strneq("ldr", opcode) ) { //Ex ldr r1, [r2..
+        if( substreq("ldr", opcode) ) { //Ex ldr r1, [r2..
             word = 0xE5900000 ; // 1110 01 1 0 1001 0000 0000 00000000 0000
         }else{ // 'str' == opcode //Ex str r1, [r2..
             word = 0xE5800000 ; // 1110 01 1 0 1000 0000 0000 00000000 0000
@@ -299,7 +299,7 @@ static void test_parse_one(){
 
     assert(expect_pos == pos);
     assert(expect_len == actual_sub.len);
-    assert(strneq(expect_str, actual_sub));
+    assert(substreq(expect_str, actual_sub));
 }
 static void test_parse_one_indent(){
     char* input = "    mov r1, r2";
@@ -312,7 +312,7 @@ static void test_parse_one_indent(){
 
     assert(expect_pos == pos);
     assert(expect_len == actual_sub.len);
-    assert(strneq(expect_str, actual_sub));
+    assert(substreq(expect_str, actual_sub));
 }
 static void test_parse_one_label(){
     char* input = "  loop:";
@@ -325,8 +325,8 @@ static void test_parse_one_label(){
     struct Substring actual_sub2; 
     read_len = parse_one(input, &actual_sub2);
 
-    assert(strneq(expect_str1, actual_sub1));
-    assert(strneq(expect_str2, actual_sub2));
+    assert(substreq(expect_str1, actual_sub1));
+    assert(substreq(expect_str2, actual_sub2));
 }
 static void test_parse_one_error(){
     char* input = "abc{}";
@@ -348,7 +348,7 @@ static void test_parse_one_nothing(){
 
     assert(expect_pos == pos);
     assert(expect_len == actual_sub.len);
-    assert(strneq(expect_str, actual_sub));
+    assert(substreq(expect_str, actual_sub));
 }
 static void test_parse_register(){
     char* input = "mov r4, r2";
