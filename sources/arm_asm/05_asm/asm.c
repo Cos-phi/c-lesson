@@ -142,7 +142,7 @@ int parse_register(char* str, int* out_register){
     int pos = skip_whitespace(str);
     if( 'r' == str[pos] ){
         pos++;
-        if( '0'==str[pos]||('2'<=str[pos] && '9'>=str[pos]) ){ //e.g. r1 ~ r9
+        if( '0'==str[pos]||('2'<=str[pos] && '9'>=str[pos]) ){ //e.g. r0, r2  ~ r9
             *out_register = str[pos]-'0';
             pos++;
         }else if( '1' == str[pos] ){ //e.g. r10 ~ r15
