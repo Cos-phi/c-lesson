@@ -34,6 +34,8 @@ int substreq(char* s1, struct Substring s2){
 }
 
 int skip_whitespace(char* str){
+    //文字列冒頭のスペースを読み飛ばして、読み飛ばした数をreturnします。
+    //e.g. "  abcd.." -> 2
     int pos = 0;
     while( ' ' == str[pos] ){
         pos++;
@@ -50,8 +52,8 @@ int is_sbracket(char* str){
     }
 }
 
-int parse_raw_value(char* str, int* out_value){ //e.g. 0x123
-    //16進数を表す文字列をパースして、数値をintで返します。
+int parse_raw_value(char* str, int* out_value){ 
+    //16進数を表す文字列をパースして、数値を返します。読んだ文字数をreturnします。
     //e.g. "0x10" -> 16
     *out_value = 0;
     int pos = skip_whitespace(str);
@@ -78,8 +80,8 @@ int parse_raw_value(char* str, int* out_value){ //e.g. 0x123
 }
 
 int parse_immediate_value(char* str, int* out_value){ 
-    //即値を表す文字列をパースして、即値をintで返します
-    //e.g. "#0x1A" -> 26 
+    //即値を表す文字列をパースして、数値を返します。読んだ文字数をreturnします。
+    //e.g. " #0x1A" -> 26
     *out_value = 0;
     int pos = skip_whitespace(str);
     if( '#' != str[pos++] ){ 
@@ -148,7 +150,7 @@ int skip_comma(char* str){
 }
 
 int parse_register(char* str, int* out_register){ 
-    //レジスタを表す文字列をパースして、レジスタ番号を返します。
+    //レジスタを表す文字列をパースして、レジスタ番号を返します。読んだ文字数をreturnします。
     //e.g. "r4" -> 4
     int pos = skip_whitespace(str);
     if( 'r' == str[pos] ){
@@ -174,14 +176,18 @@ int parse_register(char* str, int* out_register){
 }
 
 int parse_one(char *str, struct Substring* out_subs){
+    //文字列をパースして、文字の単語・コロン・ドット・なにもなしのどれかをSubstringで返します。読んだ文字数をreturnします。
+    //e.g. "    "      -> "    ",   return 4
+    //e.g. " abc123: " -> "abc123", return 7
+    //e.g. ":"         -> ":",      return 1
     int pos = skip_whitespace(str);
-    if( '\0' == str[pos] ){ // 空白のまま終わった場合
+    if( '\0' == str[pos] ){ // 空白のまま終わった場合（なにもなし）
         out_subs->str = str;
         out_subs->len = pos;
         return pos;
     }
 
-    if( ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){ //e.g. abc123 || _abc123
+    if( ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){ //e.g. _abc123
         out_subs->str = &str[pos];
         int start_pos = pos++;
         while( ('0'<=str[pos] && '9'>=str[pos]) || ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
@@ -193,7 +199,7 @@ int parse_one(char *str, struct Substring* out_subs){
         }else{
             return PARSE_FAIL;
         }
-    }else if( (':' == str[pos])||('.' == str[pos])){ 
+    }else if( (':' == str[pos])||('.' == str[pos])){ //e.g. :
         out_subs->str = &str[pos];
         pos++;
         out_subs->len = pos;
@@ -204,15 +210,19 @@ int parse_one(char *str, struct Substring* out_subs){
 }
 
 int asm_one(char* input){
+    //一行の文字列を32bitのバイナリにアセンブルして、intとしてreturnします。
+    //e.g. "mov r1, r2"           -> 0xE1A01002
+    //e.g. ".raw 0x12345678"      -> 0x12345678
+    //e.g. "ldr r1,[r15, #-0x30]" -> 0xE51F1030
     struct Substring opcode; 
     int read_len = parse_one(input, &opcode);
     input += read_len;
-    if( substreq("mov", opcode) ){ //e.g. mov ...
+    if( substreq("mov", opcode) ){ 
         int Rd; 
-        read_len = parse_register(input, &Rd); //e.g. mov r1
+        read_len = parse_register(input, &Rd);
         input += read_len;
         
-        read_len = skip_comma(input); //e.g. mov r1,
+        read_len = skip_comma(input); 
         input += read_len;
 
         int immediate_op;
@@ -245,25 +255,25 @@ int asm_one(char* input){
         return raw_value;
     }else  if( substreq("ldr", opcode) || substreq("str", opcode) ){ //e.g. ldr.. || str..
         int Rd; 
-        read_len = parse_register(input, &Rd); //e.g. ldr r1
+        read_len = parse_register(input, &Rd); 
         input += read_len;
         
-        read_len = skip_comma(input); //e.g. ldr r1,
+        read_len = skip_comma(input); 
         input += read_len;
         
-        assert(1 == is_sbracket(input)); //e.g. ldr r1, [
+        assert(1 == is_sbracket(input)); 
         read_len = skip_sbracket(input); 
         input += read_len;
         
-        assert(1 == is_register(input)); //e.g. ldr r1, [r2
+        assert(1 == is_register(input)); 
         int Rn; 
         read_len = parse_register(input, &Rn); 
         input += read_len;
         
         int word;
-        if( substreq("ldr", opcode) ) { //e.g. ldr r1, [r2..
+        if( substreq("ldr", opcode) ) { 
             word = 0xE5900000 ; // 1110 01 1 0 1001 0000 0000 00000000 0000
-        }else{ // 'str' == opcode //e.g. str r1, [r2..
+        }else{ // "str"
             word = 0xE5800000 ; // 1110 01 1 0 1000 0000 0000 00000000 0000
         }
 
@@ -278,7 +288,7 @@ int asm_one(char* input){
             read_len = parse_immediate_value(input, &immediate_value);
             input += read_len;
 
-            if( 0 > immediate_value ){ //e.g. ldr r1, [r2,#-0x12] （負の場合）
+            if( 0 > immediate_value ){ //即値が負の場合 e.g. ldr r1, [r2,#-0x12]
                 word &= 0xFF7FFFFF;
             }
             word |= Rn<<16;
