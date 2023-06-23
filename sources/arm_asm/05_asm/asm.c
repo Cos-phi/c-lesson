@@ -34,8 +34,10 @@ int substreq(char* s1, struct Substring s2){
 }
 
 int skip_whitespace(char* str){
-    //文字列冒頭のスペースを読み飛ばして、読み飛ばした数をreturnします。
-    //e.g. "  abcd.." -> 2
+/*
+    文字列冒頭のスペースを読み飛ばして、読み飛ばした数をreturnします。
+    e.g. "  abcd.." -> 2
+*/
     int pos = 0;
     while( ' ' == str[pos] ){
         pos++;
@@ -43,9 +45,9 @@ int skip_whitespace(char* str){
     return pos;
 }
 
-int skip_sbracket(char* str){
+int skip_comma(char* str){
     int pos = skip_whitespace(str);
-    if( ('[' == str[pos])||(']' == str[pos]) ){
+    if( ',' == str[pos] ){
         pos++;
         return pos;
     }else{
@@ -53,9 +55,9 @@ int skip_sbracket(char* str){
     }
 }
 
-int skip_comma(char* str){
+int skip_sbracket(char* str){
     int pos = skip_whitespace(str);
-    if( ',' == str[pos] ){
+    if( ('[' == str[pos])||(']' == str[pos]) ){
         pos++;
         return pos;
     }else{
@@ -81,8 +83,10 @@ int is_sbracket(char* str){
 }
 
 int parse_raw_value(char* str, int* out_value){ 
-    //16進数を表す文字列をパースして、数値を返します。読んだ文字数をreturnします。
-    //e.g. "0x10" -> 16
+/*
+    16進数を表す文字列をパースして、数値を返します。読んだ文字数をreturnします。
+    e.g. "0x10" -> 16
+*/
     *out_value = 0;
     int pos = skip_whitespace(str);
     if( ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
@@ -108,20 +112,20 @@ int parse_raw_value(char* str, int* out_value){
 }
 
 int parse_immediate_value(char* str, int* out_value){ 
-    //即値を表す文字列をパースして、数値を返します。読んだ文字数をreturnします。
-    //e.g. " #0x1A" -> 26
+/*
+    即値を表す文字列をパースして、数値を返します。読んだ文字数をreturnします。
+    e.g. " #0x1A" -> 26
+*/
     *out_value = 0;
     int pos = skip_whitespace(str);
     if( '#' != str[pos++] ){ 
         return PARSE_FAIL;
     }
     int value_sign;
-    if( '-' == str[pos] ){
-        //即値が負の時  e.g. #-0x123
+    if( '-' == str[pos] ){ //即値が負の時  e.g. #-0x123
         value_sign = -1;
         pos++;
-    }else{
-        //即値が正の時
+    }else{ //即値が正の時
         value_sign = 1;
     }
     
@@ -149,8 +153,10 @@ int parse_immediate_value(char* str, int* out_value){
 }
 
 int parse_register(char* str, int* out_register){ 
-    //レジスタを表す文字列をパースして、レジスタ番号を返します。読んだ文字数をreturnします。
-    //e.g. "r4" -> 4
+/*
+    レジスタを表す文字列をパースして、レジスタ番号を返します。読んだ文字数をreturnします。
+    e.g. "r4" -> 4
+*/
     int pos = skip_whitespace(str);
     if( 'r' == str[pos] ){
         pos++;
@@ -175,10 +181,12 @@ int parse_register(char* str, int* out_register){
 }
 
 int parse_one(char *str, struct Substring* out_subs){
-    //文字列をパースして、文字の単語・コロン・ドット・なにもなしのどれかをSubstringで返します。読んだ文字数をreturnします。
-    //e.g. "    "      -> "    ",   return 4
-    //e.g. " abc123: " -> "abc123", return 7
-    //e.g. ":"         -> ":",      return 1
+/*
+    文字列をパースして、文字の単語・コロン・ドット・なにもなしのどれかをSubstringで返します。読んだ文字数をreturnします。
+    e.g. "    "      -> "    ",   return 4
+         " abc123: " -> "abc123", return 7
+         ":"         -> ":",      return 1
+*/
     int pos = skip_whitespace(str);
     if( '\0' == str[pos] ){ // 空白のまま終わった場合（なにもなし）
         out_subs->str = str;
@@ -186,7 +194,7 @@ int parse_one(char *str, struct Substring* out_subs){
         return pos;
     }
 
-    if( ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){ //e.g. _abc123
+    if( ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){ //e.g. "_abc123"
         out_subs->str = &str[pos];
         int start_pos = pos++;
         while( ('0'<=str[pos] && '9'>=str[pos]) || ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
@@ -198,7 +206,7 @@ int parse_one(char *str, struct Substring* out_subs){
         }else{
             return PARSE_FAIL;
         }
-    }else if( (':' == str[pos])||('.' == str[pos])){ //e.g. :
+    }else if( (':' == str[pos])||('.' == str[pos])){ //e.g. ":"
         out_subs->str = &str[pos];
         pos++;
         out_subs->len = pos;
@@ -209,14 +217,21 @@ int parse_one(char *str, struct Substring* out_subs){
 }
 
 int asm_one(char* input){
-    //一行の文字列を32bitのバイナリにアセンブルして、intとしてreturnします。
-    //e.g. "mov r1, r2"           -> 0xE1A01002
-    //e.g. ".raw 0x12345678"      -> 0x12345678
-    //e.g. "ldr r1,[r15, #-0x30]" -> 0xE51F1030
+/*
+    一行の文字列を32bitのバイナリにアセンブルして、intとしてreturnします。
+    e.g. "mov r1, r2"           -> 0xE1A01002
+         ".raw 0x12345678"      -> 0x12345678
+         "ldr r1,[r15, #-0x30]" -> 0xE51F1030
+*/
     struct Substring opcode; 
     int read_len = parse_one(input, &opcode);
     input += read_len;
     if( substreq("mov", opcode) ){ 
+    /*
+        movのケース
+        e.g. "mov r1, r2"   -> Rdにr1が、Rmに2が入る
+             "mov r1, #123" -> Rdにr1が、immediate_valueに123が入る
+    */
         int Rd; 
         read_len = parse_register(input, &Rd);
         input += read_len;
@@ -243,7 +258,12 @@ int asm_one(char* input){
         word |= immediate_op<<25;
         word |= operand2;  
         return word;
-    }else if( substreq(".", opcode)){ //e.g. .raw 0x123456 || .raw "hello\n"
+    }else if( substreq(".", opcode)){ 
+    /*
+        疑似命令.rawのケース
+        e.g. ".raw 0x123456" 
+        引数の数値0x123456が、そのままraw_valueに入る
+    */
         struct Substring substr_raw; 
         read_len = parse_one(input, &substr_raw);
         assert( substreq("raw",substr_raw) );
@@ -252,7 +272,13 @@ int asm_one(char* input){
         int raw_value;
         read_len = parse_raw_value(input,&raw_value); 
         return raw_value;
-    }else  if( substreq("ldr", opcode) || substreq("str", opcode) ){ //e.g. ldr.. || str..
+    }else  if( substreq("ldr", opcode) || substreq("str", opcode) ){ 
+    /*
+        ldr または str のケース
+        e.g. "ldr r1, [r2]"       -> Rdにr1が、Rnにr2が入る。
+             "ldr r1, [r2,#0x12]" -> Rdにr1、Rnにr2、immediate_valueに0x12が入る。
+        opcodeにldrかstrが入っている。
+    */
         int Rd; 
         read_len = parse_register(input, &Rd); 
         input += read_len;
@@ -271,9 +297,9 @@ int asm_one(char* input){
         
         int word;
         if( substreq("ldr", opcode) ) { 
-            word = 0xE5900000 ; // 1110 01 1 0 1001 0000 0000 00000000 0000
+            word = 0xE5900000 ; 
         }else{ // "str"
-            word = 0xE5800000 ; // 1110 01 1 0 1000 0000 0000 00000000 0000
+            word = 0xE5800000 ; 
         }
 
         if( 1 == is_sbracket(input) ){ //e.g. ldr r1, [r2]
@@ -287,7 +313,7 @@ int asm_one(char* input){
             read_len = parse_immediate_value(input, &immediate_value);
             input += read_len;
 
-            if( 0 > immediate_value ){ //即値が負の場合 e.g. ldr r1, [r2,#-0x12]
+            if( 0 > immediate_value ){ 
                 word &= 0xFF7FFFFF;
             }
             word |= Rn<<16;
