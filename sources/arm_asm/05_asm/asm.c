@@ -51,6 +51,8 @@ int is_sbracket(char* str){
 }
 
 int parse_raw_value(char* str, int* out_value){ //e.g. 0x123
+    //16進数を表す文字列をパースして、数値をintで返します。
+    //e.g. "0x10" -> 16
     *out_value = 0;
     int pos = skip_whitespace(str);
     if( ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
@@ -75,17 +77,24 @@ int parse_raw_value(char* str, int* out_value){ //e.g. 0x123
     }
 }
 
-int parse_immediate_value(char* str, int* out_value){ //e.g. #0x123 || #0x-123
+int parse_immediate_value(char* str, int* out_value){ 
+    //即値を表す文字列をパースして、即値をintで返します
+    //e.g. "#0x1A" -> 26 
     *out_value = 0;
     int pos = skip_whitespace(str);
     if( '#' != str[pos++] ){ 
         return PARSE_FAIL;
     }
-    int value_sign = 1; // 1なら正、-1なら負
-    if( '-' == str[pos] ){ //e.g. #-0x123 （即値が負のとき）
+    int value_sign;
+    if( '-' == str[pos] ){
+        //即値が負の時  e.g. #-0x123
+        value_sign = -1;
         pos++;
-        value_sign *= -1;
+    }else{
+        //即値が正の時
+        value_sign = 1;
     }
+    
     if( ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
         while(1){
             if( (str[pos] >= '0')&&(str[pos] <= '9') ){
@@ -139,10 +148,12 @@ int skip_comma(char* str){
 }
 
 int parse_register(char* str, int* out_register){ 
+    //レジスタを表す文字列をパースして、レジスタ番号を返します。
+    //e.g. "r4" -> 4
     int pos = skip_whitespace(str);
     if( 'r' == str[pos] ){
         pos++;
-        if( '0'==str[pos]||('2'<=str[pos] && '9'>=str[pos]) ){ //e.g. r0, r2  ~ r9
+        if( '0'==str[pos]||('2'<=str[pos] && '9'>=str[pos]) ){ //e.g. r0, r2 ~ r9
             *out_register = str[pos]-'0';
             pos++;
         }else if( '1' == str[pos] ){ //e.g. r10 ~ r15
