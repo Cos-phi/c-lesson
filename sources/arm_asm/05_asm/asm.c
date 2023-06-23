@@ -43,6 +43,34 @@ int skip_whitespace(char* str){
     return pos;
 }
 
+int skip_sbracket(char* str){
+    int pos = skip_whitespace(str);
+    if( ('[' == str[pos])||(']' == str[pos]) ){
+        pos++;
+        return pos;
+    }else{
+        return PARSE_FAIL;
+    }
+}
+
+int skip_comma(char* str){
+    int pos = skip_whitespace(str);
+    if( ',' == str[pos] ){
+        pos++;
+        return pos;
+    }else{
+        return PARSE_FAIL;
+    }
+}
+
+int is_register(char* str){
+    int pos = skip_whitespace(str);
+    if( 'r' == str[pos] ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
 int is_sbracket(char* str){
     int pos = skip_whitespace(str);
     if( ('[' == str[pos])||(']' == str[pos]) ){
@@ -114,35 +142,6 @@ int parse_immediate_value(char* str, int* out_value){
             pos++;
         };
         *out_value *= value_sign;
-        return pos;
-    }else{
-        return PARSE_FAIL;
-    }
-}
-
-int is_register(char* str){
-    int pos = skip_whitespace(str);
-    if( 'r' == str[pos] ){
-        return 1;
-    }else{
-        return 0;
-    }
-}
-
-int skip_sbracket(char* str){
-    int pos = skip_whitespace(str);
-    if( ('[' == str[pos])||(']' == str[pos]) ){
-        pos++;
-        return pos;
-    }else{
-        return PARSE_FAIL;
-    }
-}
-
-int skip_comma(char* str){
-    int pos = skip_whitespace(str);
-    if( ',' == str[pos] ){
-        pos++;
         return pos;
     }else{
         return PARSE_FAIL;
