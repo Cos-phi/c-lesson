@@ -7,26 +7,43 @@
 
 static char buf[BUF_SIZE];
 static int pos = 0;
+static FILE *file = NULL;
 static char* input = "123\n4567\n89ABC\n";
 
 int cl_getline(char **out_buf){
-    int len = 0;
-    while('\n' != input[pos]){
-        buf[len++] = input[pos++]; // bufにつめる
-        if( len > BUF_SIZE || EOF == input[pos] ){
-            return -1;
+    if( NULL == file ){
+        int len = 0;
+        while('\n' != input[pos]){
+            buf[len++] = input[pos++]; 
+            if( len > BUF_SIZE || EOF == input[pos] ){
+                return -1;
+            }
         }
-    }
-    pos++;
-    buf[len] = '\0';
+        pos++;
+        buf[len] = '\0';
 
-    *out_buf = buf;
-    return len;
+        *out_buf = buf;
+        return len;
+    }else{
+        fgets(buf, BUF_SIZE, file);
+        int len = 0;
+        while('\n' != buf[pos]){
+            len++; 
+        }
+        buf[len] = '\0';
+
+        *out_buf = buf;
+        return len;
+    }
 }
 
 void cl_getline_set_src(char* str){
     input = str;
     pos = 0;
+}
+
+void cl_getline_set_file(FILE* input_file){
+    file = input_file;
 }
 
 /**
