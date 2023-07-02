@@ -33,6 +33,14 @@ int substreq(char* s1, struct Substring s2){
     }
 }
 
+int streq(char* s1, char* s2){
+    if( 0 == strcmp(s1,s2) ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
 int skip_whitespace(char* str){
 /*
     文字列冒頭のスペースを読み飛ばして、読み飛ばした数をreturnします。
@@ -566,6 +574,26 @@ static void test_asm_str(){
     assert(expect == actual);
 }
 
+static void test_cl_getline_file(){
+    char* input_file = "ks/nanika_mojiwo_hyouji.ks";
+    char* expect_str1 = "ldr r1, [r15, #0x04]";
+    char* expect_str2 = "mov r0, #0x68";
+    char* expect_str3 = "str r0, [r1]";
+    char* expect_str4 = ".raw 0x101f1000";
+    char** expect_lines[4] = {&expect_str1,&expect_str2,&expect_str3,&expect_str4};
+
+    FILE *file;
+    file = fopen(input_file,"r");
+    cl_getline_set_file(file);
+
+    char* buf;
+    int i = 0;
+    while( -1 != cl_getline(&buf) ){
+        assert(streq(buf,*expect_lines[i++]));
+    }
+    fclose(file);  
+}
+
 static void unit_tests(){
     test_asm_mov();
     test_parse_one();
@@ -602,6 +630,9 @@ int main(){
         emit_word(&g_emitter, oneword);
     }
     hex_dump(&g_emitter);
+
+    
+    test_cl_getline_file();
     return 0;
 }
 

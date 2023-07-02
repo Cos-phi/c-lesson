@@ -25,15 +25,20 @@ int cl_getline(char **out_buf){
         *out_buf = buf;
         return len;
     }else{
-        fgets(buf, BUF_SIZE, file);
-        int len = 0;
-        while('\n' != buf[pos]){
-            len++; 
+        if( NULL == fgets(buf, BUF_SIZE, file) ){
+            return -1;
         }
-        buf[len] = '\0';
+        int pos = 0;
+        while('\n' != buf[pos] && '\0' != buf[pos]){  
+            pos++;
+            if( pos > BUF_SIZE ){
+                return -1;
+            }
+        }
+        buf[pos] = '\0';
 
         *out_buf = buf;
-        return len;
+        return pos;
     }
 }
 

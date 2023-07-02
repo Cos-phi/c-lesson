@@ -6,4 +6,5 @@
 //cl_getline.c
 int cl_getline();
 void cl_getline_set_src();
+void cl_getline_set_file();
 
