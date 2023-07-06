@@ -43,6 +43,7 @@ int cl_getline(char **out_buf){
 }
 
 void cl_getline_set_src(char* str){
+    file = NULL;
     input = str;
     pos = 0;
 }

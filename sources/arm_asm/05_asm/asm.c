@@ -617,6 +617,7 @@ static void unit_tests(){
     test_asm_ldr2();
     test_asm_ldr3();
     test_asm_str();
+    test_cl_getline_file();
 }
 
 int main(){
@@ -632,7 +633,6 @@ int main(){
     hex_dump(&g_emitter);
 
     
-    test_cl_getline_file();
     return 0;
 }
 
