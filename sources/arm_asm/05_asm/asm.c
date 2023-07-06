@@ -14,6 +14,10 @@ struct Emitter {
 int array[250]; 
 struct Emitter g_emitter = {array,0};
 
+void init_emitter(struct Emitter* emitter){
+    emitter->pos = 0;
+}
+
 void emit_word(struct Emitter* emitter, int oneword){
     emitter->words[emitter->pos] = oneword;
     emitter->pos++;
@@ -573,7 +577,6 @@ static void test_asm_str(){
 
     assert(expect == actual);
 }
-
 static void test_cl_getline_file(){
     char* input_file = "ks/nanika_mojiwo_hyouji.ks";
     char* expect_str1 = "ldr r1, [r15, #0x04]";
@@ -593,7 +596,29 @@ static void test_cl_getline_file(){
     }
     fclose(file);  
 }
+static void test_cl_getline_file_and_hexdump(){
+    char* input_file = "ks/nanika_mojiwo_hyouji.ks";
+    /*expect: 以下の内容が画面に表示される
+        0xE59F1004
+        0xE3A00068
+        0xE5810000
+        0x101F1000
+    */
 
+    FILE *file;
+    file = fopen(input_file,"r");
+    cl_getline_set_file(file);
+
+    char* buf;
+    
+    while( -1 != cl_getline(&buf) ){
+        int oneword = asm_one(buf);
+        emit_word(&g_emitter, oneword);
+    }
+    hex_dump(&g_emitter);
+    
+    fclose(file);  
+}
 static void unit_tests(){
     test_asm_mov();
     test_parse_one();
@@ -618,11 +643,13 @@ static void unit_tests(){
     test_asm_ldr3();
     test_asm_str();
     test_cl_getline_file();
+    test_cl_getline_file_and_hexdump();
 }
 
 int main(){
     unit_tests();
 
+    init_emitter(&g_emitter);
     char* input = "mov r1, r2\nmov r3, r4\nmov r5, r6\n"; // expect: 0xE1A01002 0xE1A03004 0xE1A05006
     cl_getline_set_src(input);
     char* buf;

@@ -10,6 +10,6 @@
 			"string.h": "c",
 			"stdio.h": "c"
 		},
-		"editor.fontFamily": "HackGen35, Consolas, 'Courier New', monospace"
+		"editor.fontFamily": "PlemolJP35, HackGen35, Consolas, 'Courier New', monospace"
 	}
 }
