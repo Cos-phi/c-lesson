@@ -29,6 +29,13 @@ void hex_dump(struct Emitter* emitter){
     }
 }
 
+void write_emitter_to_file(struct Emitter* emitter, FILE* output_file){
+/*
+    emitterとファイルハンドルを受け取って、emitterの中身をファイルに書き込みます。
+*/    
+    //TODO つくる
+}
+
 int substreq(char* s1, struct Substring s2){
     if( 0 == strncmp(s1, s2.str, s2.len) ){
         return 1;
