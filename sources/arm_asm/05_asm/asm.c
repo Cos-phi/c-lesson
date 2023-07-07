@@ -29,11 +29,12 @@ void hex_dump(struct Emitter* emitter){
     }
 }
 
-void write_emitter_to_file(struct Emitter* emitter, FILE* output_file){
+void write_emitter_to_file(struct Emitter* emitter, FILE* fp){
 /*
-    emitterとファイルハンドルを受け取って、emitterの中身をファイルに書き込みます。
+emitterと、モードwbでオープンされたファイルポインタを受け取って、emitterの中身をファイルに書き込みます。
 */    
     //TODO つくる
+    fwrite(emitter->words,sizeof(int),emitter->pos,fp)
 }
 
 int substreq(char* s1, struct Substring s2){
