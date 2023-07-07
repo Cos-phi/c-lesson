@@ -592,8 +592,7 @@ static void test_cl_getline_file(){
     char* expect_str4 = ".raw 0x101f1000";
     char** expect_lines[4] = {&expect_str1,&expect_str2,&expect_str3,&expect_str4};
 
-    FILE *file;
-    file = fopen(input_file,"r");
+    FILE *file = fopen(input_file,"r");
     cl_getline_set_file(file);
 
     char* buf;
@@ -603,29 +602,42 @@ static void test_cl_getline_file(){
     }
     fclose(file);  
 }
-static void test_cl_getline_file_and_hexdump(){
+static void test_asm_ks(){
+/*
+    input:次のような内容のアスキー形式のファイルを読み込み、
+        ldr r1, [r15, #0x04]
+        mov r0, #0x68
+        str r0, [r1]
+        .raw 0x101f1000
+
+    epect:以下のワードからなるバイナリ実行ファイルを書き出す       
+        0xE59F1004 0xE3A00068 0xE5810000 0x101F1000
+*/
     char* input_file = "ks/nanika_mojiwo_hyouji.ks";
-    /*expect: 以下の内容が画面に表示される
-        0xE59F1004
-        0xE3A00068
-        0xE5810000
-        0x101F1000
-    */
+    int expect_words[4] = {0xE59F1004,0xE3A00068,0xE5810000,0x101F1000};
 
-    FILE *file;
-    file = fopen(input_file,"r");
-    cl_getline_set_file(file);
-
+    FILE* input_fp = fopen(input_file,"r");
+    cl_getline_set_file(input_fp);
     char* buf;
-    
     while( -1 != cl_getline(&buf) ){
         int oneword = asm_one(buf);
         emit_word(&g_emitter, oneword);
     }
-    hex_dump(&g_emitter);
-    
-    fclose(file);  
+    fclose(input_fp);  
+    char* output_file = "bin/nanika_mojiwo_hyouji.bin";
+    FILE* output_fp = fopen(output_file,"wb");
+    write_emitter_to_file(&g_emitter, output_fp);
+    fclose(output_fp);
+
+    FILE* actual_fp = fopen(output_file,"rb");
+    int actual_words[4];
+    fread(actual_words,sizeof(int),4,actual_fp);
+    fclose(output_fp);
+    for (int i = 0; i < 4; i++){
+        assert( expect_words[i] == actual_words[i] );
+    }
 }
+
 static void unit_tests(){
     test_asm_mov();
     test_parse_one();
@@ -650,7 +662,7 @@ static void unit_tests(){
     test_asm_ldr3();
     test_asm_str();
     test_cl_getline_file();
-    test_cl_getline_file_and_hexdump();
+    test_asm_ks();
 }
 
 int main(){
