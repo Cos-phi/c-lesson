@@ -654,19 +654,7 @@ static void unit_tests(){
 }
 
 int main(){
-    unit_tests();
-
-    init_emitter(&g_emitter);
-    char* input = "mov r1, r2\nmov r3, r4\nmov r5, r6\n"; // expect: 0xE1A01002 0xE1A03004 0xE1A05006
-    cl_getline_set_src(input);
-    char* buf;
-    while( -1 != cl_getline(&buf) ){
-        int oneword = asm_one(buf);
-        emit_word(&g_emitter, oneword);
-    }
-    hex_dump(&g_emitter);
-
-    
+    unit_tests();    
     return 0;
 }
 
