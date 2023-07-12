@@ -657,6 +657,7 @@ static void test_asm_ks(){
     for (int i = 0; i < 4; i++){
         assert( expect_words[i] == actual_words[i] );
     }
+    remove(output_file);
 }
 static void test_asm_file(){
 /*
@@ -682,6 +683,7 @@ static void test_asm_file(){
     for (int i = 0; i < 4; i++){
         assert( expect_words[i] == actual_words[i] );
     }
+    remove(output_file);
 }
 static void unit_tests(){
     test_asm_mov();
