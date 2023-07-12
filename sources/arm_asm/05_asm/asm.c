@@ -349,9 +349,20 @@ void asm_file(char* input_filename, char* output_filename){
 /*    
     .ksファイルのファイル名と、出力ファイル名を受け取って
     アセンブルする。
-*/    
-
-//TODO つくる
+*/
+    FILE* input_fp = fopen(input_filename,"r");
+    assert(NULL != input_fp);
+    cl_getline_set_file(input_fp);
+    char* buf;
+    while( -1 != cl_getline(&buf) ){
+        int oneword = asm_one(buf);
+        emit_word(&g_emitter, oneword);
+    }
+    fclose(input_fp);  
+    FILE* output_fp = fopen(output_filename,"wb");
+    assert(NULL != output_fp);
+    write_emitter_to_file(&g_emitter, output_fp);
+    fclose(output_fp);
 }
 
 static void test_asm_mov(){
@@ -626,6 +637,7 @@ static void test_asm_ks(){
     int expect_words[4] = {0xE59F1004,0xE3A00068,0xE5810000,0x101F1000};
 
     FILE* input_fp = fopen(input_file,"r");
+    assert(NULL != input_fp);
     cl_getline_set_file(input_fp);
     char* buf;
     while( -1 != cl_getline(&buf) ){
@@ -646,7 +658,31 @@ static void test_asm_ks(){
         assert( expect_words[i] == actual_words[i] );
     }
 }
+static void test_asm_file(){
+/*
+    input:次のような内容のアスキー形式のファイルを読み込み、
+        ldr r1, [r15, #0x04]
+        mov r0, #0x68
+        str r0, [r1]
+        .raw 0x101f1000
 
+    epect:以下のワードからなるバイナリ実行ファイルを書き出す       
+        0xE59F1004 0xE3A00068 0xE5810000 0x101F1000
+*/
+    char* input_file = "test/test_input/nanika_mojiwo_hyouji.ks";
+    int expect_words[4] = {0xE59F1004,0xE3A00068,0xE5810000,0x101F1000};
+
+    char* output_file = "nanika_mojiwo_hyouji2.bin";
+    asm_file(input_file,output_file);
+
+    FILE* actual_fp = fopen(output_file,"rb");
+    int actual_words[4];
+    fread(actual_words,sizeof(int),4,actual_fp);
+    fclose(actual_fp);
+    for (int i = 0; i < 4; i++){
+        assert( expect_words[i] == actual_words[i] );
+    }
+}
 static void unit_tests(){
     test_asm_mov();
     test_parse_one();
@@ -672,12 +708,13 @@ static void unit_tests(){
     test_asm_str();
     test_cl_getline_file();
     test_asm_ks();
+    test_asm_file();
 }
 
 int main(int argc, char* argv[]){
-    unit_tests();    
-    if(argc){
-        asm_file(argv[1],"tmp.bin");
+    unit_tests();
+    if(3 == argc){
+        asm_file(argv[1],argv[2]);
     }
     return 0;
 }
