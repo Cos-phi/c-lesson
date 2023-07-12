@@ -345,6 +345,15 @@ int asm_one(char* input){
     }
 }
 
+void asm_file(char* input_filename, char* output_filename){
+/*    
+    .ksファイルのファイル名と、出力ファイル名を受け取って
+    アセンブルする。
+*/    
+
+//TODO つくる
+}
+
 static void test_asm_mov(){
     char* input = "mov r1, r2";
     int expect = 0xE1A01002; // 1110 00 0 1101 0 0000 0001 00000000 0002
@@ -585,7 +594,7 @@ static void test_asm_str(){
     assert(expect == actual);
 }
 static void test_cl_getline_file(){
-    char* input_file = "ks/nanika_mojiwo_hyouji.ks";
+    char* input_file = "test/test_input/nanika_mojiwo_hyouji.ks";
     char* expect_str1 = "ldr r1, [r15, #0x04]";
     char* expect_str2 = "mov r0, #0x68";
     char* expect_str3 = "str r0, [r1]";
@@ -613,7 +622,7 @@ static void test_asm_ks(){
     epect:以下のワードからなるバイナリ実行ファイルを書き出す       
         0xE59F1004 0xE3A00068 0xE5810000 0x101F1000
 */
-    char* input_file = "ks/nanika_mojiwo_hyouji.ks";
+    char* input_file = "test/test_input/nanika_mojiwo_hyouji.ks";
     int expect_words[4] = {0xE59F1004,0xE3A00068,0xE5810000,0x101F1000};
 
     FILE* input_fp = fopen(input_file,"r");
@@ -624,7 +633,7 @@ static void test_asm_ks(){
         emit_word(&g_emitter, oneword);
     }
     fclose(input_fp);  
-    char* output_file = "bin/nanika_mojiwo_hyouji.bin";
+    char* output_file = "nanika_mojiwo_hyouji.bin";
     FILE* output_fp = fopen(output_file,"wb");
     write_emitter_to_file(&g_emitter, output_fp);
     fclose(output_fp);
@@ -665,8 +674,11 @@ static void unit_tests(){
     test_asm_ks();
 }
 
-int main(){
+int main(int argc, char* argv[]){
     unit_tests();    
+    if(argc){
+        asm_file(argv[1],"tmp.bin");
+    }
     return 0;
 }
 
