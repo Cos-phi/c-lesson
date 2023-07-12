@@ -673,7 +673,7 @@ static void test_asm_file(){
     char* input_file = "test/test_input/nanika_mojiwo_hyouji.ks";
     int expect_words[4] = {0xE59F1004,0xE3A00068,0xE5810000,0x101F1000};
 
-    char* output_file = "nanika_mojiwo_hyouji2.bin";
+    char* output_file = "nanika_mojiwo_hyouji.bin";
     asm_file(input_file,output_file);
 
     FILE* actual_fp = fopen(output_file,"rb");
