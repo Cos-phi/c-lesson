@@ -354,7 +354,7 @@ void asm_file(char* input_filename, char* output_filename){
     assert(NULL != input_fp);
     cl_getline_set_file(input_fp);
     char* buf;
-    
+    init_emitter(&g_emitter);
     while( -1 != cl_getline(&buf) ){
         int oneword = asm_one(buf);
         emit_word(&g_emitter, oneword);
