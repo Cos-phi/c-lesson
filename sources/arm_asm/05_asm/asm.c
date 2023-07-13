@@ -685,6 +685,20 @@ static void test_asm_file(){
     }
     remove(output_file);
 }
+static void test_emitter_empty(){
+/*
+    ファイルの読み書きの後、g_emitterが空になっているかどうか確認する
+*/    
+    int expect = 0;
+
+    char* input_file = "test/test_input/nanika_mojiwo_hyouji.ks";
+    char* output_file = "nanika_mojiwo_hyouji.bin";
+    asm_file(input_file,output_file);
+    FILE* actual_fp = fopen(output_file,"rb");
+    remove(output_file);
+
+    assert(expect == g_emitter.pos);
+}
 static void unit_tests(){
     test_asm_mov();
     test_parse_one();
@@ -711,6 +725,7 @@ static void unit_tests(){
     test_cl_getline_file();
     test_asm_ks();
     test_asm_file();
+    test_emitter_empty();
 }
 
 int main(int argc, char* argv[]){
