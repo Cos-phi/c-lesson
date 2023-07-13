@@ -362,6 +362,7 @@ void asm_file(char* input_filename, char* output_filename){
     FILE* output_fp = fopen(output_filename,"wb");
     assert(NULL != output_fp);
     write_emitter_to_file(&g_emitter, output_fp);
+    init_emitter(&g_emitter);
     fclose(output_fp);
 }
 
@@ -648,6 +649,7 @@ static void test_asm_ks(){
     char* output_file = "nanika_mojiwo_hyouji.bin";
     FILE* output_fp = fopen(output_file,"wb");
     write_emitter_to_file(&g_emitter, output_fp);
+    init_emitter(&g_emitter);
     fclose(output_fp);
 
     FILE* actual_fp = fopen(output_file,"rb");
