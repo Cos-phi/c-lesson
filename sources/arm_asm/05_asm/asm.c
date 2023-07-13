@@ -354,6 +354,7 @@ void asm_file(char* input_filename, char* output_filename){
     assert(NULL != input_fp);
     cl_getline_set_file(input_fp);
     char* buf;
+    
     while( -1 != cl_getline(&buf) ){
         int oneword = asm_one(buf);
         emit_word(&g_emitter, oneword);
@@ -686,19 +687,29 @@ static void test_asm_file(){
     }
     remove(output_file);
 }
-static void test_emitter_empty(){
+static void test_asm_file_init_emitter(){
 /*
-    ファイルの読み書きの後、g_emitterが空になっているかどうか確認する
+    複数回g_emitterを読み書きをした後、ファイルを正しく出力できているか確認する
 */    
-    int expect = 0;
-
     char* input_file = "test/test_input/nanika_mojiwo_hyouji.ks";
-    char* output_file = "nanika_mojiwo_hyouji.bin";
-    asm_file(input_file,output_file);
-    FILE* actual_fp = fopen(output_file,"rb");
-    remove(output_file);
+    int expect_words[4] = {0xE59F1004,0xE3A00068,0xE5810000,0x101F1000};
 
-    assert(expect == g_emitter.pos);
+    init_emitter(&g_emitter);
+    emit_word(&g_emitter, 0xABCD1234);
+    emit_word(&g_emitter, 0x12345678);
+    emit_word(&g_emitter, 0xABAB1212);
+
+    char* output_file = "nanika_mojiwo_hyouji_tmp.bin";
+    asm_file(input_file,output_file);
+
+    FILE* actual_fp = fopen(output_file,"rb");
+    int actual_words[4];
+    fread(actual_words,sizeof(int),4,actual_fp);
+    fclose(actual_fp);
+    for (int i = 0; i < 4; i++){
+        assert( expect_words[i] == actual_words[i] );
+    }
+    remove(output_file);
 }
 static void unit_tests(){
     test_asm_mov();
@@ -726,7 +737,7 @@ static void unit_tests(){
     test_cl_getline_file();
     test_asm_ks();
     test_asm_file();
-    test_emitter_empty();
+    test_asm_file_init_emitter();
 }
 
 int main(int argc, char* argv[]){
