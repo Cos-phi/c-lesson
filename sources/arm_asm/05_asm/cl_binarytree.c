@@ -17,14 +17,28 @@ int label_id = 10000;
 
 int to_mnemonic_symbol(char *str, int len) {
 /*
-    文字列を受け取って、mnemonicのツリーにおけるvalueを返す。
-    ツリーになかった場合は追加してvalueを返す
+    文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
+    ツリーになかった場合は追加してvalueを返します。
+*/
+    int value = search_mnemonic_symbol(str, len);
+
+
+    if( -1 == value ){ //ツリーになかった場合
+        return 0;
+    }else{
+        return value; //新しいvalue;
+    }
+}
+
+int search_mnemonic_symbol(char *str, int len) {
+/*
+    文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
+    ツリーになかった場合は、-1を返します。
 */
     if(1/*ツリーにあったら*/){
         return 0; //そのノードのvalue;
     }else{
-        //新しくノードをmnemonic_id++のvalueで追加
-        return 0; //新しいvalue;
+        return -1;
     }
 }
 
