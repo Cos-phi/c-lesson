@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
 struct Node {
@@ -15,29 +16,13 @@ struct Node label_root;
 int mnemonic_id = 1;
 int label_id = 10000;
 
-int to_symbol(char *str, int len) {
-/*
-    文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
-    ツリーになかった場合は追加してvalueを返します。
-*/
-    struct Node* cur_node = &mnemonic_root;
-    int value = search_mnemonic_symbol(str, cur_node);
-
-
-    if( -1 == value ){ //ツリーになかった場合
-        return 0;
-    }else{
-        return value; //新しいvalue;
-    }
-}
 
 int search_symbol(char *str, struct Node *inout_node) {
 /*
-    文字列と、ツリーのルートのノードのポインタを受け取って、ノードを更新しながらツリーをたどります。
+    文字列と、ツリーのルートのノードのポインタを受け取って、ノードのポインタを更新しながらツリーをたどります。
     ツリーに見つかったらvalueを返します。ツリーになかった場合は、-1を返します。
 */
-    struct Node *inout_node = inout_node;
-    do{
+    while(NULL != inout_node){
         int cur_strcmp = strcmp(str,inout_node->name);
         if( 0 > cur_strcmp ){ 
             inout_node = inout_node->left;
@@ -46,8 +31,37 @@ int search_symbol(char *str, struct Node *inout_node) {
         }else {// 0 == cur_strcmp
             return inout_node->value;
         }
-    }while(NULL != inout_node);
+    }
     return -1;
+}
+
+int to_mnemonic_symbol(char *str, int len) {
+/*
+    文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
+    ツリーになかった場合は追加してvalueを返します。
+*/
+    struct Node* cur_node = &mnemonic_root;
+    int value = search_symbol(str, cur_node);
+    if( -1 == value ){ //ツリーになかった場合
+        struct Node new_node;
+        new_node.name = malloc(sizeof(char)*(len+1));
+        strcpy(new_node.name,str);
+        new_node.value = value + 1;
+
+        int cur_strcmp = strcmp(str,cur_node->name);
+        if( 0 > cur_strcmp ){ 
+            cur_node->left = &new_node;
+        }else if( 0 < cur_strcmp ){ 
+            cur_node->right = &new_node;
+        }else {// 0 == cur_strcmp
+            abort();
+        }
+        //↑ここ、先に呼び出したsearch_sybolの中で既にやった比較をもう一回やっているがかっこよくありませんのよね。どうにかできる（するべき？）ものかしら？
+
+        return new_node.value;
+    }else{
+        return value;
+    }
 }
 
 static void test_func_to_mnemonic_symbol(){
