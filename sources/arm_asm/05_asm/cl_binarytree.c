@@ -9,7 +9,7 @@ struct Node {
     struct Node *right;
 };
 
-struct Node Mnemonic_root;
+struct Node mnemonic_root;
 struct Node label_root;
 
 int mnemonic_id = 1;
@@ -35,11 +35,18 @@ int search_mnemonic_symbol(char *str, int len) {
     文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
     ツリーになかった場合は、-1を返します。
 */
-    if(1/*ツリーにあったら*/){
-        return 0; //そのノードのvalue;
-    }else{
-        return -1;
-    }
+    struct Node *cur_node = &mnemonic_root;    
+    do{
+        int cur_strcmp = strcmp(str,cur_node->name);
+        if( 0 > cur_strcmp ){ 
+            cur_node = cur_node->left;
+        }else if( 0 < cur_strcmp ){ 
+            cur_node = cur_node->right;
+        }else {// 0 == cur_strcmp
+            return cur_node->value;
+        }
+    }while(NULL != cur_node);
+    return -1;
 }
 
 static void test_func_to_mnemonic_symbol(){
