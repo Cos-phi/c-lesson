@@ -15,12 +15,13 @@ struct Node label_root;
 int mnemonic_id = 1;
 int label_id = 10000;
 
-int to_mnemonic_symbol(char *str, int len) {
+int to_symbol(char *str, int len) {
 /*
     文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
     ツリーになかった場合は追加してvalueを返します。
 */
-    int value = search_mnemonic_symbol(str, len);
+    struct Node* cur_node = &mnemonic_root;
+    int value = search_mnemonic_symbol(str, cur_node);
 
 
     if( -1 == value ){ //ツリーになかった場合
@@ -30,22 +31,22 @@ int to_mnemonic_symbol(char *str, int len) {
     }
 }
 
-int search_mnemonic_symbol(char *str, int len) {
+int search_symbol(char *str, struct Node *inout_node) {
 /*
-    文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
-    ツリーになかった場合は、-1を返します。
+    文字列と、ツリーのルートのノードのポインタを受け取って、ノードを更新しながらツリーをたどります。
+    ツリーに見つかったらvalueを返します。ツリーになかった場合は、-1を返します。
 */
-    struct Node *cur_node = &mnemonic_root;    
+    struct Node *inout_node = inout_node;
     do{
-        int cur_strcmp = strcmp(str,cur_node->name);
+        int cur_strcmp = strcmp(str,inout_node->name);
         if( 0 > cur_strcmp ){ 
-            cur_node = cur_node->left;
+            inout_node = inout_node->left;
         }else if( 0 < cur_strcmp ){ 
-            cur_node = cur_node->right;
+            inout_node = inout_node->right;
         }else {// 0 == cur_strcmp
-            return cur_node->value;
+            return inout_node->value;
         }
-    }while(NULL != cur_node);
+    }while(NULL != inout_node);
     return -1;
 }
 
