@@ -44,8 +44,9 @@ int to_mnemonic_symbol(char *str, int len) {
     int value = search_symbol(str, cur_node);
     if( -1 == value ){ //ツリーになかった場合
         struct Node new_node;
-        new_node.name = malloc(sizeof(char)*(len+1));
-        strcpy(new_node.name,str);
+        char* new_name = malloc(sizeof(char)*(len+1));
+        strcpy(new_name,str);
+        new_node.name = new_name;
         new_node.value = value + 1;
 
         int cur_strcmp = strcmp(str,cur_node->name);
@@ -79,9 +80,7 @@ static void test_func_to_mnemonic_symbol(){
     assert( value2 == to_mnemonic_symbol("mue",3));
     assert( value3 == to_mnemonic_symbol("meu",3));
 }
-#if 1
-int main(){
+
+void cl_binarytree_unittests(){
     test_func_to_mnemonic_symbol();
-    return 0;
 }
-#endif

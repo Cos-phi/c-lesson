@@ -8,3 +8,5 @@ int cl_getline();
 void cl_getline_set_src();
 void cl_getline_set_file();
 
+//cl_binarytree.c
+void cl_binarytree_unittests();
