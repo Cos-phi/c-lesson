@@ -22,7 +22,7 @@ int search_symbol(char *str, struct Node *inout_node) {
     文字列と、ツリーのルートのノードのポインタを受け取って、ノードのポインタを更新しながらツリーをたどります。
     ツリーに見つかったらvalueを返します。ツリーになかった場合は、-1を返します。
 */
-    while(NULL != inout_node){
+    while(NULL != inout_node->name){
         int cur_strcmp = strcmp(str,inout_node->name);
         if( 0 > cur_strcmp ){ 
             inout_node = inout_node->left;
@@ -40,6 +40,11 @@ int to_mnemonic_symbol(char *str, int len) {
     文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
     ツリーになかった場合は追加してvalueを返します。
 */
+    if( NULL == mnemonic_root.name ){
+        mnemonic_root.name = str;
+        mnemonic_root.value = mnemonic_id;
+        return mnemonic_root.value;
+    }
     struct Node* cur_node = &mnemonic_root;
     int value = search_symbol(str, cur_node);
     if( -1 == value ){ //ツリーになかった場合
@@ -47,7 +52,7 @@ int to_mnemonic_symbol(char *str, int len) {
         char* new_name = malloc(sizeof(char)*(len+1));
         strcpy(new_name,str);
         new_node.name = new_name;
-        new_node.value = value + 1;
+        new_node.value = mnemonic_id++;
 
         int cur_strcmp = strcmp(str,cur_node->name);
         if( 0 > cur_strcmp ){ 
