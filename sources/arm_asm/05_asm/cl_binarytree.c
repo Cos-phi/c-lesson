@@ -22,17 +22,18 @@ int search_symbol(char *str, struct Node *inout_node) {
     文字列と、ツリーのルートのノードのポインタを受け取って、ノードのポインタを更新しながらツリーをたどります。
     ツリーに見つかったらvalueを返します。ツリーになかった場合は、-1を返します。
 */
-    while(NULL != inout_node->name){
+    while(NULL != inout_node){
         int cur_strcmp = strcmp(str,inout_node->name);
-        if( 0 > cur_strcmp ){ 
-            inout_node = inout_node->left;
-        }else if( 0 < cur_strcmp ){ 
-            inout_node = inout_node->right;
-        }else {// 0 == cur_strcmp
+        if( 0 == cur_strcmp ){
             return inout_node->value;
+        }else if( 0 > cur_strcmp && NULL != inout_node->left){ 
+            inout_node = inout_node->left;
+        }else if( 0 < cur_strcmp && NULL != inout_node->right){ 
+            inout_node = inout_node->right;
+        }else {
+            return -1;
         }
     }
-    return -1;
 }
 
 int to_mnemonic_symbol(char *str, int len) {
@@ -41,30 +42,35 @@ int to_mnemonic_symbol(char *str, int len) {
     ツリーになかった場合は追加してvalueを返します。
 */
     if( NULL == mnemonic_root.name ){
-        mnemonic_root.name = str;
+        mnemonic_root.name = (char*)malloc(sizeof(char)*(len+1));
+        strcpy(mnemonic_root.name,str);
         mnemonic_root.value = mnemonic_id;
+        mnemonic_root.left = NULL;
+        mnemonic_root.right = NULL;
         return mnemonic_root.value;
     }
     struct Node* cur_node = &mnemonic_root;
     int value = search_symbol(str, cur_node);
     if( -1 == value ){ //ツリーになかった場合
-        struct Node new_node;
-        char* new_name = malloc(sizeof(char)*(len+1));
-        strcpy(new_name,str);
-        new_node.name = new_name;
-        new_node.value = mnemonic_id++;
+        struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
+        new_node->name = (char*)malloc(sizeof(char)*(len+1));
+        strcpy(new_node->name,str);
+        new_node->value = mnemonic_id++;
+        new_node->left = NULL;
+        new_node->right = NULL;
 
         int cur_strcmp = strcmp(str,cur_node->name);
         if( 0 > cur_strcmp ){ 
-            cur_node->left = &new_node;
+            cur_node->left = new_node;
         }else if( 0 < cur_strcmp ){ 
-            cur_node->right = &new_node;
+            cur_node->right = new_node;
         }else {// 0 == cur_strcmp
             abort();
         }
-        //↑ここ、先に呼び出したsearch_sybolの中で既にやった比較をもう一回やっているがかっこよくありませんのよね。どうにかできる（するべき？）ものかしら？
-
-        return new_node.value;
+        /*↑ここ、先に呼び出したsearch_sybolの中で既にやった比較をもう一回やっているのが
+        かっこよくありませんのよね。どうにかできる（するべき？）ものかしら？
+        */
+       return new_node->value;
     }else{
         return value;
     }
