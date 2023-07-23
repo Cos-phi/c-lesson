@@ -17,20 +17,23 @@ int mnemonic_id = 1;
 int label_id = 10000;
 
 
-int search_symbol(char *str, struct Node *inout_node) {
+int search_symbol(char *str, struct Node **inout_node) {
 /*
     文字列と、ツリーのルートのノードのポインタを受け取って、ノードのポインタを更新しながらツリーをたどります。
     ツリーに見つかったらvalueを返します。ツリーになかった場合は、-1を返します。
 */
-    while(NULL != inout_node){
-        int cur_strcmp = strcmp(str,inout_node->name);
+    struct Node* cur_node = *inout_node;
+    while(NULL != cur_node){
+        int cur_strcmp = strcmp(str,cur_node->name);
         if( 0 == cur_strcmp ){
-            return inout_node->value;
-        }else if( 0 > cur_strcmp && NULL != inout_node->left){ 
-            inout_node = inout_node->left;
-        }else if( 0 < cur_strcmp && NULL != inout_node->right){ 
-            inout_node = inout_node->right;
+            *inout_node = cur_node;
+            return cur_node->value;
+        }else if( 0 > cur_strcmp && NULL != cur_node->left){ 
+            cur_node = cur_node->left;
+        }else if( 0 < cur_strcmp && NULL != cur_node->right){ 
+            cur_node = cur_node->right;
         }else {
+            *inout_node = cur_node;
             return -1;
         }
     }
@@ -44,13 +47,13 @@ int to_mnemonic_symbol(char *str, int len) {
     if( NULL == mnemonic_root.name ){
         mnemonic_root.name = (char*)malloc(sizeof(char)*(len+1));
         strcpy(mnemonic_root.name,str);
-        mnemonic_root.value = mnemonic_id;
+        mnemonic_root.value = mnemonic_id++;
         mnemonic_root.left = NULL;
         mnemonic_root.right = NULL;
         return mnemonic_root.value;
     }
     struct Node* cur_node = &mnemonic_root;
-    int value = search_symbol(str, cur_node);
+    int value = search_symbol(str, &cur_node);
     if( -1 == value ){ //ツリーになかった場合
         struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
         new_node->name = (char*)malloc(sizeof(char)*(len+1));
@@ -70,7 +73,7 @@ int to_mnemonic_symbol(char *str, int len) {
         /*↑ここ、先に呼び出したsearch_sybolの中で既にやった比較をもう一回やっているのが
         かっこよくありませんのよね。どうにかできる（するべき？）ものかしら？
         */
-       return new_node->value;
+        return new_node->value;
     }else{
         return value;
     }

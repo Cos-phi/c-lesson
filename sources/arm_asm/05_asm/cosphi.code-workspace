@@ -8,7 +8,8 @@
 		"files.associations": {
 			"sstream": "c",
 			"string.h": "c",
-			"stdio.h": "c"
+			"stdio.h": "c",
+			"typeinfo": "c"
 		},
 		"editor.fontFamily": "PlemolJP35, HackGen35, Consolas, 'Courier New', monospace"
 	}
