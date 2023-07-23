@@ -1,3 +1,4 @@
 *.out
 .jekyll-cache/
 _site/
+sources/arm_asm/05_asm/.vscode/settings.json

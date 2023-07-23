@@ -22,7 +22,8 @@
                 "-g",
                 "*.c",
                 "-o",
-                "${fileDirname}/a.out"
+                "${fileDirname}/a.out",
+                "-fsanitize=address"
             ],
             "options": {
                 "cwd": "${fileDirname}"

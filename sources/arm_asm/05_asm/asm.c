@@ -655,7 +655,7 @@ static void test_asm_ks(){
     FILE* actual_fp = fopen(output_file,"rb");
     int actual_words[4];
     fread(actual_words,sizeof(int),4,actual_fp);
-    fclose(output_fp);
+    fclose(actual_fp);
     for (int i = 0; i < 4; i++){
         assert( expect_words[i] == actual_words[i] );
     }
