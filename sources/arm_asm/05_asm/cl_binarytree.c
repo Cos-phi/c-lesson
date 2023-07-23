@@ -19,8 +19,9 @@ int label_id = 10000;
 
 int search_symbol(char *str, struct Node **inout_node) {
 /*
-    文字列と、ツリーのルートのノードのポインタを受け取って、ノードのポインタを更新しながらツリーをたどります。
-    ツリーに見つかったらvalueを返します。ツリーになかった場合は、-1を返します。
+    文字列と、ツリーのルートのノードのポインタを受け取って、ツリーをたどります。
+    ツリーに見つかったらvalueを返します。ツリーになかった場合は-1を返します。
+    ノードはそのときのノードに更新されます
 */
     struct Node* cur_node = *inout_node;
     while(NULL != cur_node){
@@ -44,7 +45,7 @@ int to_mnemonic_symbol(char *str, int len) {
     文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
     ツリーになかった場合は追加してvalueを返します。
 */
-    if( NULL == mnemonic_root.name ){
+    if( NULL == mnemonic_root.name ){ 
         mnemonic_root.name = (char*)malloc(sizeof(char)*(len+1));
         strcpy(mnemonic_root.name,str);
         mnemonic_root.value = mnemonic_id++;
