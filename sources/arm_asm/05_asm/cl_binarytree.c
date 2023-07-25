@@ -95,7 +95,32 @@ static void test_func_to_mnemonic_symbol(){
     assert( value2 == to_mnemonic_symbol("mue",3));
     assert( value3 == to_mnemonic_symbol("meu",3));
 }
+static void test_func_to_mnemonic_symbol_2(){
+    char* input1 = "aja";
+    char* input2 = "mue";
+    char* input3 = "meu";
+    char* input4 = "muemue";
+    char* input5 = "meuuuu";
+    char* input6 = "mochimochi";
+/*
+    expect: to_mnemonic_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
+*/
+    int value1 = to_mnemonic_symbol(input1,3);
+    int value2 = to_mnemonic_symbol(input2,3);
+    int value3 = to_mnemonic_symbol(input3,3);
+    int value4 = to_mnemonic_symbol(input4,6);
+    int value5 = to_mnemonic_symbol(input5,6);
+    int value6 = to_mnemonic_symbol(input6,10);
+
+    assert( value1 == to_mnemonic_symbol("aja",3));
+    assert( value2 == to_mnemonic_symbol("mue",3));
+    assert( value3 == to_mnemonic_symbol("meu",3));
+    assert( value4 == to_mnemonic_symbol("muemue",6));
+    assert( value5 == to_mnemonic_symbol("meuuuu",6));
+    assert( value6 == to_mnemonic_symbol("mochimochi",10));
+}
 
 void cl_binarytree_unittests(){
     test_func_to_mnemonic_symbol();
+    test_func_to_mnemonic_symbol_2();
 }
