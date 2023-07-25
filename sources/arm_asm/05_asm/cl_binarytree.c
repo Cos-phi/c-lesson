@@ -76,9 +76,13 @@ int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
         かっこよくありませんのよね。どうにかできる（するべき？）ものかしら？
 
         2023-7-25
-        リーフもleft,rightに空(NodeとしてはmallocされているけれどnameはNULL)のノードをぶら下げている‥‥
+        リーフもleft,rightに空(NodeとしてはmallocされているけれどnameとかはNULL)のノードをぶら下げている‥‥
         という作りにすればstrcmpとその下の分岐を1回で済ませられそうと気が付いたのですけれど、
         これはこれでメモリがもったいない気もしますのよね。
+
+        2023-7-25_2
+        単に、search_symbolが最後のstrempの値を返せばとりあえずstrcmpは一回で済ませられますわね。
+        正負の判断は残っちゃいますけれど
         */
         return new_node->value;
     }else{
