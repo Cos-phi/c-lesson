@@ -21,7 +21,7 @@ int search_symbol(char *str, struct Node **inout_node) {
 /*
     文字列と、ツリーのルートのノードのポインタを受け取って、ツリーをたどります。
     ツリーに見つかったら1を、ツリーになかった場合は0を返します。
-    ノードのポインタはその文字列が入っている/入るべきノードに更新されます。
+    ノードのポインタは、その文字列が 入っているノード/入るべき空ノード に更新されます。
 */
     struct Node* cur_node = *inout_node;
     while(NULL != cur_node->name){
@@ -66,6 +66,9 @@ int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
 int to_mnemonic_symbol(char *str, int len) {
     return to_symbol(str,len,&mnemonic_root,&mnemonic_id);
 }
+int to_label_symbol(char *str, int len) {
+    return to_symbol(str,len,&label_root,&label_id);
+}
 
 static void test_func_to_mnemonic_symbol(){
     char* input1 = "aja";
@@ -106,8 +109,24 @@ static void test_func_to_mnemonic_symbol_2(){
     assert( value5 == to_mnemonic_symbol("aaaaaa",6));
     assert( value6 == to_mnemonic_symbol("mochimochi",10));
 }
+static void test_func_to_label_symbol(){
+    char* input1 = "aja";
+    char* input2 = "mue";
+    char* input3 = "meu";
+/*
+    expect: to_label_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
+*/
+    int value1 = to_label_symbol(input1,3);
+    int value2 = to_label_symbol(input2,3);
+    int value3 = to_label_symbol(input3,3);
+
+    assert( value1 == to_label_symbol("aja",3));
+    assert( value2 == to_label_symbol("mue",3));
+    assert( value3 == to_label_symbol("meu",3));
+}
 
 void cl_binarytree_unittests(){
     test_func_to_mnemonic_symbol();
     test_func_to_mnemonic_symbol_2();
+    test_func_to_label_symbol();
 }
