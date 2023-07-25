@@ -54,10 +54,10 @@ void set_new_node(char *str, int len, struct Node* new_node, int* id){
 
 int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
 /*
-    文字列とノードを受け取って、ノード以下のツリーにおけるvalueを返します。
+    文字列とノード（ルート）を受け取って、ノード以下のツリーにおけるvalueを返します。
     ツリーになかった場合は追加してvalueを返します。
 */
-    if( 0 == search_symbol(str, &cur_node) ){ //ツリーになかった場合
+    if( 0 == search_symbol(str, &cur_node) ){ 
         set_new_node(str,len,cur_node,id);
     }
     return cur_node->value;
@@ -66,6 +66,7 @@ int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
 int to_mnemonic_symbol(char *str, int len) {
     return to_symbol(str,len,&mnemonic_root,&mnemonic_id);
 }
+
 int to_label_symbol(char *str, int len) {
     return to_symbol(str,len,&label_root,&label_id);
 }
@@ -81,9 +82,9 @@ static void test_func_to_mnemonic_symbol(){
     int value2 = to_mnemonic_symbol(input2,3);
     int value3 = to_mnemonic_symbol(input3,3);
 
-    assert( value1 == to_mnemonic_symbol("aja",3));
-    assert( value2 == to_mnemonic_symbol("mue",3));
-    assert( value3 == to_mnemonic_symbol("meu",3));
+    assert( 1 == to_mnemonic_symbol("aja",3));
+    assert( 2 == to_mnemonic_symbol("mue",3));
+    assert( 3 == to_mnemonic_symbol("meu",3));
 }
 static void test_func_to_mnemonic_symbol_2(){
     char* input1 = "aja";
@@ -102,12 +103,12 @@ static void test_func_to_mnemonic_symbol_2(){
     int value5 = to_mnemonic_symbol(input5,6);
     int value6 = to_mnemonic_symbol(input6,10);
 
-    assert( value1 == to_mnemonic_symbol("aja",3));
-    assert( value2 == to_mnemonic_symbol("mue",3));
-    assert( value3 == to_mnemonic_symbol("meu",3));
-    assert( value4 == to_mnemonic_symbol("muemue",6));
-    assert( value5 == to_mnemonic_symbol("aaaaaa",6));
-    assert( value6 == to_mnemonic_symbol("mochimochi",10));
+    assert( 1 == to_mnemonic_symbol("aja",3));
+    assert( 2 == to_mnemonic_symbol("mue",3));
+    assert( 3 == to_mnemonic_symbol("meu",3));
+    assert( 4 == to_mnemonic_symbol("muemue",6));
+    assert( 5 == to_mnemonic_symbol("aaaaaa",6));
+    assert( 6 == to_mnemonic_symbol("mochimochi",10));
 }
 static void test_func_to_label_symbol(){
     char* input1 = "aja";
@@ -120,9 +121,9 @@ static void test_func_to_label_symbol(){
     int value2 = to_label_symbol(input2,3);
     int value3 = to_label_symbol(input3,3);
 
-    assert( value1 == to_label_symbol("aja",3));
-    assert( value2 == to_label_symbol("mue",3));
-    assert( value3 == to_label_symbol("meu",3));
+    assert( 10000 == to_label_symbol("aja",3));
+    assert( 10001 == to_label_symbol("mue",3));
+    assert( 10002 == to_label_symbol("meu",3));
 }
 
 void cl_binarytree_unittests(){
