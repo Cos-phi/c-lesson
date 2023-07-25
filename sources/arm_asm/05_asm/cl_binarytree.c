@@ -40,26 +40,25 @@ int search_symbol(char *str, struct Node **inout_node) {
     }
 }
 
-int to_mnemonic_symbol(char *str, int len) {
+int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
 /*
-    文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
+    文字列とノードを受け取って、ノード以下のツリーにおけるvalueを返します。
     ツリーになかった場合は追加してvalueを返します。
 */
-    if( NULL == mnemonic_root.name ){ 
-        mnemonic_root.name = (char*)malloc(sizeof(char)*(len+1));
-        strcpy(mnemonic_root.name,str);
-        mnemonic_root.value = mnemonic_id++;
-        mnemonic_root.left = NULL;
-        mnemonic_root.right = NULL;
-        return mnemonic_root.value;
+    if( NULL == cur_node->name ){ 
+        cur_node->name = (char*)malloc(sizeof(char)*(len+1));
+        strcpy(cur_node->name,str);
+        cur_node->value = *id++;
+        cur_node->left = NULL;
+        cur_node->right = NULL;
+        return cur_node->value;
     }
-    struct Node* cur_node = &mnemonic_root;
     int value = search_symbol(str, &cur_node);
     if( -1 == value ){ //ツリーになかった場合
         struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
         new_node->name = (char*)malloc(sizeof(char)*(len+1));
         strcpy(new_node->name,str);
-        new_node->value = mnemonic_id++;
+        new_node->value = *id++;
         new_node->left = NULL;
         new_node->right = NULL;
 
@@ -78,6 +77,13 @@ int to_mnemonic_symbol(char *str, int len) {
     }else{
         return value;
     }
+}
+
+int to_mnemonic_symbol(char *str, int len) {
+/*
+    文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
+*/
+    int value = to_symbol(str,len,&mnemonic_root,&mnemonic_id);
 }
 
 static void test_func_to_mnemonic_symbol(){
