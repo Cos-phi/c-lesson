@@ -38,6 +38,7 @@ int search_symbol(char *str, struct Node **inout_node) {
             return -1;
         }
     }
+    abort();
 }
 
 void set_new_node(char *str, int len, struct Node* new_node, int* id){
@@ -76,8 +77,8 @@ int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
 
         2023-7-25
         リーフもleft,rightに空(NodeとしてはmallocされているけれどnameはNULL)のノードをぶら下げている‥‥
-        という作りにすればstrcmpを1回で済ませられそうと気が付いたのですけれど、
-        これはこれでメモリがもったいない気もしますのよね
+        という作りにすればstrcmpとその下の分岐を1回で済ませられそうと気が付いたのですけれど、
+        これはこれでメモリがもったいない気もしますのよね。
         */
         return new_node->value;
     }else{
