@@ -20,7 +20,7 @@ int label_id = 10000;
 int search_symbol(char *str, struct Node **inout_node) {
 /*
     文字列と、ツリーのルートのノードのポインタを受け取って、ツリーをたどります。
-    ツリーに見つかったらvalueを返します。ツリーになかった場合は-1を返します。
+    ツリーに見つかったら1を、ツリーになかった場合は0を返します。
     ノードのポインタはその文字列が入っている/入るべきノードに更新されます。
 */
     struct Node* cur_node = *inout_node;
@@ -32,11 +32,11 @@ int search_symbol(char *str, struct Node **inout_node) {
             cur_node = cur_node->right;
         }else{ // 0 == cur_strcmp 
             *inout_node = cur_node;
-            return cur_node->value;
+            return 1;
         }
     }
     *inout_node = cur_node;
-    return -1;
+    return 0;
 }
 
 void init_empty_node(struct Node** empty_node){
@@ -57,13 +57,10 @@ int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
     文字列とノードを受け取って、ノード以下のツリーにおけるvalueを返します。
     ツリーになかった場合は追加してvalueを返します。
 */
-    int value = search_symbol(str, &cur_node);
-    if( -1 == value ){ //ツリーになかった場合
+    if( 0 == search_symbol(str, &cur_node) ){ //ツリーになかった場合
         set_new_node(str,len,cur_node,id);
-        return cur_node->value;
-    }else{
-        return value;
     }
+    return cur_node->value;
 }
 
 int to_mnemonic_symbol(char *str, int len) {
@@ -90,7 +87,7 @@ static void test_func_to_mnemonic_symbol_2(){
     char* input2 = "mue";
     char* input3 = "meu";
     char* input4 = "muemue";
-    char* input5 = "meuuuu";
+    char* input5 = "aaaaaa";
     char* input6 = "mochimochi";
 /*
     expect: to_mnemonic_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
@@ -106,7 +103,7 @@ static void test_func_to_mnemonic_symbol_2(){
     assert( value2 == to_mnemonic_symbol("mue",3));
     assert( value3 == to_mnemonic_symbol("meu",3));
     assert( value4 == to_mnemonic_symbol("muemue",6));
-    assert( value5 == to_mnemonic_symbol("meuuuu",6));
+    assert( value5 == to_mnemonic_symbol("aaaaaa",6));
     assert( value6 == to_mnemonic_symbol("mochimochi",10));
 }
 
