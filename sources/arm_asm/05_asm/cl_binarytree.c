@@ -80,10 +80,7 @@ int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
 }
 
 int to_mnemonic_symbol(char *str, int len) {
-/*
-    文字列を受け取って、mnemonicのツリーにおけるvalueを返します。
-*/
-    int value = to_symbol(str,len,&mnemonic_root,&mnemonic_id);
+    return to_symbol(str,len,&mnemonic_root,&mnemonic_id);
 }
 
 static void test_func_to_mnemonic_symbol(){
