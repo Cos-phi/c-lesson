@@ -26,18 +26,26 @@ int search_symbol(char *str, struct Node **inout_node) {
     struct Node* cur_node = *inout_node;
     while(NULL != cur_node){
         int cur_strcmp = strcmp(str,cur_node->name);
-        if( 0 == cur_strcmp ){
-            *inout_node = cur_node;
-            return cur_node->value;
-        }else if( 0 > cur_strcmp && NULL != cur_node->left){ 
+        if( 0 > cur_strcmp && NULL != cur_node->left){ 
             cur_node = cur_node->left;
         }else if( 0 < cur_strcmp && NULL != cur_node->right){ 
             cur_node = cur_node->right;
+        }else if( 0 == cur_strcmp ){
+            *inout_node = cur_node;
+            return cur_node->value;
         }else {
             *inout_node = cur_node;
             return -1;
         }
     }
+}
+
+void set_new_node(char *str, int len, struct Node* new_node, int* id){
+    new_node->name = (char*)malloc(sizeof(char)*(len+1));
+    strcpy(new_node->name,str);
+    new_node->value = *id++;
+    new_node->left = NULL;
+    new_node->right = NULL;
 }
 
 int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
@@ -46,21 +54,13 @@ int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
     ツリーになかった場合は追加してvalueを返します。
 */
     if( NULL == cur_node->name ){ 
-        cur_node->name = (char*)malloc(sizeof(char)*(len+1));
-        strcpy(cur_node->name,str);
-        cur_node->value = *id++;
-        cur_node->left = NULL;
-        cur_node->right = NULL;
+        set_new_node(str,len,cur_node,id);
         return cur_node->value;
     }
     int value = search_symbol(str, &cur_node);
     if( -1 == value ){ //ツリーになかった場合
         struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
-        new_node->name = (char*)malloc(sizeof(char)*(len+1));
-        strcpy(new_node->name,str);
-        new_node->value = *id++;
-        new_node->left = NULL;
-        new_node->right = NULL;
+        set_new_node(str,len,new_node,id);
 
         int cur_strcmp = strcmp(str,cur_node->name);
         if( 0 > cur_strcmp ){ 
@@ -70,8 +70,14 @@ int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
         }else {// 0 == cur_strcmp
             abort();
         }
-        /*↑ここ、先に呼び出したsearch_sybolの中で既にやった比較をもう一回やっているのが
+        /*めも
+        ↑ここ、先に呼び出したsearch_sybolの中で既にやった比較strcmpをもう一回やっているのが
         かっこよくありませんのよね。どうにかできる（するべき？）ものかしら？
+
+        2023-7-25
+        リーフもleft,rightに空(NodeとしてはmallocされているけれどnameはNULL)のノードをぶら下げている‥‥
+        という作りにすればstrcmpを1回で済ませられそうと気が付いたのですけれど、
+        これはこれでメモリがもったいない気もしますのよね
         */
         return new_node->value;
     }else{
