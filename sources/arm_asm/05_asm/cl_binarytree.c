@@ -21,32 +21,35 @@ int search_symbol(char *str, struct Node **inout_node) {
 /*
     文字列と、ツリーのルートのノードのポインタを受け取って、ツリーをたどります。
     ツリーに見つかったらvalueを返します。ツリーになかった場合は-1を返します。
-    ノードはそのときのノードに更新されます
+    ノードのポインタはその文字列が入っている/入るべきノードに更新されます。
 */
     struct Node* cur_node = *inout_node;
-    while(NULL != cur_node){
+    while(NULL != cur_node->name){
         int cur_strcmp = strcmp(str,cur_node->name);
-        if( 0 > cur_strcmp && NULL != cur_node->left){ 
+        if( 0 > cur_strcmp ){ 
             cur_node = cur_node->left;
-        }else if( 0 < cur_strcmp && NULL != cur_node->right){ 
+        }else if( 0 < cur_strcmp ){ 
             cur_node = cur_node->right;
-        }else if( 0 == cur_strcmp ){
+        }else{ // 0 == cur_strcmp 
             *inout_node = cur_node;
             return cur_node->value;
-        }else {
-            *inout_node = cur_node;
-            return -1;
         }
     }
-    abort();
+    *inout_node = cur_node;
+    return -1;
+}
+
+void init_empty_node(struct Node** empty_node){
+    *empty_node = (struct Node*)malloc(sizeof(struct Node));
+    (*empty_node)->name = NULL;
 }
 
 void set_new_node(char *str, int len, struct Node* new_node, int* id){
     new_node->name = (char*)malloc(sizeof(char)*(len+1));
     strcpy(new_node->name,str);
-    new_node->value = *id++;
-    new_node->left = NULL;
-    new_node->right = NULL;
+    new_node->value = (*id)++;
+    init_empty_node(&(new_node->left));
+    init_empty_node(&(new_node->right));
 }
 
 int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
@@ -54,37 +57,10 @@ int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
     文字列とノードを受け取って、ノード以下のツリーにおけるvalueを返します。
     ツリーになかった場合は追加してvalueを返します。
 */
-    if( NULL == cur_node->name ){ 
-        set_new_node(str,len,cur_node,id);
-        return cur_node->value;
-    }
     int value = search_symbol(str, &cur_node);
     if( -1 == value ){ //ツリーになかった場合
-        struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
-        set_new_node(str,len,new_node,id);
-
-        int cur_strcmp = strcmp(str,cur_node->name);
-        if( 0 > cur_strcmp ){ 
-            cur_node->left = new_node;
-        }else if( 0 < cur_strcmp ){ 
-            cur_node->right = new_node;
-        }else {// 0 == cur_strcmp
-            abort();
-        }
-        /*めも
-        ↑ここ、先に呼び出したsearch_sybolの中で既にやった比較strcmpをもう一回やっているのが
-        かっこよくありませんのよね。どうにかできる（するべき？）ものかしら？
-
-        2023-7-25
-        リーフもleft,rightに空(NodeとしてはmallocされているけれどnameとかはNULL)のノードをぶら下げている‥‥
-        という作りにすればstrcmpとその下の分岐を1回で済ませられそうと気が付いたのですけれど、
-        これはこれでメモリがもったいない気もしますのよね。
-
-        2023-7-25_2
-        単に、search_symbolが最後のstrempの値を返せばとりあえずstrcmpは一回で済ませられますわね。
-        正負の判断は残っちゃいますけれど
-        */
-        return new_node->value;
+        set_new_node(str,len,cur_node,id);
+        return cur_node->value;
     }else{
         return value;
     }
