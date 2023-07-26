@@ -30,8 +30,10 @@ struct Node {
 struct Node mnemonic_root;
 struct Node label_root;
 
-int mnemonic_id = 1;
-int label_id = 10000;
+#define MNEMONIC_ID_START 1
+#define LABEL_ID_START 10000
+int mnemonic_id = MNEMONIC_ID_START;
+int label_id = LABEL_ID_START;
 
 
 int search_symbol(char *str, struct Node **inout_node) {
@@ -89,13 +91,32 @@ int to_label_symbol(char *str, int len) {
     return to_symbol(str,len,&label_root,&label_id);
 }
 
+void reset_tree(struct Node* root_node){
+//  ルートのノードを受け取って、ツリーをリセットします。
+    root_node->name = NULL;
+    root_node->value = 0;
+    root_node->right = NULL;
+    root_node->left = NULL;
+}
+
+void reset_mnemonic_tree(){
+    reset_tree(&mnemonic_root);
+    mnemonic_id = MNEMONIC_ID_START;
+}
+
+void reset_label_tree(){
+    reset_tree(&label_root);
+    label_id = LABEL_ID_START;
+}
+
 static void test_func_to_mnemonic_symbol(){
     char* input1 = "aja";
     char* input2 = "mue";
     char* input3 = "meu";
-/*
+    /*
     expect: to_mnemonic_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
-*/
+    */  
+    reset_mnemonic_tree();
     int value1 = to_mnemonic_symbol(input1,3);
     int value2 = to_mnemonic_symbol(input2,3);
     int value3 = to_mnemonic_symbol(input3,3);
@@ -103,6 +124,9 @@ static void test_func_to_mnemonic_symbol(){
     assert( 1 == to_mnemonic_symbol("aja",3));
     assert( 2 == to_mnemonic_symbol("mue",3));
     assert( 3 == to_mnemonic_symbol("meu",3));
+    assert( value1 == to_mnemonic_symbol("aja",3));
+    assert( value2 == to_mnemonic_symbol("mue",3));
+    assert( value3 == to_mnemonic_symbol("meu",3));
 }
 static void test_func_to_mnemonic_symbol_2(){
     char* input1 = "meu";
@@ -111,9 +135,10 @@ static void test_func_to_mnemonic_symbol_2(){
     char* input4 = "muemue";
     char* input5 = "aaaaaa";
     char* input6 = "mochimochi";
-/*
+    /*
     expect: to_mnemonic_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
-*/
+    */
+    reset_mnemonic_tree();
     int value1 = to_mnemonic_symbol(input1,3);
     int value2 = to_mnemonic_symbol(input2,3);
     int value3 = to_mnemonic_symbol(input3,3);
@@ -127,14 +152,21 @@ static void test_func_to_mnemonic_symbol_2(){
     assert( 4 == to_mnemonic_symbol("muemue",6));
     assert( 5 == to_mnemonic_symbol("aaaaaa",6));
     assert( 6 == to_mnemonic_symbol("mochimochi",10));
+    assert( value1 == to_mnemonic_symbol("meu",3));
+    assert( value2 == to_mnemonic_symbol("mue",3));
+    assert( value3 == to_mnemonic_symbol("aja",3));
+    assert( value4 == to_mnemonic_symbol("muemue",6));
+    assert( value5 == to_mnemonic_symbol("aaaaaa",6));
+    assert( value6 == to_mnemonic_symbol("mochimochi",10));
 }
 static void test_func_to_label_symbol(){
     char* input1 = "aja";
     char* input2 = "mue";
     char* input3 = "meu";
-/*
+    /*
     expect: to_label_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
-*/
+    */
+    reset_label_tree();
     int value1 = to_label_symbol(input1,3);
     int value2 = to_label_symbol(input2,3);
     int value3 = to_label_symbol(input3,3);
@@ -142,6 +174,9 @@ static void test_func_to_label_symbol(){
     assert( 10000 == to_label_symbol("aja",3));
     assert( 10001 == to_label_symbol("mue",3));
     assert( 10002 == to_label_symbol("meu",3));
+    assert( value1 == to_label_symbol("aja",3));
+    assert( value2 == to_label_symbol("mue",3));
+    assert( value3 == to_label_symbol("meu",3));
 }
 
 void cl_binarytree_unittests(){
