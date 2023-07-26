@@ -711,7 +711,7 @@ static void test_asm_file_init_emitter(){
     }
     remove(output_file);
 }
-static void unit_tests(){
+static void asm_unittests(){
     test_asm_mov();
     test_parse_one();
     test_parse_one_indent();
@@ -741,7 +741,7 @@ static void unit_tests(){
 }
 
 int main(int argc, char* argv[]){
-    unit_tests();
+    asm_unittests();
     cl_binarytree_unittests();
     if(3 == argc){
         asm_file(argv[1],argv[2]);
