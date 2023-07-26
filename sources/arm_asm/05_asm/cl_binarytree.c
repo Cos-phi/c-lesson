@@ -3,29 +3,29 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+struct Nodeで表現される3種類の要素で二分木を構成します。
+[NODE] ノード  name,valueに値を持ち、left,rightに一つ以上の[LEAF]または[NODE]のポインタを持ちます。
+[LEAF] リーフ  name,valueを値を持ち、left,rightに[]のポインタを持ちます。
+[]    空ノード nameがNULLにセットされています。
+
+4つの項目からなる二分木の例を以下に示します
+
+         [NODE]
+        //    \\
+     [NODE]   [LEAF]
+     /  \\     /  \
+    [] [LEAF] []  []
+        /  \
+       []  []
+
+*/
 struct Node {
     char *name;
     int value;
     struct Node *left;
     struct Node *right;
 };
-/*
-struct Nodeで表現される3種類の要素で二分木を構成します。
-[NODE] ノード  name,valueに値を持ち、left,rightに一つ以上の[LEAF]または[NODE]のポインタを持ちます。
-[LEAF] リーフ  name,valueを値を持ち、left,rightに[]のポインタを持ちます。
-[]    空ノード nameがNULL
-
-4つの項目からなる二分木の例を以下に示します
-
-     [NODE]
-      /  \
- [NODE]  [LEAF]
-  /  \     /  \
-[] [LEAF] []  []
-    /  \
-   []  []
-
-*/
 
 struct Node mnemonic_root;
 struct Node label_root;
@@ -35,11 +35,8 @@ int label_id = 10000;
 
 
 int search_symbol(char *str, struct Node **inout_node) {
-/*
-    文字列と、ツリーのルートのノードのポインタを受け取って、ツリーをたどります。
-    ツリーに見つかったら1を、ツリーになかった場合は0を返します。
-    ノードのポインタは、その文字列が 入っているノード/入るべき空ノード に更新されます。
-*/
+//  文字列と、ツリーのルートのノードのポインタを受け取って、ツリーに見つかったら1を、ツリーになかった場合は0を返します。
+//  ノードのポインタは、その文字列が 入っているノード・リーフ/入るべき空ノード に更新されます。
     struct Node* cur_node = *inout_node;
     while(NULL != cur_node->name){
         int cur_strcmp = strcmp(str,cur_node->name);
@@ -57,11 +54,13 @@ int search_symbol(char *str, struct Node **inout_node) {
 }
 
 void init_empty_node(struct Node** empty_node){
+//  空ノードを生成します。
     *empty_node = (struct Node*)malloc(sizeof(struct Node));
     (*empty_node)->name = NULL;
 }
 
-void set_new_node(char *str, int len, struct Node* new_node, int* id){
+void init_leaf(char *str, int len, struct Node* new_node, int* id){
+//  文字列と空ノードを受け取って、空ノードをリーフにします。
     new_node->name = (char*)malloc(sizeof(char)*(len+1));
     strcpy(new_node->name,str);
     new_node->value = (*id)++;
@@ -70,21 +69,23 @@ void set_new_node(char *str, int len, struct Node* new_node, int* id){
 }
 
 int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
-/*
-    文字列とノード（ルート）を受け取って、ノード以下のツリーにおけるvalueを返します。
-    ツリーになかった場合は追加してvalueを返します。
-*/
+//  文字列とノード（ルート）を受け取って、ノード以下のツリーにおけるvalueを返します。
+//  ツリーになかった場合は追加してvalueを返します。
     if( 0 == search_symbol(str, &cur_node) ){ 
-        set_new_node(str,len,cur_node,id);
+        init_leaf(str,len,cur_node,id);
     }
     return cur_node->value;
 }
 
 int to_mnemonic_symbol(char *str, int len) {
+//  文字列を受け取って、mnemonic treeにおけるvalueを返します。
+//  ツリーになかった場合は追加してvalueを返します。
     return to_symbol(str,len,&mnemonic_root,&mnemonic_id);
 }
 
 int to_label_symbol(char *str, int len) {
+//  文字列を受け取って、label treeにおけるvalueを返します。
+//  ツリーになかった場合は追加してvalueを返します。
     return to_symbol(str,len,&label_root,&label_id);
 }
 
