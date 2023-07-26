@@ -7,7 +7,7 @@
 struct Nodeで表現される3種類の要素で二分木を構成します。
 [NODE] ノード  name,valueに値を持ち、left,rightに一つ以上の[LEAF]または[NODE]のポインタを持ちます。
 [LEAF] リーフ  name,valueを値を持ち、left,rightに[]のポインタを持ちます。
-[]    空ノード nameがNULLにセットされています。
+[]    空ノード Nodeとしてはmallocされていて、nameがNULLにセットされています。
 
 4つの項目からなる二分木の例を以下に示します
 
