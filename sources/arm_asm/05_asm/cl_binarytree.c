@@ -105,9 +105,9 @@ static void test_func_to_mnemonic_symbol(){
     assert( 3 == to_mnemonic_symbol("meu",3));
 }
 static void test_func_to_mnemonic_symbol_2(){
-    char* input1 = "aja";
+    char* input1 = "meu";
     char* input2 = "mue";
-    char* input3 = "meu";
+    char* input3 = "aja";
     char* input4 = "muemue";
     char* input5 = "aaaaaa";
     char* input6 = "mochimochi";
@@ -121,9 +121,9 @@ static void test_func_to_mnemonic_symbol_2(){
     int value5 = to_mnemonic_symbol(input5,6);
     int value6 = to_mnemonic_symbol(input6,10);
 
-    assert( 1 == to_mnemonic_symbol("aja",3));
+    assert( 1 == to_mnemonic_symbol("meu",3));
     assert( 2 == to_mnemonic_symbol("mue",3));
-    assert( 3 == to_mnemonic_symbol("meu",3));
+    assert( 3 == to_mnemonic_symbol("aja",3));
     assert( 4 == to_mnemonic_symbol("muemue",6));
     assert( 5 == to_mnemonic_symbol("aaaaaa",6));
     assert( 6 == to_mnemonic_symbol("mochimochi",10));
