@@ -5,19 +5,19 @@
 
 /*
 struct Nodeで表現される3種類の要素で二分木を構成します。
-[NODE] ノード  name,valueに値を持ち、left,rightに一つ以上の[LEAF]または[NODE]のポインタを持ちます。
-[LEAF] リーフ  name,valueを値を持ち、left,rightに[]のポインタを持ちます。
-[]    空ノード Nodeとしてはmallocされていて、nameがNULLにセットされています。
+[NODE] ノード（節点）   name,valueに値を持ち、left,rightに一つ以上の[LEAF]または[NODE]のポインタを持ちます。
+[LEAF] リーフ（葉）     name,valueを値を持ち、left,rightに[]のポインタを持ちます。
+[BUD]  バド（新芽）     Nodeとしてはmallocされていて、nameがNULLにセットされています。
 
-4つの項目からなる二分木の例を以下に示します
+4つの項目（ノードとリーフ）からなる二分木の例を以下に示します
 
          [NODE]
         //    \\
-     [NODE]   [LEAF]
-     /  \\     /  \
-    [] [LEAF] []  []
-        /  \
-       []  []
+    [NODE]     [LEAF]
+    //  \       /  \
+ [LEAF] [BUD] [BUD] [BUD]
+   /  \
+[BUD] [BUD]
 
 */
 struct Node {
@@ -38,7 +38,7 @@ int label_id = LABEL_ID_START;
 
 int search_symbol(char *str, struct Node **inout_node) {
 //  文字列と、ツリーのルートのノードのポインタを受け取って、ツリーに見つかったら1を、ツリーになかった場合は0を返します。
-//  ノードのポインタは、その文字列が 入っているノード・リーフ/入るべき空ノード に更新されます。
+//  ノードのポインタは、その文字列が 入っているノード・リーフ/入るべきバド に更新されます。
     struct Node* cur_node = *inout_node;
     while(NULL != cur_node->name){
         int cur_strcmp = strcmp(str,cur_node->name);
@@ -55,19 +55,19 @@ int search_symbol(char *str, struct Node **inout_node) {
     return 0;
 }
 
-void init_empty_node(struct Node** empty_node){
-//  空ノードを生成します。
-    *empty_node = (struct Node*)malloc(sizeof(struct Node));
-    (*empty_node)->name = NULL;
+void init_bud(struct Node** bud){
+//  バドを生成します。
+    *bud = (struct Node*)malloc(sizeof(struct Node));
+    (*bud)->name = NULL;
 }
 
-void init_leaf(char *str, int len, struct Node* new_node, int* id){
-//  文字列と空ノードを受け取って、空ノードをリーフにします。
-    new_node->name = (char*)malloc(sizeof(char)*(len+1));
-    strcpy(new_node->name,str);
-    new_node->value = (*id)++;
-    init_empty_node(&(new_node->left));
-    init_empty_node(&(new_node->right));
+void init_leaf(char *str, int len, struct Node* new_leaf, int* id){
+//  文字列とバドを受け取って、バドをリーフにします。
+    new_leaf->name = (char*)malloc(sizeof(char)*(len+1));
+    strcpy(new_leaf->name,str);
+    new_leaf->value = (*id)++;
+    init_bud(&(new_leaf->left));
+    init_bud(&(new_leaf->right));
 }
 
 int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
