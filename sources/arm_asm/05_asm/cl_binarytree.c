@@ -35,7 +35,6 @@ struct Node label_root;
 int mnemonic_id = MNEMONIC_ID_START;
 int label_id = LABEL_ID_START;
 
-
 int search_symbol(char *str, struct Node **inout_node) {
 //  文字列と、ツリーのルートのノードのポインタを受け取って、ツリーに見つかったら1を、ツリーになかった場合は0を返します。
 //  ノードのポインタは、その文字列が 入っているノード・リーフ/入るべきバド に更新されます。
@@ -55,26 +54,26 @@ int search_symbol(char *str, struct Node **inout_node) {
     return 0;
 }
 
-void init_bud(struct Node** bud){
+void create_bud(struct Node** bud){
 //  バドを生成します。
     *bud = (struct Node*)malloc(sizeof(struct Node));
     (*bud)->name = NULL;
 }
 
-void init_leaf(char *str, int len, struct Node* new_leaf, int* id){
+void create_leaf(char *str, int len, struct Node* new_leaf, int* id){
 //  文字列とバドを受け取って、バドをリーフにします。
     new_leaf->name = (char*)malloc(sizeof(char)*(len+1));
     strcpy(new_leaf->name,str);
     new_leaf->value = (*id)++;
-    init_bud(&(new_leaf->left));
-    init_bud(&(new_leaf->right));
+    create_bud(&(new_leaf->left));
+    create_bud(&(new_leaf->right));
 }
 
 int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
 //  文字列とノード（ルート）を受け取って、ノード以下のツリーにおけるvalueを返します。
 //  ツリーになかった場合は追加してvalueを返します。
     if( 0 == search_symbol(str, &cur_node) ){ 
-        init_leaf(str,len,cur_node,id);
+        create_leaf(str,len,cur_node,id);
     }
     return cur_node->value;
 }
@@ -91,7 +90,7 @@ int to_label_symbol(char *str, int len) {
     return to_symbol(str,len,&label_root,&label_id);
 }
 
-void reset_tree(struct Node* root_node){
+void init_tree(struct Node* root_node){
 //  ルートのノードを受け取って、ツリーをリセットします。
     root_node->name = NULL;
     root_node->value = 0;
@@ -99,13 +98,13 @@ void reset_tree(struct Node* root_node){
     root_node->left = NULL;
 }
 
-void reset_mnemonic_tree(){
-    reset_tree(&mnemonic_root);
+void init_mnemonic_tree(){
+    init_tree(&mnemonic_root);
     mnemonic_id = MNEMONIC_ID_START;
 }
 
-void reset_label_tree(){
-    reset_tree(&label_root);
+void init_label_tree(){
+    init_tree(&label_root);
     label_id = LABEL_ID_START;
 }
 
@@ -116,7 +115,7 @@ static void test_func_to_mnemonic_symbol(){
     /*
     expect: to_mnemonic_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
     */  
-    reset_mnemonic_tree();
+    init_mnemonic_tree();
     int value1 = to_mnemonic_symbol(input1,3);
     int value2 = to_mnemonic_symbol(input2,3);
     int value3 = to_mnemonic_symbol(input3,3);
@@ -138,7 +137,7 @@ static void test_func_to_mnemonic_symbol_2(){
     /*
     expect: to_mnemonic_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
     */
-    reset_mnemonic_tree();
+    init_mnemonic_tree();
     int value1 = to_mnemonic_symbol(input1,3);
     int value2 = to_mnemonic_symbol(input2,3);
     int value3 = to_mnemonic_symbol(input3,3);
@@ -166,7 +165,7 @@ static void test_func_to_label_symbol(){
     /*
     expect: to_label_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
     */
-    reset_label_tree();
+    init_label_tree();
     int value1 = to_label_symbol(input1,3);
     int value2 = to_label_symbol(input2,3);
     int value3 = to_label_symbol(input3,3);
