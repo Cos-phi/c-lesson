@@ -1,10 +1,19 @@
 #include "clesson.h"
 #define PARSE_FAIL -1
+#define EMITTER_ARRAY_SIZE 250
 
 struct Substring {
     char *str;
     int len;
 };
+
+int substr_to_mnemonic_symbol(struct Substring substr){
+    return to_mnemonic_symbol(substr.str, substr.len);
+}
+
+int substr_to_label_symbol(struct Substring substr){
+    return to_label_symbol(substr.str, substr.len); 
+}
 
 int substreq(char* s1, struct Substring s2){
     if( 0 == strncmp(s1, s2.str, s2.len) ){
@@ -27,7 +36,6 @@ struct Emitter {
     int pos;
 };
 
-#define EMITTER_ARRAY_SIZE 250
 int array[EMITTER_ARRAY_SIZE]; 
 struct Emitter g_emitter = {array,0};
 
