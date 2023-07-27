@@ -244,6 +244,18 @@ int parse_one(char *str, struct Substring* out_subs){
     }
 }
 
+int mov_symbol;
+int ldr_symbol;
+int str_symbol;
+int raw_symbol;
+
+void init_mnemonic_sybols(){
+    mov_symbol = to_mnemonic_symbol("mov",3);
+    ldr_symbol = to_mnemonic_symbol("ldr",3);
+    str_symbol = to_mnemonic_symbol("str",3);
+    raw_symbol = to_mnemonic_symbol(".",1);
+}
+
 int asm_one(char* input){
 /*
     一行の文字列を32bitのバイナリにアセンブルして、intとしてreturnします。
@@ -749,13 +761,18 @@ static void asm_unittests(){
     test_asm_file_init_emitter();
 }
 
-int main(int argc, char* argv[]){
+static void unittests(){
     asm_unittests();
     cl_getline_unittests();
     cl_binarytree_unittests();
+}
+
+int main(int argc, char* argv[]){
+    init_mnemonic_sybols();
     if(3 == argc){
         asm_file(argv[1],argv[2]);
     }
+    unittests();
     return 0;
 }
 
