@@ -267,9 +267,8 @@ int asm_one(char* input){
     int read_len = parse_one(input, &opcode);
     input += read_len;
 
-    //int mnemonic_sybol_id = substr_to_mnemonic_symbol(opcode);
-
-    if( substreq("mov", opcode) ){ 
+    int mnemonic_sybol = substr_to_mnemonic_symbol(opcode);
+    if( mnemonic_sybol == mov_symbol ){
     /*
         movのケース
         e.g. "mov r1, r2"   -> Rdにr1が、Rmに2が入る
@@ -301,7 +300,7 @@ int asm_one(char* input){
         word |= immediate_op<<25;
         word |= operand2;  
         return word;
-    }else if( substreq(".", opcode)){ 
+    }else if( mnemonic_sybol == raw_symbol ){ 
     /*
         疑似命令.rawのケース
         e.g. ".raw 0x123456" 
@@ -315,7 +314,7 @@ int asm_one(char* input){
         int raw_value;
         read_len = parse_raw_value(input,&raw_value); 
         return raw_value;
-    }else  if( substreq("ldr", opcode) || substreq("str", opcode) ){ 
+    }else  if( mnemonic_sybol == ldr_symbol || mnemonic_sybol == str_symbol ){ 
     /*
         ldr または str のケース
         e.g. "ldr r1, [r2]"       -> Rdにr1が、Rnにr2が入る。
@@ -339,7 +338,7 @@ int asm_one(char* input){
         input += read_len;
         
         int word;
-        if( substreq("ldr", opcode) ) { 
+        if( mnemonic_sybol == ldr_symbol ) { 
             word = 0xE5900000 ; 
         }else{ // "str"
             word = 0xE5800000 ; 
