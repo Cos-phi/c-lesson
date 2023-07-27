@@ -40,7 +40,7 @@ int search_symbol(char *str, int len, struct Node **inout_node) {
 //  ノードのポインタは、その文字列が 入っているノード・リーフ/入るべきバド に更新されます。
     struct Node* cur_node = *inout_node;
     while(NULL != cur_node->name){
-        int cur_strcmp = strcmp(str,cur_node->name);
+        int cur_strcmp = strncmp(str,cur_node->name,len);
         if( 0 > cur_strcmp ){ 
             cur_node = cur_node->left;
         }else if( 0 < cur_strcmp ){ 
