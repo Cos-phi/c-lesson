@@ -35,7 +35,7 @@ struct Node label_root;
 int mnemonic_id = MNEMONIC_ID_START;
 int label_id = LABEL_ID_START;
 
-int search_symbol(char *str, struct Node **inout_node) {
+int search_symbol(char *str, int len, struct Node **inout_node) {
 //  文字列と、ツリーのルートのノードのポインタを受け取って、ツリーに見つかったら1を、ツリーになかった場合は0を返します。
 //  ノードのポインタは、その文字列が 入っているノード・リーフ/入るべきバド に更新されます。
     struct Node* cur_node = *inout_node;
@@ -72,7 +72,7 @@ void create_leaf(char *str, int len, struct Node* new_leaf, int* id){
 int to_symbol(char *str, int len, struct Node* cur_node, int* id) {
 //  文字列とノード（ルート）を受け取って、ノード以下のツリーにおけるvalueを返します。
 //  ツリーになかった場合は追加してvalueを返します。
-    if( 0 == search_symbol(str, &cur_node) ){ 
+    if( 0 == search_symbol(str, len, &cur_node) ){ 
         create_leaf(str,len,cur_node,id);
     }
     return cur_node->value;
@@ -158,6 +158,25 @@ static void test_func_to_mnemonic_symbol_2(){
     assert( value5 == to_mnemonic_symbol("aaaaaa",6));
     assert( value6 == to_mnemonic_symbol("mochimochi",10));
 }
+static void test_func_to_mnemonic_symbol_3(){
+    char* input1 = "aja";
+    char* input2 = "mue";
+    char* input3 = "meu";
+    /*
+    expect: to_mnemonic_symbolに同じ文字列（ただし、strに\0を含まず、文字数で指定したもの）を与えたとき、返り値のvalueが一致する
+    */  
+    init_mnemonic_tree();
+    int value1 = to_mnemonic_symbol(input1,3);
+    int value2 = to_mnemonic_symbol(input2,3);
+    int value3 = to_mnemonic_symbol(input3,3);
+
+    assert( 1 == to_mnemonic_symbol("aja",3));
+    assert( 2 == to_mnemonic_symbol("mue",3));
+    assert( 3 == to_mnemonic_symbol("meu",3));
+    assert( value1 == to_mnemonic_symbol("ajaaaaa",3));
+    assert( value2 == to_mnemonic_symbol("mueeeee",3));
+    assert( value3 == to_mnemonic_symbol("meuuuuu",3));
+}
 static void test_func_to_label_symbol(){
     char* input1 = "aja";
     char* input2 = "mue";
@@ -181,6 +200,7 @@ static void test_func_to_label_symbol(){
 void cl_binarytree_unittests(){
     test_func_to_mnemonic_symbol();
     test_func_to_mnemonic_symbol_2();
+    test_func_to_mnemonic_symbol_3();
     test_func_to_label_symbol();
     
     init_mnemonic_tree();

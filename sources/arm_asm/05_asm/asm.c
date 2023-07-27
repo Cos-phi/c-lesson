@@ -267,7 +267,7 @@ int asm_one(char* input){
     int read_len = parse_one(input, &opcode);
     input += read_len;
 
-    int mnemonic_sybol_id = substr_to_mnemonic_symbol(opcode);
+    //int mnemonic_sybol_id = substr_to_mnemonic_symbol(opcode);
 
     if( substreq("mov", opcode) ){ 
     /*
