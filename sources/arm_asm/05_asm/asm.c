@@ -266,6 +266,9 @@ int asm_one(char* input){
     struct Substring opcode; 
     int read_len = parse_one(input, &opcode);
     input += read_len;
+
+    int mnemonic_sybol_id = substr_to_mnemonic_symbol(opcode);
+
     if( substreq("mov", opcode) ){ 
     /*
         movのケース
