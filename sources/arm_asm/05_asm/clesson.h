@@ -4,9 +4,13 @@
 #include <assert.h>
 
 //cl_getline.c
-int cl_getline();
-void cl_getline_set_src();
-void cl_getline_set_file();
+int cl_getline(char **out_buf);
+void cl_getline_set_src(char* str);
+void cl_getline_set_file(FILE* input_file);
 
 //cl_binarytree.c
 void cl_binarytree_unittests();
+int to_mnemonic_symbol(char *str, int len);
+int to_label_symbol(char *str, int len);
+void init_mnemonic_tree();
+void init_label_tree();
