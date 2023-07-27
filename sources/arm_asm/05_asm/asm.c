@@ -742,6 +742,7 @@ static void asm_unittests(){
 
 int main(int argc, char* argv[]){
     asm_unittests();
+    cl_getline_unittests();
     cl_binarytree_unittests();
     if(3 == argc){
         asm_file(argv[1],argv[2]);

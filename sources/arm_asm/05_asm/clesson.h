@@ -4,6 +4,7 @@
 #include <assert.h>
 
 //cl_getline.c
+void cl_getline_unittests();
 int cl_getline(char **out_buf);
 void cl_getline_set_src(char* str);
 void cl_getline_set_file(FILE* input_file);
