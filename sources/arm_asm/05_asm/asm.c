@@ -6,12 +6,29 @@ struct Substring {
     int len;
 };
 
+int substreq(char* s1, struct Substring s2){
+    if( 0 == strncmp(s1, s2.str, s2.len) ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int streq(char* s1, char* s2){
+    if( 0 == strcmp(s1,s2) ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
 struct Emitter {
     int* words;
     int pos;
 };
 
-int array[250]; 
+#define EMITTER_ARRAY_SIZE 250
+int array[EMITTER_ARRAY_SIZE]; 
 struct Emitter g_emitter = {array,0};
 
 void init_emitter(struct Emitter* emitter){
@@ -34,22 +51,6 @@ void write_emitter_to_file(struct Emitter* emitter, FILE* fp){
 emitterと、モードwbでオープンされたファイルポインタを受け取って、emitterの中身をファイルに書き込みます。
 */    
     fwrite(emitter->words,sizeof(int),emitter->pos,fp);
-}
-
-int substreq(char* s1, struct Substring s2){
-    if( 0 == strncmp(s1, s2.str, s2.len) ){
-        return 1;
-    }else{
-        return 0;
-    }
-}
-
-int streq(char* s1, char* s2){
-    if( 0 == strcmp(s1,s2) ){
-        return 1;
-    }else{
-        return 0;
-    }
 }
 
 int skip_whitespace(char* str){
