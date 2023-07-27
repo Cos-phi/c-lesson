@@ -182,4 +182,7 @@ void cl_binarytree_unittests(){
     test_func_to_mnemonic_symbol();
     test_func_to_mnemonic_symbol_2();
     test_func_to_label_symbol();
+    
+    init_mnemonic_tree();
+    init_label_tree();
 }
