@@ -363,7 +363,15 @@ int asm_one(char* input){
             word |= abs(immediate_value);
         }
         return word;
-    }else{
+    }else{    
+        struct Substring suffix; 
+        input += parse_one(input, &suffix);
+        if(substreq(":",suffix)){
+        /*
+            ラベルの場合
+        */
+            
+        }
         return 0;
     }
 }
