@@ -265,6 +265,17 @@ int asm_one(char* input){
 */
     struct Substring opcode; 
     int read_len = parse_one(input, &opcode);
+
+    struct Substring suffix; 
+    parse_one(input, &suffix);
+    if(substreq(":",suffix)){
+        /*
+            ラベルの場合
+        */
+        //めも：ラベルになる文字列はstruct Substringの opcodeに入っている
+        return 0;
+    }
+
     input += read_len;
 
     int mnemonic_sybol = substr_to_mnemonic_symbol(opcode);
@@ -364,14 +375,6 @@ int asm_one(char* input){
         }
         return word;
     }else{    
-        struct Substring suffix; 
-        input += parse_one(input, &suffix);
-        if(substreq(":",suffix)){
-        /*
-            ラベルの場合
-        */
-            
-        }
         return 0;
     }
 }
