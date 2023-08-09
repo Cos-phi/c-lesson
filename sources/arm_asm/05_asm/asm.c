@@ -378,7 +378,6 @@ void asm_line(char* input, struct Emitter* emitter){
     /*
         ラベルの場合
     */
-        //めも：ラベルになる文字列はstruct Substringの substringに入っている
         int label_symbol = substr_to_label_symbol(substring);
     }else{
     /*
