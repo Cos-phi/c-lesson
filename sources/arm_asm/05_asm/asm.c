@@ -380,6 +380,10 @@ int asm_one(char* input){
     }
 }
 
+int asm_line(char* buf){
+    return asm_one(buf); 
+}
+
 void asm_file(char* input_filename, char* output_filename){
 /*    
     .ksファイルのファイル名と、出力ファイル名を受け取って
@@ -393,7 +397,7 @@ void asm_file(char* input_filename, char* output_filename){
     int line_number = 0;
     while( -1 != cl_getline(&buf) ){
         line_number++;
-        int oneword = asm_one(buf);
+        int oneword = asm_line(buf);
         emit_word(&g_emitter, oneword);
     }
     fclose(input_fp);  
