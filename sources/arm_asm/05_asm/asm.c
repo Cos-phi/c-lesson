@@ -389,11 +389,11 @@ void asm_file(char* input_filename, char* output_filename){
     cl_getline_set_file(input_fp);
     char* buf;
     init_emitter(&g_emitter);
-    int line_count = 0;
+    int line_number = 0;
     while( -1 != cl_getline(&buf) ){
+        line_number++;
         int oneword = asm_one(buf);
         emit_word(&g_emitter, oneword);
-        line_count++;
     }
     fclose(input_fp);  
     FILE* output_fp = fopen(output_filename,"wb");
