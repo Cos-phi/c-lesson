@@ -265,18 +265,6 @@ int asm_one(char* input){
 */
     struct Substring opcode; 
     int read_len = parse_one(input, &opcode);
-
-    struct Substring suffix; 
-    parse_one(input, &suffix);
-    if(substreq(":",suffix)){
-    /*
-        ラベルの場合
-    */
-        //めも：ラベルになる文字列はstruct Substringの opcodeに入っている
-        int label_symbol = substr_to_label_symbol(opcode);
-        return 0;
-    }
-
     input += read_len;
 
     int mnemonic_sybol = substr_to_mnemonic_symbol(opcode);
@@ -380,8 +368,25 @@ int asm_one(char* input){
     }
 }
 
-int asm_line(char* buf){
-    return asm_one(buf); 
+void asm_line(char* input, struct Emitter* emitter){
+    struct Substring substring; 
+    int read_len = parse_one(input, &substring);
+
+    struct Substring suffix; 
+    parse_one(input, &suffix);
+    if(substreq(":",suffix)){
+    /*
+        ラベルの場合
+    */
+        //めも：ラベルになる文字列はstruct Substringの substringに入っている
+        int label_symbol = substr_to_label_symbol(substring);
+    }else{
+    /*
+        ニーモニックの場合
+    */
+        int oneword = asm_one(input); 
+        emit_word(emitter, oneword);
+    }
 }
 
 void asm_file(char* input_filename, char* output_filename){
@@ -397,8 +402,7 @@ void asm_file(char* input_filename, char* output_filename){
     int line_number = 0;
     while( -1 != cl_getline(&buf) ){
         line_number++;
-        int oneword = asm_line(buf);
-        emit_word(&g_emitter, oneword);
+        asm_line(buf,&g_emitter);
     }
     fclose(input_fp);  
     FILE* output_fp = fopen(output_filename,"wb");
