@@ -269,10 +269,11 @@ int asm_one(char* input){
     struct Substring suffix; 
     parse_one(input, &suffix);
     if(substreq(":",suffix)){
-        /*
-            ラベルの場合
-        */
+    /*
+        ラベルの場合
+    */
         //めも：ラベルになる文字列はstruct Substringの opcodeに入っている
+        int label_symbol = substr_to_label_symbol(opcode);
         return 0;
     }
 
@@ -780,6 +781,7 @@ static void unittests(){
     asm_unittests();
     cl_getline_unittests();
     cl_binarytree_unittests();
+    dict_unittests();
 }
 
 int main(int argc, char* argv[]){

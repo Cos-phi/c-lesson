@@ -15,3 +15,6 @@ int to_mnemonic_symbol(char *str, int len);
 int to_label_symbol(char *str, int len);
 void init_mnemonic_tree();
 void init_label_tree();
+
+//dict.c
+void dict_unittests();
