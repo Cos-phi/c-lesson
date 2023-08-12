@@ -379,6 +379,7 @@ void asm_line(char* input, struct Emitter* emitter){
         ラベルの場合
     */
         int label_symbol = substr_to_label_symbol(substring);
+        //TODO なんとかする
     }else{
     /*
         ニーモニックの場合
