@@ -18,3 +18,6 @@ void init_label_tree();
 
 //dict.c
 void dict_unittests();
+void dict_put(int key, int value);
+int dict_get(int key, int* out_value);
+void dict_clear();
