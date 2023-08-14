@@ -401,6 +401,15 @@ int asm_one(char* input){
         ラベルの部分には000000を入れておき、解決が必要なものを集めるリスト（unresolved_items）に登録する。
     */    
         int word = 0xEA000000;
+
+        struct Substring label_str;
+        parse_one(input, &label_str);
+
+        //TODO unresolved_itemsに登録 
+        struct Unresolved_item unresolved_item;
+        unresolved_item.label_symbol = substr_to_label_symbol(label_str);
+        //unresolved_item.pos = cur_emitter_pos;
+        unresolved_item.mnemonic_symbol = mnemonic_sybol;
         return word;
     }else{
         return 0;
@@ -424,7 +433,7 @@ void asm_main(struct Emitter* emitter){
             ラベルの場合
         */
             int label_symbol = substr_to_label_symbol(stem);
-            address_put(label_symbol,g_emitter.pos); 
+            address_put(label_symbol,emitter->pos); 
         }else{
         /*
             ニーモニックの場合
@@ -435,7 +444,10 @@ void asm_main(struct Emitter* emitter){
     }
     struct Unresolved_item unresolved_item;
     while( 0 != get_unresolved_item(&unresolved_item)){
-        //TODO 2パス目のループ アドレスを更新する
+        /* めも
+        ここが2パス目のループ アドレスを更新します。
+        TOOD ここをかく。Emitterを書き換える関数を作る
+        */
     }
 }
 
