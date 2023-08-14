@@ -433,7 +433,10 @@ void asm_main(struct Emitter* emitter){
             emit_word(emitter, oneword);
         }
     }
-
+    struct Unresolved_item unresolved_item;
+    while( 0 != get_unresolved_item(&unresolved_item)){
+        //TODO 2パス目のループ アドレスを更新する
+    }
 }
 
 void asm_file(char* input_filename, char* output_filename){
