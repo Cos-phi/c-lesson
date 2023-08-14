@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#define DICT_ARRAY_SIZE 128
 
 struct KeyValue {
     int key;
     int value;
 };
 static int dict_pos = 0;
-static struct KeyValue dict_array[64];
+static struct KeyValue dict_array[DICT_ARRAY_SIZE];
 
 void dict_put(int key, int value){
     for(int i = 0; i < dict_pos; i++) {
