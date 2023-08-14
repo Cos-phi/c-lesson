@@ -68,30 +68,25 @@ struct Unresolved_item {
     int mnemonic_symbol;
 };
 struct Unresolved_item unresolved_items[UNRESOLVED_ARRAY_SIZE];
-int unresolved_items_pos = 0;
+int unresolved_items_num = 0;
 
-int put_unresolved_item(struct Unresolved_item input_item){
-    unresolved_items[unresolved_items_pos] = input_item;
-    unresolved_items_pos++;
-    if( UNRESOLVED_ARRAY_SIZE < unresolved_items_pos){
-        return 0;
-    }else{
-        return 1;
-    }
+void put_unresolved_item(struct Unresolved_item input_item){
+    unresolved_items[unresolved_items_num] = input_item;
+    unresolved_items_num++;
 }
 
 int get_unresolved_item(struct Unresolved_item* out_item){
-    unresolved_items_pos--;
-    *out_item = unresolved_items[unresolved_items_pos];
-    if( 0 == unresolved_items_pos ){
+    if( 0 == unresolved_items_num ){ //リストが空のとき0を返す
         return 0;
-    }else{
+    }else{ //リストが空でないとき1を返す
+        unresolved_items_num--;
+        *out_item = unresolved_items[unresolved_items_num];
         return 1;
     }
 }
 
 void clear_unresolved_items(){
-    unresolved_items_pos = 0;
+    unresolved_items_num = 0;
 }
 
 int skip_whitespace(char* str){
@@ -281,12 +276,14 @@ int mov_symbol;
 int ldr_symbol;
 int str_symbol;
 int raw_symbol;
+int b_symbol;
 
 void init_mnemonic_sybols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
     ldr_symbol = to_mnemonic_symbol("ldr",3);
     str_symbol = to_mnemonic_symbol("str",3);
     raw_symbol = to_mnemonic_symbol(".",1);
+    b_symbol = to_mnemonic_symbol("b",1);
 }
 
 int asm_one(char* input){
@@ -396,7 +393,12 @@ int asm_one(char* input){
             word |= abs(immediate_value);
         }
         return word;
-    }else{    
+    }else if( mnemonic_sybol == b_symbol ){    
+    /*
+        bのケース
+    */    
+        return 0;
+    }else{
         return 0;
     }
 }
