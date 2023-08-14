@@ -70,6 +70,27 @@ struct Unresolved_item {
 struct Unresolved_item unresolved_items[UNRESOLVED_ARRAY_SIZE];
 int unresolved_items_pos = 0;
 
+int put_unresolved_item(struct Unresolved_item input_item){
+    unresolved_items[unresolved_items_pos] = input_item;
+    unresolved_items_pos++;
+    if( UNRESOLVED_ARRAY_SIZE < unresolved_items_pos){
+        return 0;
+    }else{
+        return 1;
+    }
+}
+
+int get_unresolved_item(struct Unresolved_item* out_item){
+    unresolved_items_pos--;
+    *out_item = unresolved_items[unresolved_items_pos];
+    if( 0 == unresolved_items_pos ){
+        return 0;
+    }else{
+        return 1;
+    }
+}
+
+
 int skip_whitespace(char* str){
 /*
     文字列冒頭のスペースを読み飛ばして、読み飛ばした数をreturnします。
