@@ -1,5 +1,6 @@
 #include "clesson.h"
 #define PARSE_FAIL -1
+#define BUFF_SIZE 64
 #define EMITTER_ARRAY_SIZE 250
 #define UNRESOLVED_ARRAY_SIZE 128
 
@@ -407,24 +408,27 @@ int asm_one(char* input){
     }
 }
 
-void asm_line(char* input, struct Emitter* emitter){
-    struct Substring substring; 
-    int read_len = parse_one(input, &substring);
-
-    struct Substring suffix; 
-    parse_one(input, &suffix);
-    if(substreq(":",suffix)){
-    /*
-        ラベルの場合
-    */
-        int label_symbol = substr_to_label_symbol(substring);
-        address_put(label_symbol,emitter->pos); 
-    }else{
-    /*
-        ニーモニックの場合
-    */
-        int oneword = asm_one(input); 
-        emit_word(emitter, oneword);
+void asm_main(){
+    char* buff_line;
+    init_emitter(&g_emitter);
+    while( -1 != cl_getline(&buff_line) ){
+        struct Substring substring; 
+        parse_one(buff_line, &substring);
+        struct Substring suffix; 
+        parse_one(buff_line, &suffix);
+        if(substreq(":",suffix)){
+        /*
+            ラベルの場合
+        */
+            int label_symbol = substr_to_label_symbol(substring);
+            address_put(label_symbol,g_emitter.pos); 
+        }else{
+        /*
+            ニーモニックの場合
+        */
+            int oneword = asm_one(buff_line); 
+            emit_word(&g_emitter, oneword);
+        }
     }
 }
 
@@ -436,11 +440,7 @@ void asm_file(char* input_filename, char* output_filename){
     FILE* input_fp = fopen(input_filename,"r");
     assert(NULL != input_fp);
     cl_getline_set_file(input_fp);
-    char* buf;
-    init_emitter(&g_emitter);
-    while( -1 != cl_getline(&buf) ){
-        asm_line(buf,&g_emitter);
-    }
+    asm_main();
     fclose(input_fp);  
     FILE* output_fp = fopen(output_filename,"wb");
     assert(NULL != output_fp);
