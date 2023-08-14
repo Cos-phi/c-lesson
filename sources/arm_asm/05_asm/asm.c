@@ -62,6 +62,7 @@ emitterと、モードwbでオープンされたファイルポインタを受�
     fwrite(emitter->words,sizeof(int),emitter->pos,fp);
 }
 
+//解決が必要な物を集めるリスト
 struct Unresolved_item {
     int label_symbol;
     int pos;
@@ -396,8 +397,11 @@ int asm_one(char* input){
     }else if( mnemonic_sybol == b_symbol ){    
     /*
         bのケース
+        e.g. "b label" 
+        ラベルの部分には000000を入れておき、解決が必要なものを集めるリスト（unresolved_items）に登録する。
     */    
-        return 0;
+        int word = 0xEA000000;
+        return word;
     }else{
         return 0;
     }
