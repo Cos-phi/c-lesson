@@ -408,26 +408,26 @@ int asm_one(char* input){
     }
 }
 
-void asm_main(){
+void asm_main(struct Emitter* emitter){
     char* buff_line;
-    init_emitter(&g_emitter);
+    init_emitter(emitter);
     while( -1 != cl_getline(&buff_line) ){
-        struct Substring substring; 
-        parse_one(buff_line, &substring);
+        struct Substring stem; 
         struct Substring suffix; 
+        parse_one(buff_line, &stem);
         parse_one(buff_line, &suffix);
         if(substreq(":",suffix)){
         /*
             ラベルの場合
         */
-            int label_symbol = substr_to_label_symbol(substring);
+            int label_symbol = substr_to_label_symbol(stem);
             address_put(label_symbol,g_emitter.pos); 
         }else{
         /*
             ニーモニックの場合
         */
             int oneword = asm_one(buff_line); 
-            emit_word(&g_emitter, oneword);
+            emit_word(emitter, oneword);
         }
     }
 }
@@ -440,7 +440,7 @@ void asm_file(char* input_filename, char* output_filename){
     FILE* input_fp = fopen(input_filename,"r");
     assert(NULL != input_fp);
     cl_getline_set_file(input_fp);
-    asm_main();
+    asm_main(&g_emitter);
     fclose(input_fp);  
     FILE* output_fp = fopen(output_filename,"wb");
     assert(NULL != output_fp);
