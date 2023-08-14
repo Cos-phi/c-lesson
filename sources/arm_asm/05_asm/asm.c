@@ -1,6 +1,5 @@
 #include "clesson.h"
 #define PARSE_FAIL -1
-#define BUFF_SIZE 64
 #define EMITTER_ARRAY_SIZE 250
 #define UNRESOLVED_ARRAY_SIZE 128
 
@@ -409,6 +408,10 @@ int asm_one(char* input){
 }
 
 void asm_main(struct Emitter* emitter){
+/*
+    cl_getlineにセットされた内容をアセンブルします。
+    アセンブルした結果は、受け取ったEmitterに格納されます。
+*/
     char* buff_line;
     init_emitter(emitter);
     while( -1 != cl_getline(&buff_line) ){
@@ -430,12 +433,13 @@ void asm_main(struct Emitter* emitter){
             emit_word(emitter, oneword);
         }
     }
+
 }
 
 void asm_file(char* input_filename, char* output_filename){
 /*    
     .ksファイルのファイル名と、出力ファイル名を受け取って
-    アセンブルする。
+    アセンブルします。
 */
     FILE* input_fp = fopen(input_filename,"r");
     assert(NULL != input_fp);
