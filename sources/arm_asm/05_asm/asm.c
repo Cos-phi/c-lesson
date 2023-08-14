@@ -90,6 +90,9 @@ int get_unresolved_item(struct Unresolved_item* out_item){
     }
 }
 
+void clear_unresolved_items(){
+    unresolved_items_pos = 0;
+}
 
 int skip_whitespace(char* str){
 /*
