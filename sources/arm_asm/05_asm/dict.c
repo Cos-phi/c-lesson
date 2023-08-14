@@ -40,6 +40,16 @@ void dict_print_all(){
 void dict_clear(){
     dict_pos = 0;
 }
+ 
+
+
+int address_put(int key, int value){
+    dict_put(key,value);
+}
+int address_get(int key, int* out_value){
+    return dict_get(key,out_value);
+}
+
 
 static void test_dict() {
     int input_key = 1001;

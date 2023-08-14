@@ -379,7 +379,7 @@ void asm_line(char* input, struct Emitter* emitter){
         ラベルの場合
     */
         int label_symbol = substr_to_label_symbol(substring);
-        //TODO なんとかする
+        address_put(label_symbol,emitter->pos); 
     }else{
     /*
         ニーモニックの場合
@@ -399,9 +399,7 @@ void asm_file(char* input_filename, char* output_filename){
     cl_getline_set_file(input_fp);
     char* buf;
     init_emitter(&g_emitter);
-    int line_number = 0;
     while( -1 != cl_getline(&buf) ){
-        line_number++;
         asm_line(buf,&g_emitter);
     }
     fclose(input_fp);  
