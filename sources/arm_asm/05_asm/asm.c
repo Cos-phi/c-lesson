@@ -1,6 +1,7 @@
 #include "clesson.h"
 #define PARSE_FAIL -1
 #define EMITTER_ARRAY_SIZE 250
+#define UNRESOLVED_ARRAY_SIZE 128
 
 struct Substring {
     char *str;
@@ -60,6 +61,14 @@ emitterと、モードwbでオープンされたファイルポインタを受�
 */    
     fwrite(emitter->words,sizeof(int),emitter->pos,fp);
 }
+
+struct Unresolved_item {
+    int label_symbol;
+    int pos;
+    int mnemonic_symbol;
+};
+struct Unresolved_item unresolved_items[UNRESOLVED_ARRAY_SIZE];
+int unresolved_items_pos = 0;
 
 int skip_whitespace(char* str){
 /*
