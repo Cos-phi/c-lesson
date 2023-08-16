@@ -406,7 +406,7 @@ int asm_one(char* input,int emitter_pos){
         parse_one(input, &label_str);
 
         struct Unresolved_item unresolved_item;
-        //unresolved_item.label_symbol = substr_to_label_symbol(label_str);
+        unresolved_item.label_symbol = substr_to_label_symbol(label_str);
         unresolved_item.pos = emitter_pos; 
         unresolved_item.mnemonic_symbol = mnemonic_sybol;
         return word;
