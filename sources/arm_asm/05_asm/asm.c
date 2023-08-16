@@ -924,6 +924,8 @@ static void unittests(){
     cl_getline_unittests();
     cl_binarytree_unittests();
     dict_unittests();
+    
+    init_mnemonic_sybols();
     asm_unittests();
 }
 
