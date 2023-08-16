@@ -409,6 +409,7 @@ int asm_one(char* input,int emitter_pos){
         unresolved_item.label_symbol = substr_to_label_symbol(label_str);
         unresolved_item.pos = emitter_pos; 
         unresolved_item.mnemonic_symbol = mnemonic_sybol;
+        put_unresolved_item(unresolved_item);
         return word;
     }else{
         return 0;
@@ -722,16 +723,6 @@ static void test_asm_str(){
 
     assert(expect == actual);
 }
-static void test_asm_b(){
-    char* input = "b label";
-    int expect = 0xEA000000;
-
-    init_emitter(&g_emitter);
-    init_label_tree();
-    int actual = asm_one(input,g_emitter.pos);
-
-    assert(expect == actual);
-}
 static void test_cl_getline_file(){
     char* input_file = "test/test_input/nanika_mojiwo_hyouji.ks";
     char* expect_str1 = "ldr r1, [r15, #0x04]";
@@ -838,6 +829,22 @@ static void test_asm_file_init_emitter(){
     }
     remove(output_file);
 }
+static void test_asm_b_firstpass(){
+    char* input = "b label";
+    int expect = 0xEA000000;
+
+    init_emitter(&g_emitter);
+    init_label_tree();
+    int expect_emitter_pos = g_emitter.pos;
+    int actual = asm_one(input,g_emitter.pos);
+    struct Unresolved_item unresolved_item;
+
+    assert(expect == actual);
+    assert(1 == get_unresolved_item(&unresolved_item));
+    assert(to_label_symbol("label",5) == unresolved_item.label_symbol);
+    assert(to_mnemonic_symbol("b",1) == unresolved_item.mnemonic_symbol);
+    assert(expect_emitter_pos == unresolved_item.pos);
+}
 static void asm_unittests(){
     test_asm_mov();
     test_parse_one();
@@ -866,7 +873,7 @@ static void asm_unittests(){
     test_asm_ks();
     test_asm_file();
     test_asm_file_init_emitter();
-    test_asm_b();
+    test_asm_b_firstpass();
 }
 
 static void unittests(){
