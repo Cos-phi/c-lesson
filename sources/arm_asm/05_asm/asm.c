@@ -422,7 +422,6 @@ void asm_main(struct Emitter* emitter){
     アセンブルした結果は、受け取ったEmitterに格納されます。
 */
     char* buff_line;
-    init_emitter(emitter);
     while( -1 != cl_getline(&buff_line) ){
         struct Substring stem; 
         struct Substring suffix; 
@@ -436,8 +435,8 @@ void asm_main(struct Emitter* emitter){
             emit_word(emitter, oneword);
         }
     }
-    struct Unresolved_item unresolved_item;
-    while( 0 != get_unresolved_item(&unresolved_item)){
+    struct Unresolved_item buff_item;
+    while( 0 != get_unresolved_item(&buff_item)){
         /* めも
         ここが2パス目のループ アドレスを更新します。
         TOOD ここをかく。Emitterを書き換える関数を作る
@@ -453,6 +452,7 @@ void asm_file(char* input_filename, char* output_filename){
     FILE* input_fp = fopen(input_filename,"r");
     assert(NULL != input_fp);
     cl_getline_set_file(input_fp);
+    init_emitter(&g_emitter);
     asm_main(&g_emitter);
     fclose(input_fp);  
     FILE* output_fp = fopen(output_filename,"wb");
