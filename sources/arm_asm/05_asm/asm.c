@@ -287,7 +287,7 @@ void init_mnemonic_sybols(){
     b_symbol = to_mnemonic_symbol("b",1);
 }
 
-int asm_one(char* input){
+int asm_one(char* input,int emitter_pos){
 /*
     一行の文字列を32bitのバイナリにアセンブルして、intとしてreturnします。
     e.g. "mov r1, r2"           -> 0xE1A01002
@@ -405,10 +405,9 @@ int asm_one(char* input){
         struct Substring label_str;
         parse_one(input, &label_str);
 
-        //TODO unresolved_itemsに登録 
         struct Unresolved_item unresolved_item;
         unresolved_item.label_symbol = substr_to_label_symbol(label_str);
-        unresolved_item.pos = g_emitter.pos; 
+        unresolved_item.pos = emitter_pos; 
         unresolved_item.mnemonic_symbol = mnemonic_sybol;
         return word;
     }else{
@@ -416,13 +415,13 @@ int asm_one(char* input){
     }
 }
 
-void asm_main(){
+void asm_main(struct Emitter* emitter){
 /*
     cl_getlineにセットされた内容をアセンブルします。
     アセンブルした結果は、受け取ったEmitterに格納されます。
 */
     char* buff_line;
-    init_emitter(&g_emitter);
+    init_emitter(emitter);
     while( -1 != cl_getline(&buff_line) ){
         struct Substring stem; 
         struct Substring suffix; 
@@ -433,13 +432,13 @@ void asm_main(){
             ラベルの場合
         */
             int label_symbol = substr_to_label_symbol(stem);
-            address_put(label_symbol,g_emitter.pos); 
+            address_put(label_symbol,emitter->pos); 
         }else{
         /*
             ニーモニックの場合
         */
-            int oneword = asm_one(buff_line); 
-            emit_word(&g_emitter, oneword);
+            int oneword = asm_one(buff_line,emitter->pos); 
+            emit_word(emitter, oneword);
         }
     }
     struct Unresolved_item unresolved_item;
@@ -459,7 +458,7 @@ void asm_file(char* input_filename, char* output_filename){
     FILE* input_fp = fopen(input_filename,"r");
     assert(NULL != input_fp);
     cl_getline_set_file(input_fp);
-    asm_main();
+    asm_main(&g_emitter);
     fclose(input_fp);  
     FILE* output_fp = fopen(output_filename,"wb");
     assert(NULL != output_fp);
@@ -471,7 +470,7 @@ static void test_asm_mov(){
     char* input = "mov r1, r2";
     int expect = 0xE1A01002; // 1110 00 0 1101 0 0000 0001 00000000 0002
      
-    int actual = asm_one(input);
+    int actual = asm_one(input,0);
 
     assert(expect == actual);
 }
@@ -632,7 +631,7 @@ static void test_asm_mov_immediate_value(){
     char* input = "mov r1, #0x68";
     int expect = 0xE3A01068; // 1110 00 1 1101 0 0000 0001 0000 01101000
      
-    int actual = asm_one(input);
+    int actual = asm_one(input,0);
 
     assert(expect == actual);
 }
@@ -657,7 +656,7 @@ static void test_asm_raw(){
     char* input = ".raw 0x12345678";
     int expect = 0x12345678; 
      
-    int actual = asm_one(input);
+    int actual = asm_one(input,0);
 
     assert(expect == actual);
 }
@@ -678,7 +677,7 @@ static void test_asm_ldr(){
     char* input = "ldr r1,[r15, #0x30]";
     int expect = 0xE59F1030;
 
-    int actual = asm_one(input);
+    int actual = asm_one(input,0);
 
     assert(expect == actual);
 }
@@ -686,7 +685,7 @@ static void test_asm_ldr2(){
     char* input = "ldr r1,[r15, #-0x30]";
     int expect = 0xE51F1030; // 1110 01 0 1 0001 1111 0000 000000110000 
 
-    int actual = asm_one(input);
+    int actual = asm_one(input,0);
 
     assert(expect == actual);
 }
@@ -694,7 +693,7 @@ static void test_asm_ldr3(){
     char* input = "ldr r1,[r15]";
     int expect = 0xE59F1000; // 1110 01 1 0 1001 1111 0001 00000000 0000
 
-    int actual = asm_one(input);
+    int actual = asm_one(input,0);
 
     assert(expect == actual);
 }
@@ -702,7 +701,17 @@ static void test_asm_str(){
     char* input = "str r0,[r1]";
     int expect = 0xE5810000; // 1110 01 1 0 1000 0001 0000 00000000 0000
 
-    int actual = asm_one(input);
+    int actual = asm_one(input,0);
+
+    assert(expect == actual);
+}
+static void test_asm_b(){
+    char* input = "b label";
+    int expect = 0xEA000000;
+
+    init_emitter(&g_emitter);
+    init_label_tree();
+    int actual = asm_one(input,g_emitter.pos);
 
     assert(expect == actual);
 }
@@ -744,7 +753,7 @@ static void test_asm_ks(){
     char* buf;
     init_emitter(&g_emitter);
     while( -1 != cl_getline(&buf) ){
-        int oneword = asm_one(buf);
+        int oneword = asm_one(buf,g_emitter.pos);
         emit_word(&g_emitter, oneword);
     }
     fclose(input_fp);  
@@ -839,6 +848,7 @@ static void asm_unittests(){
     test_asm_ks();
     test_asm_file();
     test_asm_file_init_emitter();
+    test_asm_b();
 }
 
 static void unittests(){
