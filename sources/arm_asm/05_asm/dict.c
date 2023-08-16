@@ -41,14 +41,17 @@ void dict_print_all(){
 void dict_clear(){
     dict_pos = 0;
 }
- 
 
-
-int address_put(int key, int value){
-    dict_put(key,value);
+int address_put(int label_symbol, int address){    
+    dict_put(label_symbol,address);
 }
-int address_get(int key, int* out_value){
-    return dict_get(key,out_value);
+int address_get(int label_symbol){
+    int address;
+    if( 1 == dict_get(label_symbol,&address) ){
+        return address;
+    }else{
+        abort();
+    }
 }
 
 

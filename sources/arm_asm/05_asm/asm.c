@@ -425,8 +425,8 @@ void asm_main(struct Emitter* emitter){
     while( -1 != cl_getline(&buff_line) ){
         struct Substring stem; 
         struct Substring suffix; 
-        parse_one(buff_line, &stem);
-        parse_one(buff_line, &suffix);
+        int read_len = parse_one(buff_line, &stem);
+        parse_one((buff_line + read_len), &suffix);
         if(substreq(":",suffix)){ // ラベルの場合
             int label_symbol = substr_to_label_symbol(stem);
             address_put(label_symbol,emitter->pos); 
@@ -437,10 +437,9 @@ void asm_main(struct Emitter* emitter){
     }
     struct Unresolved_item buff_item;
     while( 0 != get_unresolved_item(&buff_item)){
-        /* めも
-        ここが2パス目のループ アドレスを更新します。
-        TOOD ここをかく。Emitterを書き換える関数を作る
-        */
+        int label_address = address_get(buff_item.label_symbol);
+        int offset = buff_item.pos - label_address;
+        emitter->words[buff_item.pos] |= offset;
     }
 }
 
@@ -511,6 +510,23 @@ static void test_parse_one_label(){
 }
 static void test_parse_one_word(){
     char* input = " word word2";
+    char* expect_str1 = "word";
+    int expect_len1 = 4;
+    char* expect_str2 = "word2";
+    int expect_len2 = 5;
+    
+    struct Substring actual_sub1; 
+    struct Substring actual_sub2; 
+    input += parse_one(input, &actual_sub1);
+    parse_one(input, &actual_sub2);
+
+    assert(substreq(expect_str1, actual_sub1));
+    assert(expect_len1 == actual_sub1.len);
+    assert(substreq(expect_str2, actual_sub2));
+    assert(expect_len2 == actual_sub2.len);
+}
+static void test_parse_one_word_and_comma(){
+    char* input = " word, word2";
     char* expect_str1 = "word";
     int expect_len1 = 4;
     char* expect_str2 = "word2";
@@ -840,6 +856,37 @@ static void test_asm_b_firstpass(){
     assert(to_mnemonic_symbol("b",1) == unresolved_item.mnemonic_symbol);
     assert(expect_emitter_pos == unresolved_item.pos);
 }
+static void test_asm_file_b(){
+/*
+    input:次のような内容のアスキー形式のファイルを読み込み、
+        ldr r0,[r15,0x12]
+        mov r1,#0x68
+        str r1,[r0]
+        mov r1,#0x65
+        str r1,[r0]
+        mov r1,#0x6c
+        str r1,[r0]
+        mov r1,#0x6c
+        str r1,[r0]
+        mov r1,#0x6f
+        str r1,[r0]
+        mov r2,#0x0D
+        str r2,[r0]
+        mov r2,#0x0A
+        str r2,[r0]
+    loop:
+        b loop
+    .raw 0x101f1000
+
+    epect:バイナリ実行ファイルを書き出す       
+*/
+    char* input_file = "test/test_input/hello_arm.ks";
+    int expect_words[4] = {0xE59F1004,0xE3A00068,0xE5810000,0x101F1000};
+
+    char* output_file = "hello_arm_ks.bin";
+    asm_file(input_file,output_file);
+
+}
 static void asm_unittests(){
     test_asm_mov();
     test_parse_one();
@@ -847,6 +894,7 @@ static void asm_unittests(){
     test_parse_one_label();
     test_parse_one_error();
     test_parse_one_word();
+    test_parse_one_word_and_comma();
     test_parse_one_nothing();
     test_parse_register();
     test_parse_register2();
@@ -869,6 +917,7 @@ static void asm_unittests(){
     test_asm_file();
     test_asm_file_init_emitter();
     test_asm_b_firstpass();
+    //test_asm_file_b();
 }
 
 static void unittests(){

@@ -19,5 +19,5 @@ void init_label_tree();
 //dict.c
 void dict_unittests();
 void address_put(int key, int value);
-int address_get(int key, int* out_value);
+int address_get(int key);
 void dict_clear();
