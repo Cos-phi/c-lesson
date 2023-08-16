@@ -917,14 +917,14 @@ static void asm_unittests(){
     test_asm_file();
     test_asm_file_init_emitter();
     test_asm_b_firstpass();
-    //test_asm_file_b();
+    test_asm_file_b();
 }
 
 static void unittests(){
-    asm_unittests();
     cl_getline_unittests();
     cl_binarytree_unittests();
     dict_unittests();
+    asm_unittests();
 }
 
 int main(int argc, char* argv[]){

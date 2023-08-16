@@ -63,7 +63,7 @@ void create_bud(struct Node** bud){
 void create_leaf(char *str, int len, struct Node* new_leaf, int* id){
 //  文字列とバドを受け取って、バドをリーフにします。
     new_leaf->name = (char*)malloc(sizeof(char)*(len+1));
-    strcpy(new_leaf->name,str);
+    strcpy(new_leaf->name,str); //ここ！ strncpyをつかうべきですわ！
     new_leaf->value = (*id)++;
     create_bud(&(new_leaf->left));
     create_bud(&(new_leaf->right));
@@ -196,13 +196,32 @@ static void test_func_to_label_symbol(){
     assert( value2 == to_label_symbol("mue",3));
     assert( value3 == to_label_symbol("meu",3));
 }
+static void test_func_to_label_symbol_toolongstr(){
+    char* input1 = "ajadummydummy"; // lenより長い文字列が渡されたとき
+    char* input2 = "mue";
+    char* input3 = "meu";
+    /*
+    expect: to_label_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
+    */
+    init_label_tree();
+    int value1 = to_label_symbol(input1,3); // len = 3 
+    int value2 = to_label_symbol(input2,3);
+    int value3 = to_label_symbol(input3,3);
 
+    assert( 10000 == to_label_symbol("aja",3));
+    assert( 10001 == to_label_symbol("mue",3));
+    assert( 10002 == to_label_symbol("meu",3));
+    assert( value1 == to_label_symbol("aja",3));
+    assert( value2 == to_label_symbol("mue",3));
+    assert( value3 == to_label_symbol("meu",3));
+}
 
 void cl_binarytree_unittests(){
     test_func_to_mnemonic_symbol();
     test_func_to_mnemonic_symbol_2();
     test_func_to_mnemonic_symbol_3();
     test_func_to_label_symbol();
+    test_func_to_label_symbol_toolongstr();
     
     init_mnemonic_tree();
     init_label_tree();
