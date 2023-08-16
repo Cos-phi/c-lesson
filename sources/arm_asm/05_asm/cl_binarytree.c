@@ -63,7 +63,7 @@ void create_bud(struct Node** bud){
 void create_leaf(char *str, int len, struct Node* new_leaf, int* id){
 //  文字列とバドを受け取って、バドをリーフにします。
     new_leaf->name = (char*)malloc(sizeof(char)*(len+1));
-    strcpy(new_leaf->name,str); //ここ！ strncpyをつかうべきですわ！
+    strcpy(new_leaf->name,str); //ここ！ strncpyをつかうべきですわね！
     new_leaf->value = (*id)++;
     create_bud(&(new_leaf->left));
     create_bud(&(new_leaf->right));
@@ -201,7 +201,8 @@ static void test_func_to_label_symbol_toolongstr(){
     char* input2 = "mue";
     char* input3 = "meu";
     /*
-    expect: to_label_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
+    expect1: to_label_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
+    expect2: ASANのheap-buffer-overflowが発生しない
     */
     init_label_tree();
     int value1 = to_label_symbol(input1,3); // len = 3 
