@@ -63,7 +63,7 @@ void create_bud(struct Node** bud){
 void create_leaf(char *str, int len, struct Node* new_leaf, int* id){
 //  文字列とバドを受け取って、バドをリーフにします。
     new_leaf->name = (char*)malloc(sizeof(char)*(len+1));
-    strcpy(new_leaf->name,str); //ここ！ strncpyをつかうべきですわね！
+    strncpy(new_leaf->name,str,len); 
     new_leaf->value = (*id)++;
     create_bud(&(new_leaf->left));
     create_bud(&(new_leaf->right));
