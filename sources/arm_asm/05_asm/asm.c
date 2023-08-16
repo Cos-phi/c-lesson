@@ -428,16 +428,10 @@ void asm_main(struct Emitter* emitter){
         struct Substring suffix; 
         parse_one(buff_line, &stem);
         parse_one(buff_line, &suffix);
-        if(substreq(":",suffix)){
-        /*
-            ラベルの場合
-        */
+        if(substreq(":",suffix)){ // ラベルの場合
             int label_symbol = substr_to_label_symbol(stem);
             address_put(label_symbol,emitter->pos); 
-        }else{
-        /*
-            ニーモニックの場合
-        */
+        }else{ // ニーモニックの場合
             int oneword = asm_one(buff_line,emitter->pos); 
             emit_word(emitter, oneword);
         }
@@ -835,9 +829,10 @@ static void test_asm_b_firstpass(){
 
     init_emitter(&g_emitter);
     init_label_tree();
+    struct Unresolved_item unresolved_item;
+    assert(0 == get_unresolved_item(&unresolved_item));
     int expect_emitter_pos = g_emitter.pos;
     int actual = asm_one(input,g_emitter.pos);
-    struct Unresolved_item unresolved_item;
 
     assert(expect == actual);
     assert(1 == get_unresolved_item(&unresolved_item));
