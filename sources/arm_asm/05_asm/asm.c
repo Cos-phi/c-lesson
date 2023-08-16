@@ -408,7 +408,7 @@ int asm_one(char* input){
         //TODO unresolved_itemsに登録 
         struct Unresolved_item unresolved_item;
         unresolved_item.label_symbol = substr_to_label_symbol(label_str);
-        //unresolved_item.pos = cur_emitter_pos;
+        unresolved_item.pos = g_emitter.pos; 
         unresolved_item.mnemonic_symbol = mnemonic_sybol;
         return word;
     }else{
@@ -416,13 +416,13 @@ int asm_one(char* input){
     }
 }
 
-void asm_main(struct Emitter* emitter){
+void asm_main(){
 /*
     cl_getlineにセットされた内容をアセンブルします。
     アセンブルした結果は、受け取ったEmitterに格納されます。
 */
     char* buff_line;
-    init_emitter(emitter);
+    init_emitter(&g_emitter);
     while( -1 != cl_getline(&buff_line) ){
         struct Substring stem; 
         struct Substring suffix; 
@@ -433,13 +433,13 @@ void asm_main(struct Emitter* emitter){
             ラベルの場合
         */
             int label_symbol = substr_to_label_symbol(stem);
-            address_put(label_symbol,emitter->pos); 
+            address_put(label_symbol,g_emitter.pos); 
         }else{
         /*
             ニーモニックの場合
         */
             int oneword = asm_one(buff_line); 
-            emit_word(emitter, oneword);
+            emit_word(&g_emitter, oneword);
         }
     }
     struct Unresolved_item unresolved_item;
@@ -459,7 +459,7 @@ void asm_file(char* input_filename, char* output_filename){
     FILE* input_fp = fopen(input_filename,"r");
     assert(NULL != input_fp);
     cl_getline_set_file(input_fp);
-    asm_main(&g_emitter);
+    asm_main();
     fclose(input_fp);  
     FILE* output_fp = fopen(output_filename,"wb");
     assert(NULL != output_fp);
