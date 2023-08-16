@@ -257,7 +257,7 @@ int parse_one(char *str, struct Substring* out_subs){
         while( ('0'<=str[pos] && '9'>=str[pos]) || ('A'<=str[pos] && 'z'>=str[pos]) || '_'==str[pos] ){
             pos++;
         } 
-        if( (' ' == str[pos]) || (':' == str[pos]) ){
+        if( (' ' == str[pos]) || (':' == str[pos]) || ('\0' == str[pos]) ){
             out_subs->len = (pos - start_pos);
             return pos;
         }else{
