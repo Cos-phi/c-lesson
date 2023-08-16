@@ -196,25 +196,6 @@ static void test_func_to_label_symbol(){
     assert( value2 == to_label_symbol("mue",3));
     assert( value3 == to_label_symbol("meu",3));
 }
-static void test_func_to_label_symbol_2(){
-    char* input1 = "label";
-    char* input2 = "mue";
-    char* input3 = "meu";
-    /*
-    expect: to_label_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
-    */
-    init_label_tree();
-    int value1 = to_label_symbol(input1,5);
-    int value2 = to_label_symbol(input2,3);
-    int value3 = to_label_symbol(input3,3);
-
-    assert( 10000 == to_label_symbol("label",5));
-    assert( 10001 == to_label_symbol("mue",3));
-    assert( 10002 == to_label_symbol("meu",3));
-    assert( value1 == to_label_symbol("label",5));
-    assert( value2 == to_label_symbol("mue",3));
-    assert( value3 == to_label_symbol("meu",3));
-}
 
 
 void cl_binarytree_unittests(){
@@ -222,7 +203,6 @@ void cl_binarytree_unittests(){
     test_func_to_mnemonic_symbol_2();
     test_func_to_mnemonic_symbol_3();
     test_func_to_label_symbol();
-    test_func_to_label_symbol_2();
     
     init_mnemonic_tree();
     init_label_tree();

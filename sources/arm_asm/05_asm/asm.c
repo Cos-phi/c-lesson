@@ -406,7 +406,7 @@ int asm_one(char* input,int emitter_pos){
         parse_one(input, &label_str);
 
         struct Unresolved_item unresolved_item;
-        unresolved_item.label_symbol = substr_to_label_symbol(label_str);
+        //unresolved_item.label_symbol = substr_to_label_symbol(label_str);
         unresolved_item.pos = emitter_pos; 
         unresolved_item.mnemonic_symbol = mnemonic_sybol;
         return word;
@@ -513,6 +513,23 @@ static void test_parse_one_label(){
 
     assert(substreq(expect_str1, actual_sub1));
     assert(substreq(expect_str2, actual_sub2));
+}
+static void test_parse_one_word(){
+    char* input = " word word2";
+    char* expect_str1 = "word";
+    int expect_len1 = 4;
+    char* expect_str2 = "word2";
+    int expect_len2 = 5;
+    
+    struct Substring actual_sub1; 
+    struct Substring actual_sub2; 
+    input += parse_one(input, &actual_sub1);
+    parse_one(input, &actual_sub2);
+
+    assert(substreq(expect_str1, actual_sub1));
+    assert(expect_len1 == actual_sub1.len);
+    assert(substreq(expect_str2, actual_sub2));
+    assert(expect_len2 == actual_sub2.len);
 }
 static void test_parse_one_error(){
     char* input = "abc{}";
@@ -827,6 +844,7 @@ static void asm_unittests(){
     test_parse_one_indent();
     test_parse_one_label();
     test_parse_one_error();
+    test_parse_one_word();
     test_parse_one_nothing();
     test_parse_register();
     test_parse_register2();
