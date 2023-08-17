@@ -100,6 +100,29 @@ static void test_cl_getline_set_src(){
     assert(0 == strcmp(expect_str2, actual_str2));
 }
 
+static void test_cl_getline_set_src_2(){
+    char* input = "abc\n1234";// 末尾に改行がないとき
+    /*
+    expect: ASANのglobal-buffer-overflow警告をださない
+    */
+    char* expect_str1 = "abc";
+    char* expect_str2 = "1234";
+    int expect_len1 = 3;
+    int expect_len2 = 4;
+     
+    char* actual_str1;
+    char* actual_str2;
+
+    cl_getline_set_src(input);
+    int actual_len1 = cl_getline(&actual_str1);
+    assert(expect_len1 == actual_len1);
+    assert(0 == strcmp(expect_str1, actual_str1));
+    
+    int actual_len2 = cl_getline(&actual_str2);
+    assert(expect_len2 == actual_len2);
+    assert(0 == strcmp(expect_str2, actual_str2));
+}
+
 static void test_cl_getline_err(){
     char* input = "abcdef";
     int expect = -1;
@@ -113,6 +136,7 @@ static void test_cl_getline_err(){
 void cl_getline_unittests(){
     test_cl_getline();
     test_cl_getline_set_src();
+    test_cl_getline_set_src_2();
     //test_cl_getline_err();// ASANがいると怒られてしまいますので、コメントアウトしております。
 }
 
