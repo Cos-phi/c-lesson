@@ -1,5 +1,4 @@
 #include "clesson.h"
-
 #define BUF_SIZE 64
 #define S_SIZE 512
 
@@ -54,6 +53,9 @@ void cl_getline_set_file(FILE* input_file){
 }
 
 
+/*
+    ユニットテスト
+*/
 static void test_cl_getline(){
     char* expect_str1 = "123";
     char* expect_str2 = "4567";

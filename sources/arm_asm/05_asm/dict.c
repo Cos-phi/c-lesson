@@ -40,7 +40,12 @@ void dict_clear(){
     dict_pos = 0;
 }
 
-int address_put(int label_symbol, int address){    
+
+/*
+    アドレスの解決に必要な、ラベルとの対応関係を辞書にまとめます。
+    ここでのアドレス（位置）は、emitter.posで表すものとします。
+*/
+void address_put(int label_symbol, int address){    
     dict_put(label_symbol,address);
 }
 int address_get(int label_symbol){
@@ -52,7 +57,9 @@ int address_get(int label_symbol){
     }
 }
 
-
+/*
+    ユニットテスト
+*/
 static void test_dict() {
     int input_key = 1001;
     int input_value = 2001;
@@ -68,6 +75,5 @@ static void test_dict() {
 
 void dict_unittests(){
     test_dict();
-
     dict_clear();
 }

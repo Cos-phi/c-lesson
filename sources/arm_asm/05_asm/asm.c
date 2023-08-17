@@ -4,7 +4,7 @@
 
 /*
     g_emitter: アセンブルされた結果を格納する配列です。
-    emitter.pos の 0, 1, 2, 3,.. が、実際のバイナリのアドレス0, 4, 8, c,.. に対応します。
+    emitter.pos の 0, 1, 2, 3,.. が、実際のバイナリの位置0x0, 0x4, 0x8, 0xC,.. に対応します。
 */
 struct Emitter {
     int* words;
@@ -32,17 +32,22 @@ void write_emitter_to_file(struct Emitter* emitter, FILE* fp){ //fp mode: wb
     fwrite(emitter->words,sizeof(int),emitter->pos,fp);
 }
 
+
 /*
     unresolved_items: アドレスの解決が必要な物を集めるリストです。
-    アドレスを示すposは、emitter.posで表されます。
+    アドレス（位置）は、emitter.posで表されます。
 */
 struct Unresolved_item {
     int label_symbol;
-    int pos;
+    int emitter_pos;
     int mnemonic_symbol;
 };
 struct Unresolved_item unresolved_items[UNRESOLVED_ARRAY_SIZE];
 int unresolved_items_num = 0;
+
+void clear_unresolved_items(){
+    unresolved_items_num = 0;
+}
 
 void put_unresolved_item(struct Unresolved_item input_item){
     unresolved_items[unresolved_items_num] = input_item;
@@ -59,10 +64,10 @@ int get_unresolved_item(struct Unresolved_item* out_item){
     }
 }
 
-void clear_unresolved_items(){
-    unresolved_items_num = 0;
-}
 
+/*
+    ニモニックをシンボル化した数値を、グローバル変数に持っておきます。
+*/
 int mov_symbol;
 int ldr_symbol;
 int str_symbol;
@@ -77,6 +82,10 @@ void init_mnemonic_sybols(){
     b_symbol = to_mnemonic_symbol("b",1);
 }
 
+
+/*
+    以下、アセンブルを行う関数です。
+*/
 int asm_one(char* input,int emitter_pos){
 /*
     一行の文字列を32bitのバイナリにアセンブルして、intとしてreturnします。
@@ -197,7 +206,7 @@ int asm_one(char* input,int emitter_pos){
 
         struct Unresolved_item unresolved_item;
         unresolved_item.label_symbol = substr_to_label_symbol(label_str);
-        unresolved_item.pos = emitter_pos; 
+        unresolved_item.emitter_pos = emitter_pos; 
         unresolved_item.mnemonic_symbol = mnemonic_sybol;
         put_unresolved_item(unresolved_item);
         return word;
@@ -229,10 +238,10 @@ void asm_main(struct Emitter* emitter){
     struct Unresolved_item buff_item;
     while( 0 != get_unresolved_item(&buff_item)){
         int label_address = address_get(buff_item.label_symbol);
-        int address_offset = label_address - buff_item.pos - 2 ;// r15(PC)は2つ先を指しているので、2を引きます。
-        int unresolved_word = emitter->words[buff_item.pos];
+        int address_offset = label_address - buff_item.emitter_pos - 2 ;// r15(PC)は2つ先を指しているので、2を引きます。
+        int unresolved_word = emitter->words[buff_item.emitter_pos];
         int resolved_word = (unresolved_word&0xFF000000) | (address_offset&0x00FFFFFF) ;
-        emitter->words[buff_item.pos] =  resolved_word;
+        emitter->words[buff_item.emitter_pos] =  resolved_word;
     }
 }
 
@@ -253,9 +262,10 @@ void asm_file(char* input_filename, char* output_filename){
     fclose(output_fp);
 }
 
-/****************************************************************
-                         UNITTESTS
-*****************************************************************/
+
+/*
+    ユニットテスト
+*/
 static void test_asm_mov(){
     char* input = "mov r1, r2";
     int expect = 0xE1A01002; // 1110 00 0 1101 0 0000 0001 00000000 0002
@@ -441,7 +451,7 @@ static void test_asm_b_firstpass(){
     assert(1 == get_unresolved_item(&unresolved_item));
     assert(to_label_symbol("label",5) == unresolved_item.label_symbol);
     assert(to_mnemonic_symbol("b",1) == unresolved_item.mnemonic_symbol);
-    assert(expect_emitter_pos == unresolved_item.pos);
+    assert(expect_emitter_pos == unresolved_item.emitter_pos);
 }
 static void test_asm_file_b(){
 /*

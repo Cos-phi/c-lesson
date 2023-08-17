@@ -113,6 +113,10 @@ int substr_to_label_symbol(struct Substring substr){
     return to_label_symbol(substr.str, substr.len); 
 }
 
+
+/*
+    ユニットテスト
+*/
 static void test_func_to_mnemonic_symbol(){
     char* input1 = "aja";
     char* input2 = "mue";

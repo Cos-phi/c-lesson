@@ -200,7 +200,9 @@ int parse_one(char *str, struct Substring* out_subs){
 }
 
 
-
+/*
+    ユニットテスト
+*/
 static void test_parse_one(){
     char* input = "mov r1, r2";
     char* expect_str = "mov";
@@ -435,9 +437,6 @@ void parser_unittests(){
     test_parse_immediate_value();
     test_parse_immediate_value2();
     test_parse_immediate_value3();
-
     test_parse_raw_value();
     test_is_sbracket();
-
-
 }
