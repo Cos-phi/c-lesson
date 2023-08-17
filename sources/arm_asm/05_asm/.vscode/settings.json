@@ -1,4 +1,7 @@
 {
     "editor.fontFamily": "HackGen35, Consolas, 'Courier New', monospace",
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "clesson.h": "c"
+    }
 }

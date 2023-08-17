@@ -3,6 +3,16 @@
 #include <string.h>
 #include <assert.h>
 
+#ifndef STRUCT_H
+#define STRUCT_H
+
+struct Substring {
+    char *str;
+    int len;
+};
+
+#endif
+
 //cl_getline.c
 void cl_getline_unittests();
 int cl_getline(char **out_buf);
@@ -21,3 +31,17 @@ void dict_unittests();
 void address_put(int key, int value);
 int address_get(int key);
 void dict_clear();
+
+//parser.c
+#define PARSE_FAIL -1
+int substreq(char* s1, struct Substring s2);
+int streq(char* s1, char* s2);
+int parse_immediate_value(char* str, int* out_value);
+int parse_register(char* str, int* out_register);
+int parse_one(char *str, struct Substring* out_subs);
+int parse_raw_value(char* str, int* out_value);
+int skip_whitespace(char* str);
+int skip_comma(char* str);
+int skip_sbracket(char* str);
+int is_register(char* str);
+int is_sbracket(char* str);
