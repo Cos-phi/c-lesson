@@ -49,6 +49,14 @@ void emit_word(struct Emitter* emitter, int oneword){
     emitter->pos++;
 }
 
+int emitter_pos_to_address(int emitter_pos){
+    return emitter_pos * 4;
+}
+
+int retrieve_end_address_from_emitter(struct Emitter* emitter){
+    return emitter_pos_to_address(emitter->pos);
+}
+
 void hex_dump(struct Emitter* emitter){
     for (int i = 0; i < emitter->pos; i++){
         printf("0x%X\n",emitter->words[i]);
@@ -418,8 +426,8 @@ int asm_one(char* input,int emitter_pos){
 
 void asm_main(struct Emitter* emitter){
 /*
-    cl_getlineにセットされた内容をアセンブルします。
-    アセンブルした結果は、受け取ったEmitterに格納されます。
+    cl_getlineにセットされた内容をアセンブルします。アセンブルした結果は、受け取ったEmitterに格納されます。
+    Emitterの位置 emitter.pos の0,1,2,3,.. は addressの 0,4,8,c,.. に対応します。
 */
     char* buff_line;
     while( -1 != cl_getline(&buff_line) ){
@@ -429,7 +437,8 @@ void asm_main(struct Emitter* emitter){
         parse_one((buff_line + read_len), &suffix);
         if(substreq(":",suffix)){ // ラベルの場合
             int label_symbol = substr_to_label_symbol(stem);
-            address_put(label_symbol,(emitter->pos)); 
+            int label_address = retrieve_end_address_from_emitter(emitter);
+            address_put(label_symbol,label_address); 
         }else{ // ニーモニックの場合
             int oneword = asm_one(buff_line,emitter->pos); 
             emit_word(emitter, oneword);
@@ -438,13 +447,13 @@ void asm_main(struct Emitter* emitter){
     struct Unresolved_item buff_item;
     while( 0 != get_unresolved_item(&buff_item)){
         int label_address = address_get(buff_item.label_symbol);
-        int offset = label_address - buff_item.pos -2; //この２はいったい何？
+        int address_offset = label_address - emitter_pos_to_address(buff_item.pos) ;
         int unresolved_word = emitter->words[buff_item.pos];
-        int resolved_word = (unresolved_word&0xFF000000) | (offset&0x00FFFFFF) ;
+        int resolved_word = (unresolved_word&0xFF000000) | (address_offset&0x00FFFFFF) ;
         printf("urword: %x\n",unresolved_word);
         printf("urword: %x\n",unresolved_word&0xFF000000);
-        printf("offset: %x\n",offset);
-        printf("offset: %x\n",offset&0x00FFFFFF);
+        printf("offset: %x\n",address_offset);
+        printf("offset: %x\n",address_offset&0x00FFFFFF);
         printf(" rword: %x\n",resolved_word);
         emitter->words[buff_item.pos] =  resolved_word; //TODO
     }
