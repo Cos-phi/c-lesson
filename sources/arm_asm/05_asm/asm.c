@@ -864,17 +864,6 @@ static void test_asm_b_firstpass(){
     assert(to_mnemonic_symbol("b",1) == unresolved_item.mnemonic_symbol);
     assert(expect_emitter_pos == unresolved_item.pos);
 }
-static void test_asm_main_b(){
-    char* input = "loop:\nb loop";
-    int expect = 0xEAFFFFFE;
-
-    cl_getline_set_src(input);
-    init_emitter(&g_emitter);
-    asm_main(&g_emitter);
-
-    hex_dump(&g_emitter);
-
-}
 static void test_asm_file_b(){
 /*
     input:次のような内容のアスキー形式のファイルを読み込み、
@@ -936,7 +925,6 @@ static void asm_unittests(){
     test_asm_file();
     test_asm_file_init_emitter();
     test_asm_b_firstpass();
-    //test_asm_main_b(); // cl_getline_set_srcをAさんと共存させることができなかったのであきらめましたの‥‥
     test_asm_file_b();
 }
 
