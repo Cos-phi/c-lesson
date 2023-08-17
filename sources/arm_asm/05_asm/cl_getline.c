@@ -9,12 +9,12 @@
 static char buf[BUF_SIZE];
 static int pos = 0;
 static FILE *file = NULL;
-static char* input = "123\n4567\n89ABC\n";
+static char *input = "123\n4567\n89ABC";
 
 int cl_getline(char **out_buf){
     if( NULL == file ){
         int len = 0;
-        while('\n' != input[pos]){
+        while('\n' != input[pos] && '\0' != input[pos]){
             buf[len++] = input[pos++]; 
             if( len > BUF_SIZE || EOF == input[pos] ){
                 return -1;
