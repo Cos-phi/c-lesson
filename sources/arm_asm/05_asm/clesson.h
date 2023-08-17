@@ -25,15 +25,18 @@ int to_mnemonic_symbol(char *str, int len);
 int to_label_symbol(char *str, int len);
 void init_mnemonic_tree();
 void init_label_tree();
-
+int substr_to_mnemonic_symbol(struct Substring substr);
+int substr_to_label_symbol(struct Substring substr);
+ 
 //dict.c
 void dict_unittests();
-void address_put(int key, int value);
-int address_get(int key);
+int address_put(int label_symbol, int address);
+int address_get(int label_symbol);
 void dict_clear();
 
 //parser.c
 #define PARSE_FAIL -1
+void parser_unittests();
 int substreq(char* s1, struct Substring s2);
 int streq(char* s1, char* s2);
 int parse_immediate_value(char* str, int* out_value);

@@ -2,19 +2,14 @@
 #define EMITTER_ARRAY_SIZE 250
 #define UNRESOLVED_ARRAY_SIZE 128
 
-int substr_to_mnemonic_symbol(struct Substring substr){
-    return to_mnemonic_symbol(substr.str, substr.len);
-}
-
-int substr_to_label_symbol(struct Substring substr){
-    return to_label_symbol(substr.str, substr.len); 
-}
-
+/*
+    g_emitter: アセンブルされた結果を格納する配列です。
+    emitter.pos の 0, 1, 2, 3,.. が、実際のバイナリのアドレス0, 4, 8, c,.. に対応します。
+*/
 struct Emitter {
     int* words;
     int pos;
 };
-
 int array[EMITTER_ARRAY_SIZE]; 
 struct Emitter g_emitter = {array,0};
 
@@ -33,14 +28,14 @@ void hex_dump(struct Emitter* emitter){
     }
 }
 
-void write_emitter_to_file(struct Emitter* emitter, FILE* fp){
-/*
-emitterと、モードwbでオープンされたファイルポインタを受け取って、emitterの中身をファイルに書き込みます。
-*/    
+void write_emitter_to_file(struct Emitter* emitter, FILE* fp){ //fp mode: wb
     fwrite(emitter->words,sizeof(int),emitter->pos,fp);
 }
 
-//解決が必要な物を集めるリスト
+/*
+    unresolved_items: アドレスの解決が必要な物を集めるリストです。
+    アドレスを示すposは、emitter.posで表されます。
+*/
 struct Unresolved_item {
     int label_symbol;
     int pos;
@@ -67,7 +62,6 @@ int get_unresolved_item(struct Unresolved_item* out_item){
 void clear_unresolved_items(){
     unresolved_items_num = 0;
 }
-
 
 int mov_symbol;
 int ldr_symbol;
@@ -259,199 +253,15 @@ void asm_file(char* input_filename, char* output_filename){
     fclose(output_fp);
 }
 
+/****************************************************************
+                         UNITTESTS
+*****************************************************************/
 static void test_asm_mov(){
     char* input = "mov r1, r2";
     int expect = 0xE1A01002; // 1110 00 0 1101 0 0000 0001 00000000 0002
      
     int actual = asm_one(input,0);
 
-    assert(expect == actual);
-}
-static void test_parse_one(){
-    char* input = "mov r1, r2";
-    char* expect_str = "mov";
-    int expect_pos = 3;
-    int expect_len = 3;
-    
-    struct Substring actual_sub; 
-    int pos = parse_one(input, &actual_sub);
-
-    assert(expect_pos == pos);
-    assert(expect_len == actual_sub.len);
-    assert(substreq(expect_str, actual_sub));
-}
-static void test_parse_one_indent(){
-    char* input = "    mov r1, r2";
-    char* expect_str = "mov";
-    int expect_len = 3;
-    int expect_pos = 7;
-    
-    struct Substring actual_sub; 
-    int pos = parse_one(input, &actual_sub);
-
-    assert(expect_pos == pos);
-    assert(expect_len == actual_sub.len);
-    assert(substreq(expect_str, actual_sub));
-}
-static void test_parse_one_label(){
-    char* input = "  loop:";
-    char* expect_str1 = "loop";
-    char* expect_str2 = ":";
-    
-    struct Substring actual_sub1; 
-    int read_len = parse_one(input, &actual_sub1);
-    input += read_len;
-    struct Substring actual_sub2; 
-    read_len = parse_one(input, &actual_sub2);
-
-    assert(substreq(expect_str1, actual_sub1));
-    assert(substreq(expect_str2, actual_sub2));
-}
-static void test_parse_one_word(){
-    char* input = " word word2";
-    char* expect_str1 = "word";
-    int expect_len1 = 4;
-    char* expect_str2 = "word2";
-    int expect_len2 = 5;
-    
-    struct Substring actual_sub1; 
-    struct Substring actual_sub2; 
-    input += parse_one(input, &actual_sub1);
-    parse_one(input, &actual_sub2);
-
-    assert(substreq(expect_str1, actual_sub1));
-    assert(expect_len1 == actual_sub1.len);
-    assert(substreq(expect_str2, actual_sub2));
-    assert(expect_len2 == actual_sub2.len);
-}
-static void test_parse_one_word_and_comma(){
-    char* input = " word, word2";
-    char* expect_str1 = "word";
-    int expect_len1 = 4;
-    char* expect_str2 = "word2";
-    int expect_len2 = 5;
-    
-    struct Substring actual_sub1; 
-    struct Substring actual_sub2; 
-    input += parse_one(input, &actual_sub1);
-    parse_one(input, &actual_sub2);
-
-    assert(substreq(expect_str1, actual_sub1));
-    assert(expect_len1 == actual_sub1.len);
-    assert(substreq(expect_str2, actual_sub2));
-    assert(expect_len2 == actual_sub2.len);
-}
-static void test_parse_one_error(){
-    char* input = "abc{}";
-    int expect_pos = PARSE_FAIL;
-    
-    struct Substring actual_sub; 
-    int pos = parse_one(input, &actual_sub);
-
-    assert(expect_pos == pos);
-}
-static void test_parse_one_nothing(){
-    char* input = "    ";
-    char* expect_str = "    ";
-    int expect_len = 4;
-    int expect_pos = 4;
-    
-    struct Substring actual_sub; 
-    int pos = parse_one(input, &actual_sub);
-
-    assert(expect_pos == pos);
-    assert(expect_len == actual_sub.len);
-    assert(substreq(expect_str, actual_sub));
-}
-static void test_parse_register(){
-    char* input = "mov r4, r2";
-    int expect_r1 = 4;
-    
-    struct Substring actual_sub; 
-    int read_len = parse_one(input, &actual_sub);
-    input += read_len;
-
-    int actual_r1;
-    read_len = parse_register(input, &actual_r1);
-    
-    assert(expect_r1 == actual_r1);
-    assert(3 == read_len);
-}
-static void test_parse_register2(){
-    char* input = "mov r12, r2";
-    int expect_r1 = 12;
-    
-    struct Substring actual_sub; 
-    int read_len = parse_one(input, &actual_sub);
-    input += read_len;
-
-    int actual_r1;
-    read_len = parse_register(input, &actual_r1);
-    
-    assert(expect_r1 == actual_r1);
-    assert(4 == read_len);
-}
-static void test_parse_register_and_skip_comma(){
-    char* input = "mov r12, r3";
-    int expect_r1 = 12;
-    int expect_r2 = 3;
-    
-    struct Substring actual_sub; 
-    int read_len = parse_one(input, &actual_sub);
-    input += read_len;
-
-    int actual_r1;
-    read_len = parse_register(input, &actual_r1);
-    input += read_len;
-    
-    read_len = skip_comma(input);
-    input += read_len;
-
-    int actual_r2;
-    read_len = parse_register(input, &actual_r2);
-    
-    assert(expect_r1 == actual_r1);
-    assert(expect_r2 == actual_r2);
-    assert(3 == read_len);
-}
-static void test_is_register(){
-    char* input1 = "mov"; // is not register
-    int expect1 = 0;
-
-    char* input2 = " r2"; // is register
-    int expect2 = 1;
-
-    int actual1 = is_register(input1);
-    int actual2 = is_register(input2);
-
-    assert(expect1 == actual1);
-    assert(expect2 == actual2);
-}
-static void test_parse_immediate_value(){
-    char* input = " #0x68 ";
-    int expect = 0x68;
-
-    int actual;
-    int read_len = parse_immediate_value(input, &actual);
-
-    assert(expect == actual);
-}
-static void test_parse_immediate_value2(){
-    char* input = " #0xA8 ";
-    int expect = 0xA8;
-
-    int actual;
-    int read_len = parse_immediate_value(input, &actual);
-    
-    assert(expect == actual);
-}
-static void test_parse_immediate_value3(){
-    char* input = " #-0xA8 ";
-    int expect = -0xA8;
-
-    int actual;
-    int read_len = parse_immediate_value(input, &actual);
-    
     assert(expect == actual);
 }
 static void test_asm_mov_immediate_value(){
@@ -462,23 +272,6 @@ static void test_asm_mov_immediate_value(){
 
     assert(expect == actual);
 }
-static void test_parse_raw_value(){
-    char* input = ".raw 0x12345678";
-    int expect = 0x12345678;
-    
-    struct Substring actual_sub1; 
-    int read_len = parse_one(input, &actual_sub1); // .
-    input += read_len;
-
-    struct Substring actual_sub2; 
-    read_len = parse_one(input, &actual_sub2); // raw
-    input += read_len;
-
-    int actual;
-    read_len = parse_raw_value(input,&actual); //
-    
-    assert(expect == actual);
-}
 static void test_asm_raw(){
     char* input = ".raw 0x12345678";
     int expect = 0x12345678; 
@@ -486,19 +279,6 @@ static void test_asm_raw(){
     int actual = asm_one(input,0);
 
     assert(expect == actual);
-}
-static void test_is_sbracket(){
-    char* input1 = " ["; 
-    int expect1 = 1;
-
-    char* input2 = "r2"; 
-    int expect2 = 0;
-
-    int actual1 = is_sbracket(input1);
-    int actual2 = is_sbracket(input2);
-
-    assert(expect1 == actual1);
-    assert(expect2 == actual2);
 }
 static void test_asm_ldr(){
     char* input = "ldr r1,[r15, #0x30]";
@@ -696,25 +476,9 @@ static void test_asm_file_b(){
 }
 static void asm_unittests(){
     test_asm_mov();
-    test_parse_one();
-    test_parse_one_indent();
-    test_parse_one_label();
-    test_parse_one_error();
-    test_parse_one_word();
-    test_parse_one_word_and_comma();
-    test_parse_one_nothing();
-    test_parse_register();
-    test_parse_register2();
-    test_parse_register_and_skip_comma();
-    test_is_register();
-    test_parse_immediate_value();
-    test_parse_immediate_value2();
-    test_parse_immediate_value3();
     test_asm_mov();
     test_asm_mov_immediate_value();
-    test_parse_raw_value();
     test_asm_raw();
-    test_is_sbracket();
     test_asm_ldr();
     test_asm_ldr2();
     test_asm_ldr3();
@@ -732,7 +496,8 @@ static void unittests(){
     cl_getline_unittests();
     cl_binarytree_unittests();
     dict_unittests();
-    
+    parser_unittests();
+
     init_mnemonic_sybols();
     asm_unittests();
 }

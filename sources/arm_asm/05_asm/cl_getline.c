@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
+#include "clesson.h"
 
 #define BUF_SIZE 64
 #define S_SIZE 512

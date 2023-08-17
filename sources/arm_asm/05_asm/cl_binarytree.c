@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
+#include "clesson.h"
 
 /*
 struct Nodeで表現される3種類の要素で二分木を構成します。
@@ -106,6 +103,14 @@ void init_mnemonic_tree(){
 void init_label_tree(){
     init_tree(&label_root);
     label_id = LABEL_ID_START;
+}
+
+int substr_to_mnemonic_symbol(struct Substring substr){
+    return to_mnemonic_symbol(substr.str, substr.len);
+}
+
+int substr_to_label_symbol(struct Substring substr){
+    return to_label_symbol(substr.str, substr.len); 
 }
 
 static void test_func_to_mnemonic_symbol(){
