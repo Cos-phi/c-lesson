@@ -729,7 +729,7 @@ static void test_asm_ldr3(){
     assert(expect == actual);
 }
 static void test_asm_ldr4(){
-    char* input = "ldr r0,[r15,0x38]";
+    char* input = "ldr r0,[r15,#0x38]";
     int expect = 0xE59F0038; 
 
     int actual = asm_one(input,0);
@@ -870,7 +870,7 @@ static void test_asm_b_firstpass(){
 static void test_asm_file_b(){
 /*
     input:次のような内容のアスキー形式のファイルを読み込み、
-        ldr r0,[r15,0x38]
+        ldr r0,[r15,#0x38]
         mov r1,#0x68
         str r1,[r0]
         mov r1,#0x65
