@@ -49,14 +49,6 @@ void emit_word(struct Emitter* emitter, int oneword){
     emitter->pos++;
 }
 
-int emitter_pos_to_address(int emitter_pos){
-    return emitter_pos * 4;
-}
-
-int retrieve_end_address_from_emitter(struct Emitter* emitter){
-    return emitter_pos_to_address(emitter->pos);
-}
-
 void hex_dump(struct Emitter* emitter){
     for (int i = 0; i < emitter->pos; i++){
         printf("0x%X\n",emitter->words[i]);
@@ -426,8 +418,8 @@ int asm_one(char* input,int emitter_pos){
 
 void asm_main(struct Emitter* emitter){
 /*
-    cl_getlineにセットされた内容をアセンブルします。アセンブルした結果は、受け取ったEmitterに格納されます。
-    Emitterの位置 emitter.pos の0,1,2,3,.. は addressの 0,4,8,c,.. に対応します。
+    cl_getlineにセットされた内容をアセンブルします。
+    アセンブルした結果は、受け取ったEmitterに格納されます。
 */
     char* buff_line;
     while( -1 != cl_getline(&buff_line) ){
@@ -437,7 +429,7 @@ void asm_main(struct Emitter* emitter){
         parse_one((buff_line + read_len), &suffix);
         if(substreq(":",suffix)){ // ラベルの場合
             int label_symbol = substr_to_label_symbol(stem);
-            int label_address = retrieve_end_address_from_emitter(emitter);
+            int label_address = emitter->pos;
             address_put(label_symbol,label_address); 
         }else{ // ニーモニックの場合
             int oneword = asm_one(buff_line,emitter->pos); 
@@ -447,7 +439,7 @@ void asm_main(struct Emitter* emitter){
     struct Unresolved_item buff_item;
     while( 0 != get_unresolved_item(&buff_item)){
         int label_address = address_get(buff_item.label_symbol);
-        int address_offset = label_address - emitter_pos_to_address(buff_item.pos) ;
+        int address_offset = label_address - buff_item.pos;//2ずれてる
         int unresolved_word = emitter->words[buff_item.pos];
         int resolved_word = (unresolved_word&0xFF000000) | (address_offset&0x00FFFFFF) ;
         printf("urword: %x\n",unresolved_word);
@@ -872,6 +864,17 @@ static void test_asm_b_firstpass(){
     assert(to_mnemonic_symbol("b",1) == unresolved_item.mnemonic_symbol);
     assert(expect_emitter_pos == unresolved_item.pos);
 }
+static void test_asm_main_b(){
+    char* input = "loop:\nb loop";
+    int expect = 0xEAFFFFFE;
+
+    cl_getline_set_src(input);
+    init_emitter(&g_emitter);
+    asm_main(&g_emitter);
+
+    hex_dump(&g_emitter);
+
+}
 static void test_asm_file_b(){
 /*
     input:次のような内容のアスキー形式のファイルを読み込み、
@@ -933,6 +936,7 @@ static void asm_unittests(){
     test_asm_file();
     test_asm_file_init_emitter();
     test_asm_b_firstpass();
+    test_asm_main_b();
     test_asm_file_b();
 }
 
