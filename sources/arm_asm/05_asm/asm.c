@@ -429,7 +429,7 @@ void asm_main(struct Emitter* emitter){
         parse_one((buff_line + read_len), &suffix);
         if(substreq(":",suffix)){ // ラベルの場合
             int label_symbol = substr_to_label_symbol(stem);
-            address_put(label_symbol,(emitter->pos - 1)); 
+            address_put(label_symbol,(emitter->pos)); 
         }else{ // ニーモニックの場合
             int oneword = asm_one(buff_line,emitter->pos); 
             emit_word(emitter, oneword);
@@ -438,10 +438,15 @@ void asm_main(struct Emitter* emitter){
     struct Unresolved_item buff_item;
     while( 0 != get_unresolved_item(&buff_item)){
         int label_address = address_get(buff_item.label_symbol);
-        int offset = label_address - buff_item.pos;
+        int offset = label_address - buff_item.pos -2; //この２はいったい何？
         int unresolved_word = emitter->words[buff_item.pos];
-        int resolved_word = unresolved_word || offset ;
-        emitter->words[buff_item.pos] = resolved_word; //TODO
+        int resolved_word = (unresolved_word&0xFF000000) | (offset&0x00FFFFFF) ;
+        printf("urword: %x\n",unresolved_word);
+        printf("urword: %x\n",unresolved_word&0xFF000000);
+        printf("offset: %x\n",offset);
+        printf("offset: %x\n",offset&0x00FFFFFF);
+        printf(" rword: %x\n",resolved_word);
+        emitter->words[buff_item.pos] =  resolved_word; //TODO
     }
 }
 
