@@ -74,7 +74,7 @@ int str_symbol;
 int raw_symbol;
 int b_symbol;
 
-void init_mnemonic_sybols(){
+void init_mnemonic_symbols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
     ldr_symbol = to_mnemonic_symbol("ldr",3);
     str_symbol = to_mnemonic_symbol("str",3);
@@ -97,8 +97,8 @@ int asm_one(char* input,int emitter_pos){
     int read_len = parse_one(input, &opcode);
     input += read_len;
 
-    int mnemonic_sybol = substr_to_mnemonic_symbol(opcode);
-    if( mnemonic_sybol == mov_symbol ){
+    int mnemonic_symbol = substr_to_mnemonic_symbol(opcode);
+    if( mnemonic_symbol == mov_symbol ){
     /*
         movのケース
         e.g. "mov r1, r2"   -> Rdにr1が、Rmに2が入る
@@ -130,7 +130,7 @@ int asm_one(char* input,int emitter_pos){
         word |= immediate_op<<25;
         word |= operand2;  
         return word;
-    }else if( mnemonic_sybol == raw_symbol ){ 
+    }else if( mnemonic_symbol == raw_symbol ){ 
     /*
         疑似命令.rawのケース
         e.g. ".raw 0x123456" 
@@ -144,7 +144,7 @@ int asm_one(char* input,int emitter_pos){
         int raw_value;
         read_len = parse_raw_value(input,&raw_value); 
         return raw_value;
-    }else  if( mnemonic_sybol == ldr_symbol || mnemonic_sybol == str_symbol ){ 
+    }else  if( mnemonic_symbol == ldr_symbol || mnemonic_symbol == str_symbol ){ 
     /*
         ldr または str のケース
         e.g. "ldr r1, [r2]"       -> Rdにr1が、Rnにr2が入る。
@@ -168,7 +168,7 @@ int asm_one(char* input,int emitter_pos){
         input += read_len;
         
         int word;
-        if( mnemonic_sybol == ldr_symbol ) { 
+        if( mnemonic_symbol == ldr_symbol ) { 
             word = 0xE5900000 ; 
         }else{ // "str"
             word = 0xE5800000 ; 
@@ -193,7 +193,7 @@ int asm_one(char* input,int emitter_pos){
             word |= abs(immediate_value);
         }
         return word;
-    }else if( mnemonic_sybol == b_symbol ){    
+    }else if( mnemonic_symbol == b_symbol ){    
     /*
         bのケース
         e.g. "b label" 
@@ -207,7 +207,7 @@ int asm_one(char* input,int emitter_pos){
         struct Unresolved_item unresolved_item;
         unresolved_item.label_symbol = substr_to_label_symbol(label_str);
         unresolved_item.emitter_pos = emitter_pos; 
-        unresolved_item.mnemonic_symbol = mnemonic_sybol;
+        unresolved_item.mnemonic_symbol = mnemonic_symbol;
         put_unresolved_item(unresolved_item);
         return word;
     }else{
@@ -356,7 +356,7 @@ static void test_asm_ks(){
         str r0, [r1]
         .raw 0x101f1000
 
-    epect:以下のワードからなるバイナリ実行ファイルを書き出す       
+    expect:以下のワードからなるバイナリ実行ファイルを書き出す       
         0xE59F1004 0xE3A00068 0xE5810000 0x101F1000
 */
     char* input_file = "test/test_input/nanika_mojiwo_hyouji.ks";
@@ -394,7 +394,7 @@ static void test_asm_file(){
         str r0, [r1]
         .raw 0x101f1000
 
-    epect:以下のワードからなるバイナリ実行ファイルを書き出す       
+    expect:以下のワードからなるバイナリ実行ファイルを書き出す       
         0xE59F1004 0xE3A00068 0xE5810000 0x101F1000
 */
     char* input_file = "test/test_input/nanika_mojiwo_hyouji.ks";
@@ -475,7 +475,7 @@ static void test_asm_file_b(){
         b loop
     .raw 0x101f1000
 
-    epect:バイナリ実行ファイルを書き出す       
+    expect:バイナリ実行ファイルを書き出す       
 */
     char* input_file = "test/test_input/hello_arm.ks";
     int expect_words[4] = {0xE59F1004,0xE3A00068,0xE5810000,0x101F1000};
@@ -508,12 +508,12 @@ static void unittests(){
     dict_unittests();
     parser_unittests();
 
-    init_mnemonic_sybols();
+    init_mnemonic_symbols();
     asm_unittests();
 }
 
 int main(int argc, char* argv[]){
-    init_mnemonic_sybols();
+    init_mnemonic_symbols();
     if(3 == argc){
         asm_file(argv[1],argv[2]);
     }
