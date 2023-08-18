@@ -65,6 +65,26 @@ int is_sbracket(char* str){
     }
 }
 
+int parse_string(char* buf, char **out_str) {
+    static char tmpbuf[1024];
+
+    int i = 0;
+    assert(buf[i] == '"');
+    i++;
+    while(buf[i] != '"') {
+        tmpbuf[i-1] = buf[i];
+        i++;
+    }
+    tmpbuf[i-1] = '\0';
+
+    char *res = (char*)malloc(sizeof(char)*i);
+    memcpy(res, tmpbuf, i);
+
+    *out_str = res;
+
+    return i;
+}
+
 int parse_raw_value(char* str, int* out_value){ 
 /*
     16進数を表す文字列をパースして、数値を返します。読んだ文字数をreturnします。
@@ -420,6 +440,15 @@ static void test_is_sbracket(){
     assert(expect1 == actual1);
     assert(expect2 == actual2);
 }
+static void test_parse_string(){
+    char* input = "\"hello world\"";
+    char* expect_str = "hello world";
+
+    char* actual_str;
+    parse_string(input,&actual_str);
+
+    assert(streq(expect_str,actual_str));
+}
 
 
 void parser_unittests(){
@@ -439,4 +468,5 @@ void parser_unittests(){
     test_parse_immediate_value3();
     test_parse_raw_value();
     test_is_sbracket();
+    test_parse_string();
 }
