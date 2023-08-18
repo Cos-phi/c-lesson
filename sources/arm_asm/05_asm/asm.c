@@ -235,13 +235,13 @@ void asm_main(struct Emitter* emitter){
             emit_word(emitter, oneword);
         }
     }
-    struct Unresolved_item buff_item;
-    while( 0 != get_unresolved_item(&buff_item)){
-        int label_address = address_get(buff_item.label_symbol);
-        int address_offset = label_address - buff_item.emitter_pos - 2 ;// r15(PC)は2つ先を指しているので、2を引きます。
-        int unresolved_word = emitter->words[buff_item.emitter_pos];
+    struct Unresolved_item unresolved_item;
+    while( 0 != get_unresolved_item(&unresolved_item)){
+        int label_address = address_get(unresolved_item.label_symbol);
+        int address_offset = label_address - unresolved_item.emitter_pos - 2 ;// r15(PC)は2つ先を指しているので、2を引きます。
+        int unresolved_word = emitter->words[unresolved_item.emitter_pos];
         int resolved_word = (unresolved_word&0xFF000000) | (address_offset&0x00FFFFFF) ;
-        emitter->words[buff_item.emitter_pos] =  resolved_word;
+        emitter->words[unresolved_item.emitter_pos] =  resolved_word;
     }
 }
 
