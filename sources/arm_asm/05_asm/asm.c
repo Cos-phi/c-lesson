@@ -455,27 +455,11 @@ static void test_asm_b_firstpass(){
 }
 static void test_asm_file_b(){
 /*
-    input:次のような内容のアスキー形式のファイルを読み込み、
-        ldr r0,[r15,#0x38]
-        mov r1,#0x68
-        str r1,[r0]
-        mov r1,#0x65
-        str r1,[r0]
-        mov r1,#0x6c
-        str r1,[r0]
-        mov r1,#0x6c
-        str r1,[r0]
-        mov r1,#0x6f
-        str r1,[r0]
-        mov r2,#0x0D
-        str r2,[r0]
-        mov r2,#0x0A
-        str r2,[r0]
-    loop:
-        b loop
-    .raw 0x101f1000
+    動作確認のためファイルに出力するだけの関数です。
+    この関数内では、結果の判定を行いません。
 
-    expect:バイナリ実行ファイルを書き出す       
+    input:  hello_arm.s相当のファイルhello_arm.ksを読み込み、
+    expect: hello_arm.sをARMアセンブラでアセンブルしたバイナリと、同等のバイナリを書き出す。
 */
     char* input_file = "test/test_input/hello_arm.ks";
     int expect_words[4] = {0xE59F1004,0xE3A00068,0xE5810000,0x101F1000};
