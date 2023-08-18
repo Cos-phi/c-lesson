@@ -65,14 +65,15 @@ int is_sbracket(char* str){
     }
 }
 
-int parse_string(char* buf, char **out_str) {
+int parse_string(char* input_str, char **out_str) {
     static char tmpbuf[1024];
 
     int i = 0;
-    assert(buf[i] == '"');
+    assert(input_str[i] == '"');
     i++;
-    while(buf[i] != '"') {
-        tmpbuf[i-1] = buf[i];
+    while(input_str[i] != '"') {
+        assert( '\0' != input_str[i] );
+        tmpbuf[i-1] = input_str[i];
         i++;
     }
     tmpbuf[i-1] = '\0';
@@ -81,7 +82,6 @@ int parse_string(char* buf, char **out_str) {
     memcpy(res, tmpbuf, i);
 
     *out_str = res;
-
     return i;
 }
 
