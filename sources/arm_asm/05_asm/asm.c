@@ -71,14 +71,14 @@ int get_unresolved_item(struct Unresolved_item* out_item){
 int mov_symbol;
 int ldr_symbol;
 int str_symbol;
-int raw_symbol;
+int dot_symbol;
 int b_symbol;
 
 void init_mnemonic_symbols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
     ldr_symbol = to_mnemonic_symbol("ldr",3);
     str_symbol = to_mnemonic_symbol("str",3);
-    raw_symbol = to_mnemonic_symbol(".",1);
+    dot_symbol = to_mnemonic_symbol(".",1);
     b_symbol = to_mnemonic_symbol("b",1);
 }
 
@@ -130,15 +130,15 @@ int asm_one(char* input,int emitter_pos){
         word |= immediate_op<<25;
         word |= operand2;  
         return word;
-    }else if( mnemonic_symbol == raw_symbol ){ 
+    }else if( mnemonic_symbol == dot_symbol ){ 
     /*
         疑似命令.rawのケース
         e.g. ".raw 0x123456" 
         引数の数値0x123456が、そのままraw_valueに入る
     */
-        struct Substring substr_raw; 
-        read_len = parse_one(input, &substr_raw);
-        assert( substreq("raw",substr_raw) );
+        struct Substring pseudo_inst_name; 
+        read_len = parse_one(input, &pseudo_inst_name);
+        assert( substreq("raw",pseudo_inst_name) );
         input += read_len;
 
         int raw_value;
@@ -197,7 +197,7 @@ int asm_one(char* input,int emitter_pos){
     /*
         bのケース
         e.g. "b label" 
-        ラベルの部分には000000を入れておき、解決が必要なものを集めるリスト（unresolved_items）に登録する。
+        即値（ラベルが指すアドレス）には000000を入れておき、解決が必要なものを集めるリスト（unresolved_items）に登録する。
     */    
         int word = 0xEA000000;
 
