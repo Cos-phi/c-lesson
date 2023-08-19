@@ -69,26 +69,30 @@ int is_sbracket(char* str){
 int parse_string(char* input, char **out_str) {
 /*
     ダブルクォーテーションで囲まれた文字列をパースします。
+    ダブルクォーテーションはバックスラッシュでエスケープされます
 */
     static char string_buff[STRING_BUFF_SIZE];
     int input_cnt = 0;
     int buff_cnt = 0;
-    assert(input[input_cnt] == '"');
-    input_cnt++;
+    assert(input[input_cnt++] == '"');
     while( STRING_BUFF_SIZE > buff_cnt ) {
         if( '\\' == input[input_cnt] ){ 
             input_cnt++;
-            string_buff[buff_cnt++] = input[input_cnt++];
-        }else if( '"' == input[input_cnt] ){
-            break;
+            if( 'n' == input[input_cnt] ){
+                string_buff[buff_cnt++] = '\n';
+                input_cnt++;
+            }else{
+                string_buff[buff_cnt++] = input[input_cnt++];
+            }
         }else if( '\0' == input[input_cnt] ){
             abort();
+        }else if( '"' == input[input_cnt] ){
+            string_buff[buff_cnt] = '\0';
+            break;
         }else{
             string_buff[buff_cnt++] = input[input_cnt++];
         }
     }
-    string_buff[buff_cnt] = '\0';
-
     char *res = (char*)malloc(sizeof(char)*(buff_cnt+1));
     memcpy(res, string_buff, sizeof(char)*(buff_cnt+1));
 
@@ -470,7 +474,7 @@ static void test_parse_string_escape_1(){
     assert(streq(expect_str,actual_str));
 }
 static void test_parse_string_escape_2(){
-    char* input = "\"End with back slash. \\\"";
+    char* input = "\"End with back slash. \\\\\"";
     char* expect_str = "End with back slash. \\";
 
     char* actual_str;
@@ -481,6 +485,15 @@ static void test_parse_string_escape_2(){
 static void test_parse_string_escape_3(){
     char* input = "\"Back slach and double quote \\\\\\\" this is note closed double quote.\"";
     char* expect_str = "Back slach and double quote \\\" this is note closed double quote.";
+
+    char* actual_str;
+    parse_string(input,&actual_str);
+
+    assert(streq(expect_str,actual_str));
+}
+static void test_parse_string_escape_4(){
+    char* input = "\"Return here.\\nlike this.\"";
+    char* expect_str = "Return here.\nlike this.";
 
     char* actual_str;
     parse_string(input,&actual_str);
@@ -508,6 +521,7 @@ void parser_unittests(){
     test_is_sbracket();
     test_parse_string();
     test_parse_string_escape_1();
-    //test_parse_string_escape_2();
-    //test_parse_string_escape_3();
+    test_parse_string_escape_2();
+    test_parse_string_escape_3();
+    test_parse_string_escape_4();
 }
