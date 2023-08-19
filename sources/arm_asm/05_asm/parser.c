@@ -66,6 +66,9 @@ int is_sbracket(char* str){
 }
 
 int parse_string(char* input_str, char **out_str) {
+/*
+    ダブルクォーテーションで囲まれた文字列をパースします。
+*/
     static char tmpbuf[1024];
 
     int i = 0;
@@ -449,6 +452,33 @@ static void test_parse_string(){
 
     assert(streq(expect_str,actual_str));
 }
+static void test_parse_string_escape_1(){
+    char* input = "\"This is \"\" double quote!\"";
+    char* expect_str = "This is \" double quote!";
+
+    char* actual_str;
+    parse_string(input,&actual_str);
+
+    assert(streq(expect_str,actual_str));
+}
+static void test_parse_string_escape_2(){
+    char* input = "\"End with back slash. \\\"";
+    char* expect_str = "End with back slash. \\";
+
+    char* actual_str;
+    parse_string(input,&actual_str);
+
+    assert(streq(expect_str,actual_str));
+}
+static void test_parse_string_escape_3(){
+    char* input = "\"Back slach and double quote \\\\\\\" this is note closed double quote.\"";
+    char* expect_str = "Back slach and double quote \\\" this is note closed double quote.";
+
+    char* actual_str;
+    parse_string(input,&actual_str);
+
+    assert(streq(expect_str,actual_str));
+}
 
 
 void parser_unittests(){
@@ -469,4 +499,7 @@ void parser_unittests(){
     test_parse_raw_value();
     test_is_sbracket();
     test_parse_string();
+    //test_parse_string_escape_1();
+    //test_parse_string_escape_2();
+    //test_parse_string_escape_3();
 }
