@@ -1,4 +1,5 @@
 #include "clesson.h"
+#define STRING_BUFF_SIZE 1024
 
 int substreq(char* s1, struct Substring s2){
     if( 0 == strncmp(s1, s2.str, s2.len) ){
@@ -65,27 +66,34 @@ int is_sbracket(char* str){
     }
 }
 
-int parse_string(char* input_str, char **out_str) {
+int parse_string(char* input, char **out_str) {
 /*
     ダブルクォーテーションで囲まれた文字列をパースします。
 */
-    static char tmpbuf[1024];
-
-    int i = 0;
-    assert(input_str[i] == '"');
-    i++;
-    while(input_str[i] != '"') {
-        assert( '\0' != input_str[i] );
-        tmpbuf[i-1] = input_str[i];
-        i++;
+    static char string_buff[STRING_BUFF_SIZE];
+    int input_cnt = 0;
+    int buff_cnt = 0;
+    assert(input[input_cnt] == '"');
+    input_cnt++;
+    while( STRING_BUFF_SIZE > buff_cnt ) {
+        if( '\\' == input[input_cnt] ){ 
+            input_cnt++;
+            string_buff[buff_cnt++] = input[input_cnt++];
+        }else if( '"' == input[input_cnt] ){
+            break;
+        }else if( '\0' == input[input_cnt] ){
+            abort();
+        }else{
+            string_buff[buff_cnt++] = input[input_cnt++];
+        }
     }
-    tmpbuf[i-1] = '\0';
+    string_buff[buff_cnt] = '\0';
 
-    char *res = (char*)malloc(sizeof(char)*i);
-    memcpy(res, tmpbuf, i);
+    char *res = (char*)malloc(sizeof(char)*(buff_cnt+1));
+    memcpy(res, string_buff, sizeof(char)*(buff_cnt+1));
 
     *out_str = res;
-    return i;
+    return buff_cnt;
 }
 
 int parse_raw_value(char* str, int* out_value){ 
@@ -453,7 +461,7 @@ static void test_parse_string(){
     assert(streq(expect_str,actual_str));
 }
 static void test_parse_string_escape_1(){
-    char* input = "\"This is \"\" double quote!\"";
+    char* input = "\"This is \\\" double quote!\"";
     char* expect_str = "This is \" double quote!";
 
     char* actual_str;
@@ -499,7 +507,7 @@ void parser_unittests(){
     test_parse_raw_value();
     test_is_sbracket();
     test_parse_string();
-    //test_parse_string_escape_1();
+    test_parse_string_escape_1();
     //test_parse_string_escape_2();
     //test_parse_string_escape_3();
 }
