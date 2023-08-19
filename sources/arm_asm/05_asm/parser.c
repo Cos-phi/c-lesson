@@ -464,7 +464,7 @@ static void test_parse_string(){
 
     assert(streq(expect_str,actual_str));
 }
-static void test_parse_string_escape_1(){
+static void test_parse_string_escape_dq(){
     char* input = "\"This is \\\" double quote!\"";
     char* expect_str = "This is \" double quote!";
 
@@ -473,7 +473,7 @@ static void test_parse_string_escape_1(){
 
     assert(streq(expect_str,actual_str));
 }
-static void test_parse_string_escape_2(){
+static void test_parse_string_escape_end_bs(){
     char* input = "\"End with back slash. \\\\\"";
     char* expect_str = "End with back slash. \\";
 
@@ -482,7 +482,7 @@ static void test_parse_string_escape_2(){
 
     assert(streq(expect_str,actual_str));
 }
-static void test_parse_string_escape_3(){
+static void test_parse_string_escape_bs_and_dq(){
     char* input = "\"Back slach and double quote \\\\\\\" this is note closed double quote.\"";
     char* expect_str = "Back slach and double quote \\\" this is note closed double quote.";
 
@@ -491,9 +491,18 @@ static void test_parse_string_escape_3(){
 
     assert(streq(expect_str,actual_str));
 }
-static void test_parse_string_escape_4(){
+static void test_parse_string_escape_return(){
     char* input = "\"Return here.\\nlike this.\"";
     char* expect_str = "Return here.\nlike this.";
+
+    char* actual_str;
+    parse_string(input,&actual_str);
+
+    assert(streq(expect_str,actual_str));
+}
+static void test_parse_string_escape_end_in_the_middle(){
+    char* input = "\"mue- mue-\" This is aja";
+    char* expect_str = "mue- mue-";
 
     char* actual_str;
     parse_string(input,&actual_str);
@@ -520,8 +529,9 @@ void parser_unittests(){
     test_parse_raw_value();
     test_is_sbracket();
     test_parse_string();
-    test_parse_string_escape_1();
-    test_parse_string_escape_2();
-    test_parse_string_escape_3();
-    test_parse_string_escape_4();
+    test_parse_string_escape_dq();
+    test_parse_string_escape_end_bs();
+    test_parse_string_escape_bs_and_dq();
+    test_parse_string_escape_return();
+    test_parse_string_escape_end_in_the_middle();
 }
