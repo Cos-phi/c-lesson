@@ -473,7 +473,7 @@ static void test_parse_string_escape_dq(){
 
     assert(streq(expect_str,actual_str));
 }
-static void test_parse_string_escape_end_bs(){
+static void test_parse_string_escape_end_after_bs(){
     char* input = "\"End with back slash. \\\\\"";
     char* expect_str = "End with back slash. \\";
 
@@ -509,6 +509,15 @@ static void test_parse_string_escape_end_in_the_middle(){
 
     assert(streq(expect_str,actual_str));
 }
+static void test_parse_string_escape_end_in_the_middle_after_bs(){
+    char* input = "\"/^o^\\\\\" This is pudding";
+    char* expect_str = "/^o^\\";
+
+    char* actual_str;
+    parse_string(input,&actual_str);
+
+    assert(streq(expect_str,actual_str));
+}
 
 
 void parser_unittests(){
@@ -530,8 +539,9 @@ void parser_unittests(){
     test_is_sbracket();
     test_parse_string();
     test_parse_string_escape_dq();
-    test_parse_string_escape_end_bs();
+    test_parse_string_escape_end_after_bs();
     test_parse_string_escape_bs_and_dq();
     test_parse_string_escape_return();
     test_parse_string_escape_end_in_the_middle();
+    test_parse_string_escape_end_in_the_middle_after_bs();
 }
