@@ -89,6 +89,8 @@ int parse_string(char* input, char **out_str) {
             case STATE_START:
                 if( '\"' == ch ){
                     state = STATE_CHAR;
+                }else{
+                    state = STATE_ERROR;
                 }
                 continue;
             case STATE_CHAR:
@@ -108,14 +110,13 @@ int parse_string(char* input, char **out_str) {
                 }else{
                     string_buff[buff_cnt++] = ch;
                 }
+                state = STATE_CHAR;
                 continue;
-            case STATE_END:
-                break;
             case STATE_ERROR:
                 abort();
         }
     }
-
+    string_buff[buff_cnt] = '\0';
     char *res = (char*)malloc(sizeof(char)*(buff_cnt+1));
     memcpy(res, string_buff, sizeof(char)*(buff_cnt+1));
 
@@ -497,8 +498,8 @@ static void test_parse_string_escape_dq(){
     assert(streq(expect_str,actual_str));
 }
 static void test_parse_string_escape_end_after_bs(){
-    char* input = "\"End with back slash. \\\\\"";
-    char* expect_str = "End with back slash. \\";
+    char* input = "\"End with back slash.\\\\\"";
+    char* expect_str = "End with back slash.\\";
 
     char* actual_str;
     parse_string(input,&actual_str);
@@ -561,10 +562,10 @@ void parser_unittests(){
     test_parse_raw_value();
     test_is_sbracket();
     test_parse_string();
-    //test_parse_string_escape_dq();
-    //test_parse_string_escape_end_after_bs();
-    //test_parse_string_escape_bs_and_dq();
-    //test_parse_string_escape_return();
-    //test_parse_string_escape_end_in_the_middle();
-    //test_parse_string_escape_end_in_the_middle_after_bs();
+    test_parse_string_escape_dq();
+    test_parse_string_escape_end_after_bs();
+    test_parse_string_escape_bs_and_dq();
+    test_parse_string_escape_return();
+    test_parse_string_escape_end_in_the_middle();
+    test_parse_string_escape_end_in_the_middle_after_bs();
 }
