@@ -70,7 +70,6 @@ enum State {
     STATE_START,
     STATE_CHAR,
     STATE_ESCAPE,
-    STATE_RETURN,
     STATE_END,
     STATE_ERROR
 };
@@ -107,16 +106,12 @@ int parse_string(char* input, char **out_str) {
                 continue;
             case STATE_ESCAPE:
                 if( 'n' == ch ){
-                    state = STATE_RETURN;
+                    string_buff[buff_cnt++] = '\n';
+                    state = STATE_CHAR;
                 }else{
                     string_buff[buff_cnt++] = ch;
                     state = STATE_CHAR;
                 }
-                continue;
-            case STATE_RETURN:
-                string_buff[buff_cnt++] = '\n';
-                input_cnt--;
-                state = STATE_CHAR;
                 continue;
             case STATE_ERROR:
                 abort();
