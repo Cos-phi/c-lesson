@@ -138,12 +138,20 @@ int asm_one(char* input,int emitter_pos){
     */
         struct Substring pseudo_inst_name; 
         read_len = parse_one(input, &pseudo_inst_name);
+        input += read_len;
         assert( substreq("raw",pseudo_inst_name) );
+
+        read_len = skip_whitespace(input);
         input += read_len;
 
         int raw_value;
         if( 1 == is_doublequotation(input) ){
-            raw_value = 0x74657374;
+            char* str;
+            raw_value = 0;
+            parse_string(input,&str);
+            for(int i=0; '\0' != str[i];i++){
+                raw_value += str[i] << 8*(3-i);
+            }
         }else{
             read_len = parse_raw_value(input,&raw_value); 
         }

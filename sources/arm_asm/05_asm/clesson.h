@@ -44,6 +44,7 @@ int parse_immediate_value(char* str, int* out_value);
 int parse_register(char* str, int* out_register);
 int parse_one(char *str, struct Substring* out_subs);
 int parse_raw_value(char* str, int* out_value);
+int parse_string(char* input, char **out_str);
 int skip_whitespace(char* str);
 int skip_comma(char* str);
 int skip_sbracket(char* str);
