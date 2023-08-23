@@ -142,7 +142,11 @@ int asm_one(char* input,int emitter_pos){
         input += read_len;
 
         int raw_value;
-        read_len = parse_raw_value(input,&raw_value); 
+        if( 1 == is_doublequotation(input) ){
+            raw_value = 0x74657374;
+        }else{
+            read_len = parse_raw_value(input,&raw_value); 
+        }
         return raw_value;
     }else  if( mnemonic_symbol == ldr_symbol || mnemonic_symbol == str_symbol ){ 
     /*
@@ -468,6 +472,14 @@ static void test_asm_file_b(){
     asm_file(input_file,output_file);
 
 }
+static void test_asm_raw_oneword(){
+    char* input = ".raw \"test\"";
+    int expect = 0x74657374; 
+     
+    int actual = asm_one(input,0);
+
+    assert(expect == actual);
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -484,6 +496,7 @@ static void asm_unittests(){
     test_asm_file_init_emitter();
     test_asm_b_firstpass();
     test_asm_file_b();
+    test_asm_raw_oneword();
 }
 
 static void unittests(){

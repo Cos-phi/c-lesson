@@ -49,3 +49,4 @@ int skip_comma(char* str);
 int skip_sbracket(char* str);
 int is_register(char* str);
 int is_sbracket(char* str);
+int is_doublequotation(char* str);

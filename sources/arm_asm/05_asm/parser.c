@@ -57,9 +57,19 @@ int is_register(char* str){
         return 0;
     }
 }
+
 int is_sbracket(char* str){
     int pos = skip_whitespace(str);
     if( ('[' == str[pos])||(']' == str[pos]) ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int is_doublequotation(char* str){
+    int pos = skip_whitespace(str);
+    if( '\"' == str[pos] ){
         return 1;
     }else{
         return 0;
