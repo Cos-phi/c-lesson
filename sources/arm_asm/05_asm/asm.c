@@ -133,8 +133,6 @@ int asm_one(char* input, struct Emitter* emitter){
     }else if( mnemonic_symbol == dot_symbol ){ 
     /*
         疑似命令.rawのケース
-        e.g. ".raw 0x123456" 
-        引数の数値0x123456が、そのままraw_valueに入る
     */
         struct Substring pseudo_inst_name; 
         read_len = parse_one(input, &pseudo_inst_name);
@@ -146,6 +144,11 @@ int asm_one(char* input, struct Emitter* emitter){
 
         int raw_value;
         if( 1 == is_doublequotation(input) ){
+        /*
+            e.g. ".raw \"test\""
+            引数をエスケープ処理した文字列test4文字が、そのままraw_valueに並べられて入る。
+        TODO    文字列が4文字より多い場合は、4文字ずつ文字列をemitterに入れて、最後の文字列だけがemitterに入れられてraw_valueに入る
+        */
             char* str;
             raw_value = 0;
             parse_string(input,&str);
@@ -153,6 +156,10 @@ int asm_one(char* input, struct Emitter* emitter){
                 raw_value += str[i] << 8*(3-i);
             }
         }else{
+        /*
+            e.g. ".raw 0x123456" 
+            引数の数値0x123456が、そのままraw_valueに入る
+        */
             read_len = parse_raw_value(input,&raw_value); 
         }
         return raw_value;
