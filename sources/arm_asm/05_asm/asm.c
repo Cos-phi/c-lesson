@@ -86,7 +86,7 @@ void init_mnemonic_symbols(){
 /*
     以下、アセンブルを行う関数です。
 */
-int asm_one(char* input,int emitter_pos){
+int asm_one(char* input, struct Emitter* emitter){
 /*
     一行の文字列を32bitのバイナリにアセンブルして、intとしてreturnします。
     e.g. "mov r1, r2"           -> 0xE1A01002
@@ -218,7 +218,7 @@ int asm_one(char* input,int emitter_pos){
 
         struct Unresolved_item unresolved_item;
         unresolved_item.label_symbol = substr_to_label_symbol(label_str);
-        unresolved_item.emitter_pos = emitter_pos; 
+        unresolved_item.emitter_pos = emitter->pos; 
         unresolved_item.mnemonic_symbol = mnemonic_symbol;
         put_unresolved_item(unresolved_item);
         return word;
@@ -243,7 +243,7 @@ void asm_main(struct Emitter* emitter){
             int label_address = emitter->pos; //ここで"address"は、emitter内のwordの順番を指すものとします。
             address_put(label_symbol,label_address); 
         }else{ // ニーモニックの場合
-            int oneword = asm_one(buff_line,emitter->pos); 
+            int oneword = asm_one(buff_line,emitter); 
             emit_word(emitter, oneword);
         }
     }
@@ -380,7 +380,7 @@ static void test_asm_ks(){
     char* buf;
     init_emitter(&g_emitter);
     while( -1 != cl_getline(&buf) ){
-        int oneword = asm_one(buf,g_emitter.pos);
+        int oneword = asm_one(buf,&g_emitter);
         emit_word(&g_emitter, oneword);
     }
     fclose(input_fp);  
@@ -457,7 +457,7 @@ static void test_asm_b_firstpass(){
     struct Unresolved_item unresolved_item;
     assert(0 == get_unresolved_item(&unresolved_item));
     int expect_emitter_pos = g_emitter.pos;
-    int actual = asm_one(input,g_emitter.pos);
+    int actual = asm_one(input,&g_emitter);
 
     assert(expect == actual);
     assert(1 == get_unresolved_item(&unresolved_item));
