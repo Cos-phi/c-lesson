@@ -1,6 +1,7 @@
 #include "clesson.h"
 #define EMITTER_ARRAY_SIZE 250
 #define UNRESOLVED_ARRAY_SIZE 128
+#define RAWSTR_BUFFSIZE 64
 
 /*
     g_emitter: アセンブルされた結果を格納する配列です。
@@ -145,17 +146,22 @@ int asm_one(char* input, struct Emitter* emitter){
         int raw_value;
         if( 1 == is_doublequotation(input) ){
         /*
-            e.g. ".raw \"test\"" -> 0x74657374 がreturn
             引数をエスケープ処理した文字列test4文字が、そのままint raw_valueとしてはいる
-            e.g. ".raw \"Hello world\"" -> 0x48656C6C 0x6F20776F がEmitterに、 0x726C6400がreturn
-        TODO    文字列が4文字より多い場合は、4文字ずつ文字列をintにしてemitterに入れて、最後の文字列だけがemitterに入れられすにraw_valueに入る
+            e.g. ".raw \"test\"" -> 0x74657374 がreturn
+            
+            文字列が4文字より多い場合は、4文字ずつ文字列をintにしてemitterに入れて、最後の文字列だけがemitterに入れられすにraw_valueに入る
+            e.g. ".raw \"Hello world\"" -> 0x48656C6C 0x6F20776F がEmitterに、 0x726C6400がreturn   
         */
             char* str;
             raw_value = 0;
+            int raw_value_words[RAWSTR_BUFFSIZE];
+            int raw_value_words_index = 0;
+            raw_value_words[raw_value_words_index] = 0;
             parse_string(input,&str);
             for(int i=0; '\0' != str[i];i++){
-                raw_value += str[i] << 8*(3-i);
+                raw_value_words[raw_value_words_index] += str[i] << 8*(3-i);
             }
+            raw_value = raw_value_words[raw_value_words_index];
         }else{
         /*
             e.g. ".raw 0x123456" 
