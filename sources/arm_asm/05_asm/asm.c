@@ -155,9 +155,46 @@ int asm_one(char* input, struct Emitter* emitter){
             char* str;
             raw_value = 0;
             parse_string(input,&str);
+
             int raw_value_words[RAWSTR_BUFFSIZE];
             int raw_value_words_index = 0;
-            raw_value_words[raw_value_words_index] = 0;
+
+            enum State {
+                STATE_WORDSTART,
+                STATE_NEXTWORD,
+                STATE_CHAR,
+                STATE_END,
+                STATE_ERROR
+            };
+            enum State state = STATE_WORDSTART;
+            int str_index = 0;
+            while( STATE_END != state ){
+                switch (state){
+                    case STATE_WORDSTART:
+                        raw_value_words[raw_value_words_index] = 0;
+                        state = STATE_CHAR;           
+                        continue;
+                    case STATE_NEXTWORD:
+                        raw_value_words_index++;
+                        state = STATE_WORDSTART;
+                        continue;
+                    case STATE_CHAR:
+                        raw_value_words[raw_value_words_index] += str[str_index] << 8*(3-str_index);
+                        str_index++;
+                        if( '\0' == str[str_index] ){
+                            state = STATE_END;
+                        }else if( 0 == str_index % 4 ){
+                            state = STATE_NEXTWORD;
+                        }
+                        continue;
+                    case STATE_ERROR:
+                        abort();
+                }
+
+            }
+            /* ↑のε遷移を許すステートマシーンに書き換える前のコードですの。
+                はたしてこの書き換えはやってよかったかしら？
+
             for(int i=0; '\0' != str[i];i++){
                 if( 0 == i%4 && 0 != i ){
                     raw_value_words_index++;
@@ -165,6 +202,8 @@ int asm_one(char* input, struct Emitter* emitter){
                 }
                 raw_value_words[raw_value_words_index] += str[i] << 8*(3-i);
             }
+            */
+
             for(int i=0; i < raw_value_words_index; i++){
                 emit_word(emitter,raw_value_words[i]);
             }
@@ -517,11 +556,40 @@ static void test_asm_raw_str(){
    
     init_emitter(&g_emitter);
     int actual = asm_one(input,&g_emitter);
-    //hex_dump(&g_emitter);
 
     assert(expect1 == g_emitter.words[0]);
     assert(expect2 == g_emitter.words[1]);
     assert(expect3 == actual);
+}
+static void test_asm_raw_str_escape1(){
+    char* input = ".raw \"escape1 \\\" end\"";
+    int expect1 = 0x65736361; 
+    int expect2 = 0x70653120; 
+    int expect3 = 0x2220656E;
+    int expect4 = 0x64000000; 
+   
+    init_emitter(&g_emitter);
+    int actual = asm_one(input,&g_emitter);
+
+    assert(expect1 == g_emitter.words[0]);
+    assert(expect2 == g_emitter.words[1]);
+    assert(expect3 == g_emitter.words[2]);
+    assert(expect4 == actual);
+}
+static void test_asm_raw_str_escape2(){
+    char* input = ".raw \"escape1 \\\\ end\"";
+    int expect1 = 0x65736361; 
+    int expect2 = 0x70653120; 
+    int expect3 = 0x5C20656E;
+    int expect4 = 0x64000000; 
+   
+    init_emitter(&g_emitter);
+    int actual = asm_one(input,&g_emitter);
+
+    assert(expect1 == g_emitter.words[0]);
+    assert(expect2 == g_emitter.words[1]);
+    assert(expect3 == g_emitter.words[2]);
+    assert(expect4 == actual);
 }
 static void asm_unittests(){
     test_asm_mov();
@@ -541,6 +609,8 @@ static void asm_unittests(){
     test_asm_file_b();
     test_asm_raw_oneword();
     test_asm_raw_str();
+    test_asm_raw_str_escape1();
+    test_asm_raw_str_escape2();
 }
 
 static void unittests(){
