@@ -76,22 +76,23 @@ int is_doublequotation(char* str){
     }
 }
 
-enum State {
-    STATE_START,
-    STATE_CHAR,
-    STATE_ESCAPE,
-    STATE_END,
-    STATE_ERROR
-};
 
 int parse_string(char* input, char **out_str) {
 /*
     ダブルクォーテーションで囲まれた文字列をパースします。
     ダブルクォーテーションはバックスラッシュでエスケープされます
 */
+
     static char string_buff[STRING_BUFF_SIZE];
     int input_cnt = 0;
     int buff_cnt = 0;
+    enum State {
+        STATE_START,
+        STATE_CHAR,
+        STATE_ESCAPE,
+        STATE_END,
+        STATE_ERROR
+    };
     enum State state = STATE_START; 
     while(STATE_END != state){
         char ch = input[input_cnt++];
