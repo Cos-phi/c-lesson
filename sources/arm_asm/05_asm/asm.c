@@ -577,11 +577,39 @@ static void test_asm_raw_str_escape1(){
     assert(expect4 == actual);
 }
 static void test_asm_raw_str_escape2(){
-    char* input = ".raw \"escape1 \\\\ end\"";
+    char* input = ".raw \"escape2 \\\\ end\"";
     int expect1 = 0x65736361; 
-    int expect2 = 0x70653120; 
+    int expect2 = 0x70653220; 
     int expect3 = 0x5C20656E;
     int expect4 = 0x64000000; 
+   
+    init_emitter(&g_emitter);
+    int actual = asm_one(input,&g_emitter);
+
+    assert(expect1 == g_emitter.words[0]);
+    assert(expect2 == g_emitter.words[1]);
+    assert(expect3 == g_emitter.words[2]);
+    assert(expect4 == actual);
+}
+static void test_asm_raw_str_escape3(){
+    char* input = ".raw \"escape3 \\\\\"";
+    int expect1 = 0x65736361; 
+    int expect2 = 0x70653320; 
+    int expect3 = 0x5C000000;
+   
+    init_emitter(&g_emitter);
+    int actual = asm_one(input,&g_emitter);
+
+    assert(expect1 == g_emitter.words[0]);
+    assert(expect2 == g_emitter.words[1]);
+    assert(expect3 == actual);
+}
+static void test_asm_raw_str_escape4(){
+    char* input = ".raw \"escape4 \\\\\\\" end\"";
+    int expect1 = 0x65736361; 
+    int expect2 = 0x70653420; 
+    int expect3 = 0x5C222065;
+    int expect4 = 0x6E640000; 
    
     init_emitter(&g_emitter);
     int actual = asm_one(input,&g_emitter);
@@ -611,6 +639,8 @@ static void asm_unittests(){
     test_asm_raw_str();
     test_asm_raw_str_escape1();
     test_asm_raw_str_escape2();
+    test_asm_raw_str_escape3();
+    test_asm_raw_str_escape4();
 }
 
 static void unittests(){
