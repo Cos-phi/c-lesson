@@ -209,11 +209,8 @@ void asm_line(char* input, struct Emitter* emitter){
         int raw_value;
         if( 1 == is_doublequotation(input) ){
         /*
-            引数をエスケープ処理した文字列test4文字が、そのままint raw_valueとしてはいる
-            e.g. ".raw \"test\"" -> 0x74657374 がreturn
-            
-            文字列が4文字より多い場合は、4文字ずつ文字列をintにしてemitterに入れて、最後の文字列だけがemitterに入れられすにraw_valueに入る
-            e.g. ".raw \"Hello world\"" -> 0x48656C6C 0x6F20776F がEmitterに、 0x726C6400がreturn   
+            引数をエスケープ処理した文字列が、4文字ずつ文字列をintにしてemitterに入る
+            e.g. ".raw \"Hello world\"" -> 0x48656C6C 0x6F20776F  0x726C6400 がEmitterに入る
         */
             char* str;
             raw_value = 0;
@@ -236,7 +233,7 @@ void asm_line(char* input, struct Emitter* emitter){
         }else{
         /*
             e.g. ".raw 0x123456" 
-            引数の数値0x123456が、そのままraw_valueに入る
+            引数の数値0x123456が、そのままraw_valueに入りemitterに入る
         */
             read_len = parse_raw_value(input,&raw_value); 
             emit_word(emitter, raw_value);
