@@ -95,8 +95,7 @@ int asm_one(char* input){
          "ldr r1,[r15, #-0x30]" -> 0xE51F1030
 */
     struct Substring opcode; 
-    int read_len = parse_one(input, &opcode);
-    input += read_len;
+    input += parse_one(input, &opcode);
 
     int mnemonic_symbol = substr_to_mnemonic_symbol(opcode);
     if( mnemonic_symbol == mov_symbol ){
@@ -106,23 +105,20 @@ int asm_one(char* input){
              "mov r1, #123" -> Rdにr1が、immediate_valueに123が入る
     */
         int Rd; 
-        read_len = parse_register(input, &Rd);
-        input += read_len;
-        
-        read_len = skip_comma(input); 
-        input += read_len;
+        input += parse_register(input, &Rd);
+        input += skip_comma(input); 
 
         int immediate_op;
         int operand2 = 0;
         if(1 == is_register(input)){ //e.g. mov r1, r2
             immediate_op = 0;
             int Rm; 
-            read_len = parse_register(input, &Rm);
+            parse_register(input, &Rm);
             operand2 |= Rm;
         }else{ //e.g. mov r1, #123
             immediate_op = 1;
             int immediate_value; 
-            read_len = parse_immediate_value(input, &immediate_value);
+            parse_immediate_value(input, &immediate_value);
             assert( 0 < immediate_value );
             operand2 |= immediate_value;
         }
@@ -139,20 +135,13 @@ int asm_one(char* input){
         opcodeにldrかstrが入っている。
     */
         int Rd; 
-        read_len = parse_register(input, &Rd); 
-        input += read_len;
-        
-        read_len = skip_comma(input); 
-        input += read_len;
-        
+        input += parse_register(input, &Rd); 
+        input += skip_comma(input); 
         assert(1 == is_sbracket(input)); 
-        read_len = skip_sbracket(input); 
-        input += read_len;
-        
+        input += skip_sbracket(input); 
         assert(1 == is_register(input)); 
         int Rn; 
-        read_len = parse_register(input, &Rn); 
-        input += read_len;
+        input += parse_register(input, &Rn); 
         
         int word;
         if( mnemonic_symbol == ldr_symbol ) { 
@@ -165,13 +154,9 @@ int asm_one(char* input){
             word |= Rn<<16;
             word |= Rd<<12; 
         }else{ //e.g. ldr r1, [r2,#0x12]
-            read_len = skip_comma(input);
-            input += read_len;
-
+            input += skip_comma(input);
             int immediate_value;
-            read_len = parse_immediate_value(input, &immediate_value);
-            input += read_len;
-
+            parse_immediate_value(input, &immediate_value);
             if( 0 > immediate_value ){ 
                 word &= 0xFF7FFFFF;
             }
