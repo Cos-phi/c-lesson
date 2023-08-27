@@ -197,7 +197,7 @@ void asm_line(char* input, struct Emitter* emitter){
         即値（ラベルが指すアドレス）には000000を入れておき、解決が必要なものを集めるリスト（unresolved_items）に登録する。
     */    
         input += read_len;
-        int word = 0xEA000000;
+        int dummyword = 0xEA000000;
 
         struct Substring label_str;
         parse_one(input, &label_str);
@@ -207,7 +207,7 @@ void asm_line(char* input, struct Emitter* emitter){
         unresolved_item.emitter_pos = emitter->pos; 
         unresolved_item.mnemonic_symbol = mnemonic_symbol;
         put_unresolved_item(unresolved_item);
-        emit_word(emitter, word);
+        emit_word(emitter, dummyword);
     }else if( mnemonic_symbol == dot_symbol ){ 
     /*
         疑似命令.rawのケース
@@ -245,19 +245,17 @@ void asm_line(char* input, struct Emitter* emitter){
                 }
                 raw_value_words[raw_value_words_index] += str[i] << 8*(3-i);
             }
-
-            for(int i=0; i < raw_value_words_index; i++){
+            for(int i=0; i <= raw_value_words_index; i++){
                 emit_word(emitter,raw_value_words[i]);
             }
-            raw_value = raw_value_words[raw_value_words_index];
         }else{
         /*
             e.g. ".raw 0x123456" 
             引数の数値0x123456が、そのままraw_valueに入る
         */
             read_len = parse_raw_value(input,&raw_value); 
+            emit_word(emitter, raw_value);
         }
-        emit_word(emitter, raw_value);
     }else{
     /*
         その他、asm_oneで処理できるニーモニックのケース
