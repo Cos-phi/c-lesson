@@ -199,13 +199,9 @@ void asm_line(char* input, struct Emitter* emitter){
     */
         input += read_len;
         struct Substring pseudo_inst_name; 
-        read_len = parse_one(input, &pseudo_inst_name);
-        input += read_len;
+        input += parse_one(input, &pseudo_inst_name);
         assert( substreq("raw",pseudo_inst_name) );
-
-        read_len = skip_whitespace(input);
-        input += read_len;
-
+        input += skip_whitespace(input);
         int raw_value;
         if( 1 == is_doublequotation(input) ){
         /*
@@ -218,7 +214,6 @@ void asm_line(char* input, struct Emitter* emitter){
 
             int raw_value_words[RAWSTR_BUFFSIZE];
             int raw_value_words_index = 0;
-   
             raw_value_words[raw_value_words_index] = 0;
             for(int i=0; '\0' != str[i];i++){
                 if( 0 == i%4 && 0 != i ){
@@ -235,7 +230,7 @@ void asm_line(char* input, struct Emitter* emitter){
             e.g. ".raw 0x123456" 
             引数の数値0x123456が、そのままraw_valueに入りemitterに入る
         */
-            read_len = parse_raw_value(input,&raw_value); 
+            parse_raw_value(input,&raw_value); 
             emit_word(emitter, raw_value);
         }
     }else{
