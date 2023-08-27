@@ -251,6 +251,10 @@ int asm_one(char* input, struct Emitter* emitter){
     }
 }
 
+int asm_line(char* input, struct Emitter* emitter){
+    return asm_one(input, emitter);
+}
+
 void asm_main(struct Emitter* emitter){
 /*
     cl_getlineにセットされた内容をアセンブルします。
@@ -267,7 +271,7 @@ void asm_main(struct Emitter* emitter){
             int label_address = emitter->pos; //ここで"address"は、emitter内のwordの順番を指すものとします。
             address_put(label_symbol,label_address); 
         }else{ // ニーモニックの場合
-            int oneword = asm_one(buff_line,emitter); 
+            int oneword = asm_line(buff_line,emitter); 
             emit_word(emitter, oneword);
         }
     }
