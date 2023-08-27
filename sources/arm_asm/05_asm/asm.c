@@ -229,12 +229,23 @@ int asm_one(char* input, struct Emitter* emitter){
             word |= abs(immediate_value);
         }
         return word;
-    }else if( mnemonic_symbol == b_symbol ){    
+    }else{
+        return 0;
+    }
+}
+
+int asm_line(char* input, struct Emitter* emitter){
+    struct Substring opcode; 
+    int read_len = parse_one(input, &opcode);
+    int mnemonic_symbol = substr_to_mnemonic_symbol(opcode);
+    
+    if( mnemonic_symbol == b_symbol ){    
     /*
         bのケース
         e.g. "b label" 
         即値（ラベルが指すアドレス）には000000を入れておき、解決が必要なものを集めるリスト（unresolved_items）に登録する。
     */    
+        input += read_len;
         int word = 0xEA000000;
 
         struct Substring label_str;
@@ -247,12 +258,9 @@ int asm_one(char* input, struct Emitter* emitter){
         put_unresolved_item(unresolved_item);
         return word;
     }else{
-        return 0;
+    
+        return asm_one(input, emitter);
     }
-}
-
-int asm_line(char* input, struct Emitter* emitter){
-    return asm_one(input, emitter);
 }
 
 void asm_main(struct Emitter* emitter){
@@ -485,7 +493,7 @@ static void test_asm_b_firstpass(){
     struct Unresolved_item unresolved_item;
     assert(0 == get_unresolved_item(&unresolved_item));
     int expect_emitter_pos = g_emitter.pos;
-    int actual = asm_one(input,&g_emitter);
+    int actual = asm_line(input,&g_emitter);
 
     assert(expect == actual);
     assert(1 == get_unresolved_item(&unresolved_item));
