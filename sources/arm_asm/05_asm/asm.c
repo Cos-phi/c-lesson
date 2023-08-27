@@ -87,7 +87,7 @@ void init_mnemonic_symbols(){
 /*
     以下、アセンブルを行う関数です。
 */
-int asm_one(char* input, struct Emitter* emitter){
+int asm_one(char* input){
 /*
     一行の文字列を32bitのバイナリにアセンブルして、intとしてreturnします。
     e.g. "mov r1, r2"           -> 0xE1A01002
@@ -260,7 +260,7 @@ int asm_line(char* input, struct Emitter* emitter){
         return raw_value;
     }else{
     
-        return asm_one(input, emitter);
+        return asm_one(input);
     }
 }
 
