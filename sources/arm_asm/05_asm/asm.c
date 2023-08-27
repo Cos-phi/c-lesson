@@ -185,7 +185,7 @@ int asm_one(char* input){
     }
 }
 
-int asm_line(char* input, struct Emitter* emitter){
+void asm_line(char* input, struct Emitter* emitter){
     struct Substring opcode; 
     int read_len = parse_one(input, &opcode);
     int mnemonic_symbol = substr_to_mnemonic_symbol(opcode);
@@ -207,7 +207,7 @@ int asm_line(char* input, struct Emitter* emitter){
         unresolved_item.emitter_pos = emitter->pos; 
         unresolved_item.mnemonic_symbol = mnemonic_symbol;
         put_unresolved_item(unresolved_item);
-        return word;
+        emit_word(emitter, word);
     }else if( mnemonic_symbol == dot_symbol ){ 
     /*
         疑似命令.rawのケース
@@ -257,11 +257,15 @@ int asm_line(char* input, struct Emitter* emitter){
         */
             read_len = parse_raw_value(input,&raw_value); 
         }
-        return raw_value;
+        emit_word(emitter, raw_value);
     }else{
-    
-        return asm_one(input);
+    /*
+        その他、asm_oneで処理できるニーモニックのケース
+    */
+        int oneword = asm_one(input);
+        emit_word(emitter, oneword);
     }
+    
 }
 
 void asm_main(struct Emitter* emitter){
@@ -280,8 +284,7 @@ void asm_main(struct Emitter* emitter){
             int label_address = emitter->pos; //ここで"address"は、emitter内のwordの順番を指すものとします。
             address_put(label_symbol,label_address); 
         }else{ // ニーモニックの場合
-            int oneword = asm_line(buff_line,emitter); 
-            emit_word(emitter, oneword);
+            asm_line(buff_line,emitter); 
         }
     }
     struct Unresolved_item unresolved_item;
@@ -319,7 +322,7 @@ static void test_asm_mov(){
     char* input = "mov r1, r2";
     int expect = 0xE1A01002; // 1110 00 0 1101 0 0000 0001 00000000 0002
      
-    int actual = asm_line(input,&g_emitter);
+    int actual = asm_one(input);
 
     assert(expect == actual);
 }
@@ -327,23 +330,24 @@ static void test_asm_mov_immediate_value(){
     char* input = "mov r1, #0x68";
     int expect = 0xE3A01068; // 1110 00 1 1101 0 0000 0001 0000 01101000
      
-    int actual = asm_line(input,&g_emitter);
+    int actual = asm_one(input);
 
     assert(expect == actual);
 }
 static void test_asm_raw(){
     char* input = ".raw 0x12345678";
     int expect = 0x12345678; 
-     
-    int actual = asm_line(input,&g_emitter);
 
-    assert(expect == actual);
+    init_emitter(&g_emitter); 
+    asm_line(input,&g_emitter);
+
+    assert(expect == g_emitter.words[0]);
 }
 static void test_asm_ldr(){
     char* input = "ldr r1,[r15, #0x30]";
     int expect = 0xE59F1030;
 
-    int actual = asm_line(input,&g_emitter);
+    int actual = asm_one(input);
 
     assert(expect == actual);
 }
@@ -351,7 +355,7 @@ static void test_asm_ldr2(){
     char* input = "ldr r1,[r15, #-0x30]";
     int expect = 0xE51F1030; // 1110 01 0 1 0001 1111 0000 000000110000 
 
-    int actual = asm_line(input,&g_emitter);
+    int actual = asm_one(input);
 
     assert(expect == actual);
 }
@@ -359,7 +363,7 @@ static void test_asm_ldr3(){
     char* input = "ldr r1,[r15]";
     int expect = 0xE59F1000; // 1110 01 1 0 1001 1111 0001 00000000 0000
 
-    int actual = asm_line(input,&g_emitter);
+    int actual = asm_one(input);
 
     assert(expect == actual);
 }
@@ -367,7 +371,7 @@ static void test_asm_ldr4(){
     char* input = "ldr r0,[r15,#0x38]";
     int expect = 0xE59F0038; 
 
-    int actual = asm_line(input,&g_emitter);
+    int actual = asm_one(input);
 
     assert(expect == actual);
 }
@@ -375,7 +379,7 @@ static void test_asm_str(){
     char* input = "str r0,[r1]";
     int expect = 0xE5810000; // 1110 01 1 0 1000 0001 0000 00000000 0000
 
-    int actual = asm_line(input,&g_emitter);
+    int actual = asm_one(input);
 
     assert(expect == actual);
 }
@@ -417,8 +421,7 @@ static void test_asm_ks(){
     char* buf;
     init_emitter(&g_emitter);
     while( -1 != cl_getline(&buf) ){
-        int oneword = asm_line(buf,&g_emitter);
-        emit_word(&g_emitter, oneword);
+        asm_line(buf,&g_emitter);
     }
     fclose(input_fp);  
     char* output_file = "nanika_mojiwo_hyouji.bin";
@@ -494,9 +497,9 @@ static void test_asm_b_firstpass(){
     struct Unresolved_item unresolved_item;
     assert(0 == get_unresolved_item(&unresolved_item));
     int expect_emitter_pos = g_emitter.pos;
-    int actual = asm_line(input,&g_emitter);
+    asm_line(input,&g_emitter);
 
-    assert(expect == actual);
+    assert(expect == g_emitter.words[0]);
     assert(1 == get_unresolved_item(&unresolved_item));
     assert(to_label_symbol("label",5) == unresolved_item.label_symbol);
     assert(to_mnemonic_symbol("b",1) == unresolved_item.mnemonic_symbol);
@@ -520,10 +523,11 @@ static void test_asm_file_b(){
 static void test_asm_raw_oneword(){
     char* input = ".raw \"test\"";
     int expect = 0x74657374; 
-     
-    int actual = asm_line(input,&g_emitter);
+    
+    init_emitter(&g_emitter);
+    asm_line(input,&g_emitter);
 
-    assert(expect == actual);
+    assert(expect == g_emitter.words[0]);
 }
 static void test_asm_raw_str(){
     char* input = ".raw \"Hello World\\n\"";
@@ -532,11 +536,11 @@ static void test_asm_raw_str(){
     int expect3 = 0x726C640A; 
    
     init_emitter(&g_emitter);
-    int actual = asm_line(input,&g_emitter);
+    asm_line(input,&g_emitter);
 
     assert(expect1 == g_emitter.words[0]);
     assert(expect2 == g_emitter.words[1]);
-    assert(expect3 == actual);
+    assert(expect3 == g_emitter.words[2]);
 }
 static void test_asm_raw_str_escape1(){
     char* input = ".raw \"escape1 \\\" end\"";
@@ -546,12 +550,12 @@ static void test_asm_raw_str_escape1(){
     int expect4 = 0x64000000; 
    
     init_emitter(&g_emitter);
-    int actual = asm_line(input,&g_emitter);
+    asm_line(input,&g_emitter);
 
     assert(expect1 == g_emitter.words[0]);
     assert(expect2 == g_emitter.words[1]);
     assert(expect3 == g_emitter.words[2]);
-    assert(expect4 == actual);
+    assert(expect4 == g_emitter.words[3]);
 }
 static void test_asm_raw_str_escape2(){
     char* input = ".raw \"escape2 \\\\ end\"";
@@ -561,12 +565,12 @@ static void test_asm_raw_str_escape2(){
     int expect4 = 0x64000000; 
    
     init_emitter(&g_emitter);
-    int actual = asm_line(input,&g_emitter);
+    asm_line(input,&g_emitter);
 
     assert(expect1 == g_emitter.words[0]);
     assert(expect2 == g_emitter.words[1]);
     assert(expect3 == g_emitter.words[2]);
-    assert(expect4 == actual);
+    assert(expect4 == g_emitter.words[3]);
 }
 static void test_asm_raw_str_escape3(){
     char* input = ".raw \"escape3 \\\\\"";
@@ -575,11 +579,11 @@ static void test_asm_raw_str_escape3(){
     int expect3 = 0x5C000000;
    
     init_emitter(&g_emitter);
-    int actual = asm_line(input,&g_emitter);
+    asm_line(input,&g_emitter);
 
     assert(expect1 == g_emitter.words[0]);
     assert(expect2 == g_emitter.words[1]);
-    assert(expect3 == actual);
+    assert(expect3 == g_emitter.words[2]);
 }
 static void test_asm_raw_str_escape4(){
     char* input = ".raw \"escape4 \\\\\\\" end\"";
@@ -589,12 +593,12 @@ static void test_asm_raw_str_escape4(){
     int expect4 = 0x6E640000; 
    
     init_emitter(&g_emitter);
-    int actual = asm_line(input,&g_emitter);
+    asm_line(input,&g_emitter);
 
     assert(expect1 == g_emitter.words[0]);
     assert(expect2 == g_emitter.words[1]);
     assert(expect3 == g_emitter.words[2]);
-    assert(expect4 == actual);
+    assert(expect4 == g_emitter.words[3]);
 }
 static void asm_unittests(){
     test_asm_mov();
