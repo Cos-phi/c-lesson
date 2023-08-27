@@ -89,7 +89,8 @@ void init_mnemonic_symbols(){
 */
 int asm_one(char* input){
 /*
-    一行の文字列を32bitのバイナリにアセンブルして、intとしてreturnします。
+    入力された文字列のみからアセンブルした結果が定まる文字列について
+    32bitのバイナリにアセンブルして、intとしてreturnします。
     e.g. "mov r1, r2"           -> 0xE1A01002
          ".raw 0x12345678"      -> 0x12345678
          "ldr r1,[r15, #-0x30]" -> 0xE51F1030
@@ -171,6 +172,9 @@ int asm_one(char* input){
 }
 
 void asm_line(char* input, struct Emitter* emitter){
+/*
+    1行の文字列を32bitのバイナリにアセンブルして、emitterに追加します。
+*/
     struct Substring opcode; 
     int read_len = parse_one(input, &opcode);
     int mnemonic_symbol = substr_to_mnemonic_symbol(opcode);
@@ -235,7 +239,7 @@ void asm_line(char* input, struct Emitter* emitter){
         }
     }else{
     /*
-        その他、asm_oneで処理できるニーモニックのケース
+        その他、asm_oneで処理できる（emitterの状態に依存しない）ニーモニックのケース
     */
         int oneword = asm_one(input);
         emit_word(emitter, oneword);
