@@ -48,6 +48,8 @@ int parse_string(char* input, char **out_str);
 int skip_whitespace(char* str);
 int skip_comma(char* str);
 int skip_sbracket(char* str);
+int skip_equal(char* str);
 int is_register(char* str);
 int is_sbracket(char* str);
 int is_doublequotation(char* str);
+int is_equal(char* str);

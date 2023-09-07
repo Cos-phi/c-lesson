@@ -49,6 +49,16 @@ int skip_sbracket(char* str){
     }
 }
 
+int skip_equal(char* str){
+    int pos = skip_whitespace(str);
+    if( '=' == str[pos] ){
+        pos++;
+        return pos;
+    }else{
+        return PARSE_FAIL;
+    }
+}
+
 int is_register(char* str){
     int pos = skip_whitespace(str);
     if( 'r' == str[pos] ){
@@ -70,6 +80,15 @@ int is_sbracket(char* str){
 int is_doublequotation(char* str){
     int pos = skip_whitespace(str);
     if( '\"' == str[pos] ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int is_equal(char* str){
+    int pos = skip_whitespace(str);
+    if( '=' == str[pos] ){
         return 1;
     }else{
         return 0;

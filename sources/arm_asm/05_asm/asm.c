@@ -186,8 +186,6 @@ void asm_line(char* input, struct Emitter* emitter){
         即値（ラベルが指すアドレス）には000000を入れておき、解決が必要なものを集めるリスト（unresolved_items）に登録する。
     */    
         input += read_len;
-        int dummyword = 0xEA000000;
-
         struct Substring label_str;
         parse_one(input, &label_str);
 
@@ -196,7 +194,36 @@ void asm_line(char* input, struct Emitter* emitter){
         unresolved_item.emitter_pos = emitter->pos; 
         unresolved_item.mnemonic_symbol = mnemonic_symbol;
         put_unresolved_item(unresolved_item);
+        
+        int dummyword = 0xEA000000;
         emit_word(emitter, dummyword);
+    }else if( mnemonic_symbol == ldr_symbol ){
+    /*
+        ldrのケース
+        ラベルを指している場合以外は asm_oneで処理する
+    */  
+        char* tmp_input = input + read_len;
+        int Rd;
+        tmp_input += parse_register(tmp_input, &Rd);
+        tmp_input += skip_comma( tmp_input );
+        if( 1 == is_equal(tmp_input) ){ // ラベルのケース e.g. ldr r1,=label
+            tmp_input += skip_equal(tmp_input);
+            struct Substring label_str;
+            parse_one(tmp_input, &label_str);
+
+            struct Unresolved_item unresolved_item;
+            unresolved_item.label_symbol = substr_to_label_symbol(label_str);
+            unresolved_item.emitter_pos = emitter->pos; 
+            unresolved_item.mnemonic_symbol = mnemonic_symbol;
+            put_unresolved_item(unresolved_item);
+
+            int dummyword = 0xE51F1000;
+            emit_word(emitter, dummyword);
+        }else{ // ラベル以外のケース
+            int oneword = asm_one(input);
+            emit_word(emitter, oneword);
+        }
+
     }else if( mnemonic_symbol == dot_symbol ){ 
     /*
         疑似命令.rawのケース
@@ -579,6 +606,24 @@ static void test_asm_raw_str_escape4(){
     assert(expect3 == g_emitter.words[2]);
     assert(expect4 == g_emitter.words[3]);
 }
+static void test_asm_ldr_label_firstpass(){
+    char* input = "ldr r1,=message";
+    int expect = 0xE51F1000;
+
+    init_emitter(&g_emitter);
+    clear_unresolved_items();
+    init_label_tree();
+    struct Unresolved_item unresolved_item;
+    assert(0 == get_unresolved_item(&unresolved_item));
+    int expect_emitter_pos = g_emitter.pos;
+    asm_line(input,&g_emitter);
+
+    assert(expect == g_emitter.words[0]);
+    assert(1 == get_unresolved_item(&unresolved_item));
+    assert(to_label_symbol("message",5) == unresolved_item.label_symbol);
+    assert(to_mnemonic_symbol("ldr",1) == unresolved_item.mnemonic_symbol);
+    assert(expect_emitter_pos == unresolved_item.emitter_pos);
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -601,6 +646,7 @@ static void asm_unittests(){
     test_asm_raw_str_escape2();
     test_asm_raw_str_escape3();
     test_asm_raw_str_escape4();
+    test_asm_ldr_label_firstpass();
 }
 
 static void unittests(){
