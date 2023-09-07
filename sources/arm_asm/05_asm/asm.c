@@ -520,8 +520,6 @@ static void test_asm_file_b(){
     expect: hello_arm.sをARMアセンブラでアセンブルしたバイナリと、同等のバイナリを書き出す。
 */
     char* input_file = "test/test_input/hello_arm.ks";
-    int expect_words[4] = {0xE59F1004,0xE3A00068,0xE5810000,0x101F1000};
-
     char* output_file = "hello_arm_ks.bin";
     asm_file(input_file,output_file);
 
@@ -624,6 +622,19 @@ static void test_asm_ldr_label_firstpass(){
     assert(to_mnemonic_symbol("ldr",1) == unresolved_item.mnemonic_symbol);
     assert(expect_emitter_pos == unresolved_item.emitter_pos);
 }
+static void test_asm_file_loop(){
+/*
+    動作確認のためファイルに出力するだけの関数です。
+    この関数内では、結果の判定を行いません。
+
+    input:  hello_loop.s相当のファイルhello_loop.ksを読み込み、
+    expect: hello_loop.sをARMアセンブラでアセンブルしたバイナリと、同等のバイナリを書き出す。
+*/
+    char* input_file = "test/test_input/hello_loop.ks";
+    char* output_file = "hello_loop_ks.bin";
+    asm_file(input_file,output_file);
+
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -647,6 +658,7 @@ static void asm_unittests(){
     test_asm_raw_str_escape3();
     test_asm_raw_str_escape4();
     test_asm_ldr_label_firstpass();
+    //test_asm_file_loop();
 }
 
 static void unittests(){
