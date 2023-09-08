@@ -189,6 +189,7 @@ int parse_immediate_value(char* str, int* out_value){
     即値を表す文字列をパースして、数値を返します。読んだ文字数をreturnします。
     e.g. " #0x1A" -> 26
     e.g. " #10" -> 10
+    ※即値のローテートには未対応です
 */
     *out_value = 0;
     int pos = skip_whitespace(str);

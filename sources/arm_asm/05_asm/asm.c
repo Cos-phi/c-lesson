@@ -180,16 +180,16 @@ int asm_one(char* input){
     */
         int word = 0xE1500000;
         int Rn;
-        int Rm;
-        int immediate_value;
         input += parse_register(input, &Rn);
         word |= Rn<<16;
         input += skip_comma(input); 
         if( 1 == is_register(input) ){
+            int Rm;
             parse_register(input, &Rm);
             word |= Rm;
         }else{
             word |= 0x02000000;
+            int immediate_value;
             parse_immediate_value(input, &immediate_value);
             word |= (immediate_value & 0x000000FF);
         }
