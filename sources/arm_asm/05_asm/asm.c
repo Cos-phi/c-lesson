@@ -75,6 +75,7 @@ int ldrb_symbol;
 int str_symbol;
 int dot_symbol;
 int b_symbol;
+int bne_symbol;
 int cmp_symbol;
 
 void init_mnemonic_symbols(){
@@ -84,6 +85,7 @@ void init_mnemonic_symbols(){
     str_symbol = to_mnemonic_symbol("str",3);
     dot_symbol = to_mnemonic_symbol(".",1);
     b_symbol = to_mnemonic_symbol("b",1);
+    bne_symbol = to_mnemonic_symbol("bne",3);
     cmp_symbol = to_mnemonic_symbol("cmp",3);
 }
 
@@ -208,9 +210,9 @@ void asm_line(char* input, struct Emitter* emitter){
     int read_len = parse_one(input, &opcode);
     int mnemonic_symbol = substr_to_mnemonic_symbol(opcode);
     
-    if( mnemonic_symbol == b_symbol ){    
+    if( mnemonic_symbol == b_symbol || mnemonic_symbol == bne_symbol ){    
     /*
-        bのケース
+        b/bneのケース
         e.g. "b label" 
         即値（ラベルが指すアドレス）には000000を入れておき、解決が必要なものを集めるリスト（unresolved_items）に登録する。
     */    
@@ -224,7 +226,12 @@ void asm_line(char* input, struct Emitter* emitter){
         unresolved_item.mnemonic_symbol = mnemonic_symbol;
         put_unresolved_item(unresolved_item);
         
-        int dummyword = 0xEA000000;
+        int dummyword;
+        if( mnemonic_symbol == b_symbol ){
+            dummyword = 0xEA000000;
+        }else{
+            dummyword = 0x1A000000;
+        }
         emit_word(emitter, dummyword);
     }else if( mnemonic_symbol == ldr_symbol ){
     /*
@@ -689,6 +696,23 @@ static void test_asm_cmp2(){
 
     assert(expect == actual);
 }
+static void test_asm_bne_firstpass(){
+    char* input = "bne label";
+    int expect = 0x1A000000;
+
+    init_emitter(&g_emitter);
+    init_label_tree();
+    struct Unresolved_item unresolved_item;
+    assert(0 == get_unresolved_item(&unresolved_item));
+    int expect_emitter_pos = g_emitter.pos;
+    asm_line(input,&g_emitter);
+
+    assert(expect == g_emitter.words[0]);
+    assert(1 == get_unresolved_item(&unresolved_item));
+    assert(to_label_symbol("label",5) == unresolved_item.label_symbol);
+    assert(to_mnemonic_symbol("bne",3) == unresolved_item.mnemonic_symbol);
+    assert(expect_emitter_pos == unresolved_item.emitter_pos);
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -716,6 +740,7 @@ static void asm_unittests(){
     test_asm_ldrb();
     test_asm_cmp();
     test_asm_cmp2();
+    test_asm_bne_firstpass();
 }
 
 static void unittests(){
