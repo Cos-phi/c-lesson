@@ -200,6 +200,7 @@ void asm_line(char* input, struct Emitter* emitter){
     }else if( mnemonic_symbol == ldr_symbol ){
     /*
         ldrのケース
+        ラベルが指すアドレスには000000を入れておき、解決が必要なものを集めるリスト（unresolved_items）に登録する
         ラベルを指している場合以外は asm_oneで処理する
     */  
         char* tmp_input = input + read_len;
@@ -657,8 +658,8 @@ static void asm_unittests(){
     test_asm_raw_str_escape2();
     test_asm_raw_str_escape3();
     test_asm_raw_str_escape4();
-    test_asm_ldr_label_firstpass();
-    //test_asm_file_loop();
+    test_asm_ldr_label_firstpass(); // TODO その他hello_loop.ksに必要なニーモニックをサポート後、second loopを整備する
+    //test_asm_file_loop(); 
 }
 
 static void unittests(){
