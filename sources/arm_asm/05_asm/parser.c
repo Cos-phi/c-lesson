@@ -188,6 +188,7 @@ int parse_immediate_value(char* str, int* out_value){
 /*
     即値を表す文字列をパースして、数値を返します。読んだ文字数をreturnします。
     e.g. " #0x1A" -> 26
+    e.g. " #10" -> 10
 */
     *out_value = 0;
     int pos = skip_whitespace(str);
@@ -202,7 +203,9 @@ int parse_immediate_value(char* str, int* out_value){
         value_sign = 1;
     }
     
-    if( ('0' == str[pos++]) && ('x' == str[pos++]) ){ 
+    if( ('0' == str[pos]) && ('x' == str[pos+1]) ){
+        pos++; 
+        pos++;
         while(1){
             if( (str[pos] >= '0')&&(str[pos] <= '9') ){
                 *out_value *= 16;
@@ -221,7 +224,17 @@ int parse_immediate_value(char* str, int* out_value){
         *out_value *= value_sign;
         return pos;
     }else{
-        return PARSE_FAIL;
+        while(1){
+            if( (str[pos] >= '0')&&(str[pos] <= '9') ){
+                *out_value *= 10;
+                *out_value += str[pos] - '0';
+            }else{
+                break;
+            }
+            pos++;
+        };
+        *out_value *= value_sign;
+        return pos;
     }
 }
 
@@ -480,6 +493,24 @@ static void test_parse_immediate_value3(){
     
     assert(expect == actual);
 }
+static void test_parse_immediate_value_decimal(){
+    char* input = " #23";
+    int expect = 23;
+
+    int actual;
+    int read_len = parse_immediate_value(input, &actual);
+    
+    assert(expect == actual);
+}
+static void test_parse_immediate_value_decimal2(){
+    char* input = " #-42";
+    int expect = -42;
+
+    int actual;
+    int read_len = parse_immediate_value(input, &actual);
+    
+    assert(expect == actual);
+}
 static void test_parse_raw_value(){
     char* input = ".raw 0x12345678";
     int expect = 0x12345678;
@@ -590,6 +621,8 @@ void parser_unittests(){
     test_parse_immediate_value();
     test_parse_immediate_value2();
     test_parse_immediate_value3();
+    test_parse_immediate_value_decimal();
+    test_parse_immediate_value_decimal2();
     test_parse_raw_value();
     test_is_sbracket();
     test_parse_string();

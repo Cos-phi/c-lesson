@@ -175,8 +175,13 @@ int asm_one(char* input){
     }else if( mnemonic_symbol == cmp_symbol ){
     /*
         cmpのケース
+        e.g. cmp r3,#0 
     */
         int word = 0xE3530000; //まずはハードコードで
+        int Rn;
+        input += parse_register(input, &Rn);
+        input += skip_comma(input); 
+        //TODO parse imm value (decimal system)
         return word;
 
     }else{
