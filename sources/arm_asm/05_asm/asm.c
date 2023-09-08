@@ -176,12 +176,23 @@ int asm_one(char* input){
     /*
         cmpのケース
         e.g. cmp r3,#0 
+        e.g. cmp r1,r2
     */
-        int word = 0xE3530000; //まずはハードコードで
+        int word = 0xE1500000;
         int Rn;
+        int Rm;
+        int immediate_value;
         input += parse_register(input, &Rn);
+        word |= Rn<<16;
         input += skip_comma(input); 
-        //TODO parse imm value (decimal system)
+        if( 1 == is_register(input) ){
+            parse_register(input, &Rm);
+            word |= Rm;
+        }else{
+            word |= 0x02000000;
+            parse_immediate_value(input, &immediate_value);
+            word |= (immediate_value & 0x000000FF);
+        }
         return word;
 
     }else{
@@ -663,8 +674,16 @@ static void test_asm_ldrb(){
     assert(expect == actual);
 }
 static void test_asm_cmp(){
-    char* input = "cmp r3,#0";
-    int expect = 0xE3530000; 
+    char* input = "cmp r3,#12";
+    int expect = 0xE353000C; 
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
+static void test_asm_cmp2(){
+    char* input = "cmp r3,r4";
+    int expect = 0xE1530004; 
 
     int actual = asm_one(input);
 
@@ -696,6 +715,7 @@ static void asm_unittests(){
     //test_asm_file_loop(); 
     test_asm_ldrb();
     test_asm_cmp();
+    test_asm_cmp2();
 }
 
 static void unittests(){
