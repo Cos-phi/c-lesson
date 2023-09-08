@@ -1,5 +1,4 @@
-_start:
-    ldr r0,=0x101f1000
+    ldr r0,[r15,#0x28]
     ldr r1,=message
     ldrb r3,[r1]    
 loop:
@@ -10,6 +9,6 @@ loop:
     bne loop
 end:
     b end
-
 message:
     .raw "hello, world\n"
+    .raw 0x101f1000

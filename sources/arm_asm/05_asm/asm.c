@@ -736,7 +736,7 @@ static void asm_unittests(){
     test_asm_raw_str_escape3();
     test_asm_raw_str_escape4();
     test_asm_ldr_label_firstpass(); // TODO その他hello_loop.ksに必要なニーモニックをサポート後、second loopを整備する
-    //test_asm_file_loop(); 
+    test_asm_file_loop(); 
     test_asm_ldrb();
     test_asm_cmp();
     test_asm_cmp2();
