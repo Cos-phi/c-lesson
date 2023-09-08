@@ -71,6 +71,7 @@ int get_unresolved_item(struct Unresolved_item* out_item){
 */
 int mov_symbol;
 int ldr_symbol;
+int ldrb_symbol;
 int str_symbol;
 int dot_symbol;
 int b_symbol;
@@ -78,6 +79,7 @@ int b_symbol;
 void init_mnemonic_symbols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
     ldr_symbol = to_mnemonic_symbol("ldr",3);
+    ldrb_symbol = to_mnemonic_symbol("ldrb",4);
     str_symbol = to_mnemonic_symbol("str",3);
     dot_symbol = to_mnemonic_symbol(".",1);
     b_symbol = to_mnemonic_symbol("b",1);
@@ -128,12 +130,12 @@ int asm_one(char* input){
         word |= immediate_op<<25;
         word |= operand2;  
         return word;
-    }else  if( mnemonic_symbol == ldr_symbol || mnemonic_symbol == str_symbol ){ 
+    }else  if( mnemonic_symbol == ldr_symbol || mnemonic_symbol == str_symbol || mnemonic_symbol == ldrb_symbol){ 
     /*
-        ldr または str のケース
+        ldr または ldrb または str のケース
         e.g. "ldr r1, [r2]"       -> Rdにr1が、Rnにr2が入る。
              "ldr r1, [r2,#0x12]" -> Rdにr1、Rnにr2、immediate_valueに0x12が入る。
-        opcodeにldrかstrが入っている。
+        opcodeにldrかldrbかstrが入っている。
     */
         int Rd; 
         input += parse_register(input, &Rd); 
@@ -146,9 +148,11 @@ int asm_one(char* input){
         
         int word;
         if( mnemonic_symbol == ldr_symbol ) { 
-            word = 0xE5900000 ; 
-        }else{ // "str"
-            word = 0xE5800000 ; 
+            word = 0xE5900000; 
+        }else if( mnemonic_symbol == str_symbol ) { // "str"
+            word = 0xE5800000; 
+    }else{ // "ldrb"
+            word = 0xE5D00000;
         }
 
         if( 1 == is_sbracket(input) ){ //e.g. ldr r1, [r2]
@@ -636,6 +640,14 @@ static void test_asm_file_loop(){
     asm_file(input_file,output_file);
 
 }
+static void test_asm_ldrb(){
+    char* input = "ldrb r3,[r1]";
+    int expect = 0xE5D13000; 
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -660,6 +672,7 @@ static void asm_unittests(){
     test_asm_raw_str_escape4();
     test_asm_ldr_label_firstpass(); // TODO その他hello_loop.ksに必要なニーモニックをサポート後、second loopを整備する
     //test_asm_file_loop(); 
+    test_asm_ldrb();
 }
 
 static void unittests(){
