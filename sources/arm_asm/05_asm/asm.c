@@ -75,6 +75,7 @@ int ldrb_symbol;
 int str_symbol;
 int dot_symbol;
 int b_symbol;
+int cmp_symbol;
 
 void init_mnemonic_symbols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
@@ -83,6 +84,7 @@ void init_mnemonic_symbols(){
     str_symbol = to_mnemonic_symbol("str",3);
     dot_symbol = to_mnemonic_symbol(".",1);
     b_symbol = to_mnemonic_symbol("b",1);
+    cmp_symbol = to_mnemonic_symbol("cmp",3);
 }
 
 
@@ -151,7 +153,7 @@ int asm_one(char* input){
             word = 0xE5900000; 
         }else if( mnemonic_symbol == str_symbol ) { // "str"
             word = 0xE5800000; 
-    }else{ // "ldrb"
+        }else{ // "ldrb"
             word = 0xE5D00000;
         }
 
@@ -170,6 +172,13 @@ int asm_one(char* input){
             word |= abs(immediate_value);
         }
         return word;
+    }else if( mnemonic_symbol == cmp_symbol ){
+    /*
+        cmpのケース
+    */
+        int word = 0xE3530000; //まずはハードコードで
+        return word;
+
     }else{
         return 0;
     }
@@ -648,6 +657,14 @@ static void test_asm_ldrb(){
 
     assert(expect == actual);
 }
+static void test_asm_cmp(){
+    char* input = "cmp r3,#0";
+    int expect = 0xE3530000; 
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -673,6 +690,7 @@ static void asm_unittests(){
     test_asm_ldr_label_firstpass(); // TODO その他hello_loop.ksに必要なニーモニックをサポート後、second loopを整備する
     //test_asm_file_loop(); 
     test_asm_ldrb();
+    test_asm_cmp();
 }
 
 static void unittests(){
