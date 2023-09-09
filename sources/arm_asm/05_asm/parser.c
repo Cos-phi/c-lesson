@@ -296,7 +296,7 @@ int parse_one(char *str, struct Substring* out_subs){
     }else if( (':' == str[pos])||('.' == str[pos])){ //e.g. ":"
         out_subs->str = &str[pos];
         pos++;
-        out_subs->len = pos;
+        out_subs->len = 1;
         return pos;
     }else{
         return PARSE_FAIL;

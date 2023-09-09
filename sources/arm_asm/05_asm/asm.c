@@ -335,7 +335,7 @@ void asm_main(struct Emitter* emitter){
         int label_address = address_get(unresolved_item.label_symbol);
         int address_offset = label_address - unresolved_item.emitter_pos - 2 ;// r15(PC)は2つ先を指しているので、2を引きます。
         int unresolved_word = emitter->words[unresolved_item.emitter_pos];
-        int resolved_word = (unresolved_word&0xFF000000) | (address_offset&0x00FFFFFF) ;
+        int resolved_word = (unresolved_word&0xFFFF0000) | (address_offset&0x00FFFFFF) ;
         emitter->words[unresolved_item.emitter_pos] =  resolved_word;
     }
 }
@@ -670,6 +670,7 @@ static void test_asm_file_loop(){
     char* input_file = "test/test_input/hello_loop.ks";
     char* output_file = "hello_loop_ks.bin";
     asm_file(input_file,output_file);
+    hex_dump(&g_emitter);
 
 }
 static void test_asm_ldrb(){
