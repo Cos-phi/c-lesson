@@ -45,10 +45,10 @@ void dict_clear(){
     アドレスの解決に必要な、ラベルとの対応関係を辞書にまとめます。
     ここでのアドレス（位置）は、emitter.posで表すものとします。
 */
-void address_put(int label_symbol, int address){    
+void dict_emitter_pos_put(int label_symbol, int address){    
     dict_put(label_symbol,address);
 }
-int address_get(int label_symbol){
+int dict_emitter_pos_get(int label_symbol){
     int address;
     if( 1 == dict_get(label_symbol,&address) ){
         return address;

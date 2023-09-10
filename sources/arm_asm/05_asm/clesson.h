@@ -32,8 +32,8 @@ int substr_to_label_symbol(struct Substring substr);
  
 //dict.c
 void dict_unittests();
-void address_put(int label_symbol, int address);
-int address_get(int label_symbol);
+void dict_emitter_pos_put(int label_symbol, int address);
+int dict_emitter_pos_get(int label_symbol);
 void dict_clear();
 
 //parser.c

@@ -346,14 +346,14 @@ void asm_main(struct Emitter* emitter){
         if(substreq(":",suffix)){ // ラベルの場合
             int label_symbol = substr_to_label_symbol(stem);
             int label_address = emitter->pos; //ここで"address"は、emitter内のwordの順番を指すものとします。
-            address_put(label_symbol,label_address); 
+            dict_emitter_pos_put(label_symbol,label_address); 
         }else{ // ニーモニックの場合
             asm_line(buff_line,emitter); 
         }
     }
     struct Unresolved_item unresolved_item;
     while( 0 != get_unresolved_item(&unresolved_item)){
-        int label_pos = address_get(unresolved_item.label_symbol);
+        int label_pos = dict_emitter_pos_get(unresolved_item.label_symbol);
         int unresolved_word = emitter->words[unresolved_item.emitter_pos];
         if( ldr_symbol == unresolved_item.mnemonic_symbol ){
             int coefficient_pos_to_address = 4;
