@@ -295,7 +295,7 @@ void asm_line(char* input, struct Emitter* emitter){
         if( 1 == is_doublequotation(input) ){
         /*
             引数をエスケープ処理した文字列が、4文字ずつ文字列をintにしてemitterに入る
-            e.g. ".raw \"Hello world\"" -> 0x48656C6C 0x6F20776F  0x726C6400 がEmitterに入る
+            e.g. ".raw \"Hello world\"" -> 0x6C6C6568 0x6F77206F 0x00646C72 がEmitterに入る
         */
             char* str;
             raw_value = 0;
@@ -309,7 +309,7 @@ void asm_line(char* input, struct Emitter* emitter){
                     raw_value_words_index++;
                     raw_value_words[raw_value_words_index] = 0;
                 }
-                raw_value_words[raw_value_words_index] += str[i] << 8*(3-i);
+                raw_value_words[raw_value_words_index] += str[i] << 8*i;
             }
             for(int i=0; i <= raw_value_words_index; i++){
                 emit_word(emitter,raw_value_words[i]);
@@ -604,7 +604,7 @@ static void test_asm_raw_oneword(){
 static void test_asm_raw_str(){
     char* input = ".raw \"hello world\\n\"";
     int expect1 = 0x6C6C6568; 
-    int expect2 = 0x6F77406F; 
+    int expect2 = 0x6F77206F; 
     int expect3 = 0x0A646C72; 
    
     init_emitter(&g_emitter);
