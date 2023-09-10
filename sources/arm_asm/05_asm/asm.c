@@ -77,6 +77,7 @@ int dot_symbol;
 int b_symbol;
 int bne_symbol;
 int cmp_symbol;
+int add_symbol;
 
 void init_mnemonic_symbols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
@@ -87,6 +88,7 @@ void init_mnemonic_symbols(){
     b_symbol = to_mnemonic_symbol("b",1);
     bne_symbol = to_mnemonic_symbol("bne",3);
     cmp_symbol = to_mnemonic_symbol("cmp",3);
+    add_symbol = to_mnemonic_symbol("add",3);
 }
 
 
@@ -197,6 +199,24 @@ int asm_one(char* input){
         }
         return word;
 
+    }else if( mnemonic_symbol == add_symbol ){
+    /*
+        addのケース
+        e.g. add r1, r1, #5
+    */   
+        int word = 0xE2800000;
+        int Rd;
+        int Rn;
+        int immediate_value;
+        input += parse_register(input, &Rd);
+        input += skip_comma(input); 
+        input += parse_register(input, &Rn);
+        input += skip_comma(input); 
+        input += parse_immediate_value(input, &immediate_value);
+        word |= Rn<<12;
+        word |= Rn<<16;
+        word |= immediate_value;
+        return word;
     }else{
         return 0;
     }
@@ -723,6 +743,14 @@ static void test_asm_bne_firstpass(){
     assert(to_mnemonic_symbol("bne",3) == unresolved_item.mnemonic_symbol);
     assert(expect_emitter_pos == unresolved_item.emitter_pos);
 }
+static void test_asm_add(){
+    char* input = "add r1, r1, #1";
+    int expect = 0xE2811001; 
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -751,6 +779,7 @@ static void asm_unittests(){
     test_asm_cmp();
     test_asm_cmp2();
     test_asm_bne_firstpass();
+    test_asm_add();
 }
 
 static void unittests(){
