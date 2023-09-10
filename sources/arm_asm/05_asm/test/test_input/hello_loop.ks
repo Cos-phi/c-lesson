@@ -1,4 +1,4 @@
-    ldr r0,[r15,#0x28]
+    ldr r0,[r15,#0x2C]
     ldr r1,=message
     ldrb r3,[r1]    
 loop:

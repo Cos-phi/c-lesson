@@ -25,7 +25,7 @@ void emit_word(struct Emitter* emitter, int oneword){
 
 void hex_dump(struct Emitter* emitter){
     for (int i = 0; i < emitter->pos; i++){
-        printf("0x%X\n",emitter->words[i]);
+        printf("%d 0x%X\n",i,emitter->words[i]);
     }
 }
 
@@ -254,7 +254,7 @@ void asm_line(char* input, struct Emitter* emitter){
             unresolved_item.mnemonic_symbol = mnemonic_symbol;
             put_unresolved_item(unresolved_item);
 
-            int dummyword = 0xE51F1000;
+            int dummyword = 0xE5900000;
             emit_word(emitter, dummyword);
         }else{ // ラベル以外のケース
             int oneword = asm_one(input);
@@ -332,11 +332,21 @@ void asm_main(struct Emitter* emitter){
     }
     struct Unresolved_item unresolved_item;
     while( 0 != get_unresolved_item(&unresolved_item)){
-        int label_address = address_get(unresolved_item.label_symbol);
-        int address_offset = label_address - unresolved_item.emitter_pos - 2 ;// r15(PC)は2つ先を指しているので、2を引きます。
+        int label_pos = address_get(unresolved_item.label_symbol);
         int unresolved_word = emitter->words[unresolved_item.emitter_pos];
-        int resolved_word = (unresolved_word&0xFFFF0000) | (address_offset&0x00FFFFFF) ;
-        emitter->words[unresolved_item.emitter_pos] =  resolved_word;
+        if( ldr_symbol == unresolved_item.mnemonic_symbol ){
+            int coefficient_pos_to_address = 4;
+            int label_address = 0x00010000 + label_pos * coefficient_pos_to_address;
+            emit_word(emitter, label_address); 
+            int offset = emitter->pos - unresolved_item.emitter_pos;
+            int address_offset = offset * coefficient_pos_to_address;
+            int resolved_word = (unresolved_word&0xFFFFF000) | (address_offset&0x00000FFF) ;
+            emitter->words[unresolved_item.emitter_pos] =  resolved_word;
+        }else{ // e.g. b, bl, bne..
+            int offset = label_pos - unresolved_item.emitter_pos - 2 ;// r15(PC)は2つ先を指しているので、2を引きます。
+            int resolved_word = (unresolved_word&0xFFFF0000) | (offset&0x00FFFFFF) ;
+            emitter->words[unresolved_item.emitter_pos] =  resolved_word;
+        }
     }
 }
 
@@ -643,7 +653,7 @@ static void test_asm_raw_str_escape4(){
 }
 static void test_asm_ldr_label_firstpass(){
     char* input = "ldr r1,=message";
-    int expect = 0xE51F1000;
+    int expect = 0xE5900000;
 
     init_emitter(&g_emitter);
     clear_unresolved_items();
@@ -670,7 +680,6 @@ static void test_asm_file_loop(){
     char* input_file = "test/test_input/hello_loop.ks";
     char* output_file = "hello_loop_ks.bin";
     asm_file(input_file,output_file);
-    hex_dump(&g_emitter);
 
 }
 static void test_asm_ldrb(){
