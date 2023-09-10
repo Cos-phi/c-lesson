@@ -712,7 +712,7 @@ static void asm_unittests(){
     test_asm_file_b();
     test_asm_raw_oneword();
     test_asm_raw_str();
-    test_asm_ldr_label_firstpass(); // TODO その他hello_loop.ksに必要なニーモニックをサポート後、second loopを整備する
+    test_asm_ldr_label_firstpass(); 
     test_asm_file_loop(); 
     test_asm_ldrb();
     test_asm_cmp();
