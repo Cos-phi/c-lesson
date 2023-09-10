@@ -11,7 +11,7 @@ struct Emitter {
     int* words;
     int pos;
 };
-int array[EMITTER_ARRAY_SIZE]; 
+static int array[EMITTER_ARRAY_SIZE]; 
 struct Emitter g_emitter = {array,0};
 
 void init_emitter(struct Emitter* emitter){
