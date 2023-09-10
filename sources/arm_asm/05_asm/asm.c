@@ -213,7 +213,7 @@ int asm_one(char* input){
         input += parse_register(input, &Rn);
         input += skip_comma(input); 
         input += parse_immediate_value(input, &immediate_value);
-        word |= Rn<<12;
+        word |= Rd<<12;
         word |= Rn<<16;
         word |= immediate_value;
         return word;
@@ -274,7 +274,8 @@ void asm_line(char* input, struct Emitter* emitter){
             unresolved_item.mnemonic_symbol = mnemonic_symbol;
             put_unresolved_item(unresolved_item);
 
-            int dummyword = 0xE5900000;
+            int dummyword = 0xE59F0000;
+            dummyword |= Rd<<12;
             emit_word(emitter, dummyword);
         }else{ // ラベル以外のケース
             int oneword = asm_one(input);
@@ -358,12 +359,12 @@ void asm_main(struct Emitter* emitter){
             int coefficient_pos_to_address = 4;
             int label_address = 0x00010000 + label_pos * coefficient_pos_to_address;
             emit_word(emitter, label_address); 
-            int offset = emitter->pos - unresolved_item.emitter_pos;
+            int offset = (emitter->pos - 1) - unresolved_item.emitter_pos - 2;// emitter.posは1つ先を、r15(PC)は2つ先を指しているので、1,2を引きます。
             int address_offset = offset * coefficient_pos_to_address;
             int resolved_word = (unresolved_word&0xFFFFF000) | (address_offset&0x00000FFF) ;
             emitter->words[unresolved_item.emitter_pos] =  resolved_word;
         }else{ // e.g. b, bl, bne..
-            int offset = label_pos - unresolved_item.emitter_pos - 2 ;// r15(PC)は2つ先を指しているので、2を引きます。
+            int offset = label_pos - unresolved_item.emitter_pos - 2;// r15(PC)は2つ先を指しているので、2を引きます。
             int resolved_word = (unresolved_word&0xFFFF0000) | (offset&0x00FFFFFF) ;
             emitter->words[unresolved_item.emitter_pos] =  resolved_word;
         }
@@ -673,7 +674,7 @@ static void test_asm_raw_str_escape4(){
 }
 static void test_asm_ldr_label_firstpass(){
     char* input = "ldr r1,=message";
-    int expect = 0xE5900000;
+    int expect = 0xE59F1000;
 
     init_emitter(&g_emitter);
     clear_unresolved_items();
