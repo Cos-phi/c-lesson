@@ -268,6 +268,14 @@ void asm_line(char* input, struct Emitter* emitter){
             struct Substring label_str;
             parse_one(tmp_input, &label_str);
 
+            int raw_value;
+            parse_raw_value(tmp_input, &raw_value);
+            if( 0x08000000 == raw_value) {
+                int word = 0xE3A0D302;
+                emit_word(emitter,word);
+                return;
+            }
+
             struct Unresolved_item unresolved_item;
             unresolved_item.label_symbol = substr_to_label_symbol(label_str);
             unresolved_item.emitter_pos = emitter->pos; 
@@ -694,6 +702,15 @@ static void test_asm_add(){
 
     assert(expect == actual);
 }
+static void test_asm_ldr_r13_stack(){
+    char* input = " ldr r13,=0x08000000";
+    int expect = 0xE3A0D302; 
+
+    init_emitter(&g_emitter);
+    asm_line(input,&g_emitter);
+
+    assert(expect == g_emitter.words[0]);
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -719,6 +736,7 @@ static void asm_unittests(){
     test_asm_cmp2();
     test_asm_bne_firstpass();
     test_asm_add();
+    test_asm_ldr_r13_stack();
 }
 
 static void unittests(){

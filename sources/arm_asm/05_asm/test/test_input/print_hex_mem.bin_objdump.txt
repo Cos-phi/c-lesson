@@ -1,0 +1,44 @@
+
+test/test_input/print_hex_mem.bin:     file format binary
+
+
+Disassembly of section .data:
+
+00000000 <.data>:
+   0:	e3a0d302 	mov	sp, #134217728	; 0x8000000
+   4:	e1a0000f 	mov	r0, pc
+   8:	eb000005 	bl	0x24
+   c:	e3a00068 	mov	r0, #104	; 0x68
+  10:	eb000003 	bl	0x24
+  14:	e1a0000f 	mov	r0, pc
+  18:	eb000001 	bl	0x24
+  1c:	eb000018 	bl	0x84
+  20:	eafffffe 	b	0x20
+  24:	e92d400b 	push	{r0, r1, r3, lr}
+  28:	e1a01000 	mov	r1, r0
+  2c:	e3a0301c 	mov	r3, #28
+  30:	e1a00331 	lsr	r0, r1, r3
+  34:	e200000f 	and	r0, r0, #15
+  38:	e350000a 	cmp	r0, #10
+  3c:	e2800030 	add	r0, r0, #48	; 0x30
+  40:	ba000000 	blt	0x48
+  44:	e2800007 	add	r0, r0, #7
+  48:	eb000008 	bl	0x70
+  4c:	e2433004 	sub	r3, r3, #4
+  50:	e3530000 	cmp	r3, #0
+  54:	aafffff5 	bge	0x30
+  58:	e3a0000d 	mov	r0, #13
+  5c:	eb000003 	bl	0x70
+  60:	e3a0000a 	mov	r0, #10
+  64:	eb000001 	bl	0x70
+  68:	e8bd400b 	pop	{r0, r1, r3, lr}
+  6c:	e1a0f00e 	mov	pc, lr
+  70:	e92d4002 	push	{r1, lr}
+  74:	e59f1014 	ldr	r1, [pc, #20]	; 0x90
+  78:	e5810000 	str	r0, [r1]
+  7c:	e8bd4002 	pop	{r1, lr}
+  80:	e1a0f00e 	mov	pc, lr
+  84:	e1a0000e 	mov	r0, lr
+  88:	ebffffe5 	bl	0x24
+  8c:	e1a0f00e 	mov	pc, lr
+  90:	101f1000 	andsne	r1, pc, r0
