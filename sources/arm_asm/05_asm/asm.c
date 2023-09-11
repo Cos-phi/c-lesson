@@ -82,6 +82,7 @@ int bne_symbol;
 int cmp_symbol;
 int add_symbol;
 int sub_symbol;
+int ldmia_symbol;
 
 void init_mnemonic_symbols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
@@ -97,6 +98,7 @@ void init_mnemonic_symbols(){
     cmp_symbol = to_mnemonic_symbol("cmp",3);
     add_symbol = to_mnemonic_symbol("add",3);
     sub_symbol = to_mnemonic_symbol("sub",3);
+    ldmia_symbol = to_mnemonic_symbol("ldmia",5);
 }
 
 
@@ -165,8 +167,10 @@ int asm_one(char* input){
             word = 0xE5900000; 
         }else if( mnemonic_symbol == str_symbol ) { // "str"
             word = 0xE5800000; 
-        }else{ // "ldrb"
+        }else if( mnemonic_symbol == ldrb_symbol ){ // "ldrb"
             word = 0xE5D00000;
+        }else{
+            abort();
         }
 
         if( 1 == is_sbracket(input) ){ //e.g. ldr r1, [r2]
@@ -228,6 +232,28 @@ int asm_one(char* input){
         word |= Rd<<12;
         word |= Rn<<16;
         word |= immediate_value;
+        return word;
+    }else if( mnemonic_symbol == ldmia_symbol){
+    /*
+        ldimaのケース
+        e.g. ldmia r13!,{r0,r1,r3,r14} ※writeback,カンマ区切りのみサポートします e8bd400b
+    */
+        int word = 0xE8B00000;
+        int Rn;
+        input += parse_register(input, &Rn);
+        word |= Rn<<16;
+        input += skip_exclamation_mark(input);
+        input += skip_comma(input);
+        input += skip_cbracket(input);
+        while(1){
+            int r;
+            input += parse_register(input,&r);
+            word |= 1 << r;
+            if( 1 == is_cbracket(input) ){
+                break;
+            }
+            input += skip_comma(input);
+        }
         return word;
     }else{
         return 0;
@@ -794,6 +820,14 @@ static void test_asm_ldr_r13_stack(){
 
     assert(expect == g_emitter.words[0]);
 }
+static void test_asm_ldmia(){
+    char* input = "ldmia r13!,{r0,r1,r3,r14}";
+    int expect = 0xE8BD400B; 
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -824,6 +858,7 @@ static void asm_unittests(){
     test_asm_add();
     test_asm_sub();
     test_asm_ldr_r13_stack();
+    test_asm_ldmia();
 }
 
 static void unittests(){

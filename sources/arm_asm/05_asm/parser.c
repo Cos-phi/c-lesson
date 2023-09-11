@@ -49,9 +49,29 @@ int skip_sbracket(char* str){
     }
 }
 
+int skip_cbracket(char* str){
+    int pos = skip_whitespace(str);
+    if( ('{' == str[pos])||('}' == str[pos]) ){
+        pos++;
+        return pos;
+    }else{
+        return PARSE_FAIL;
+    }
+}
+
 int skip_equal(char* str){
     int pos = skip_whitespace(str);
     if( '=' == str[pos] ){
+        pos++;
+        return pos;
+    }else{
+        return PARSE_FAIL;
+    }
+}
+
+int skip_exclamation_mark(char* str){
+    int pos = skip_whitespace(str);
+    if( '!' == str[pos] ){
         pos++;
         return pos;
     }else{
@@ -77,6 +97,15 @@ int is_sbracket(char* str){
     }
 }
 
+int is_cbracket(char* str){
+    int pos = skip_whitespace(str);
+    if( ('{' == str[pos])||('}' == str[pos]) ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
 int is_doublequotation(char* str){
     int pos = skip_whitespace(str);
     if( '\"' == str[pos] ){
@@ -95,6 +124,14 @@ int is_equal(char* str){
     }
 }
 
+int is_exclamation_mark(char* str){
+    int pos = skip_whitespace(str);
+    if( '!' == str[pos] ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
 
 int parse_string(char* input, char **out_str) {
 /*
