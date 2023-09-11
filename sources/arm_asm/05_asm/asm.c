@@ -75,6 +75,7 @@ int ldrb_symbol;
 int str_symbol;
 int dot_symbol;
 int b_symbol;
+int bl_symbol;
 int bne_symbol;
 int cmp_symbol;
 int add_symbol;
@@ -86,6 +87,7 @@ void init_mnemonic_symbols(){
     str_symbol = to_mnemonic_symbol("str",3);
     dot_symbol = to_mnemonic_symbol(".",1);
     b_symbol = to_mnemonic_symbol("b",1);
+    bl_symbol = to_mnemonic_symbol("bl",2);
     bne_symbol = to_mnemonic_symbol("bne",3);
     cmp_symbol = to_mnemonic_symbol("cmp",3);
     add_symbol = to_mnemonic_symbol("add",3);
@@ -230,9 +232,9 @@ void asm_line(char* input, struct Emitter* emitter){
     int read_len = parse_one(input, &opcode);
     int mnemonic_symbol = substr_to_mnemonic_symbol(opcode);
     
-    if( mnemonic_symbol == b_symbol || mnemonic_symbol == bne_symbol ){    
+    if( mnemonic_symbol == b_symbol || mnemonic_symbol == bl_symbol ||  mnemonic_symbol == bne_symbol ){    
     /*
-        b/bneのケース
+        b/bl/bneのケース
         e.g. "b label" 
         即値（ラベルが指すアドレス）には000000を入れておき、解決が必要なものを集めるリスト（unresolved_items）に登録する。
     */    
@@ -249,6 +251,8 @@ void asm_line(char* input, struct Emitter* emitter){
         int dummyword;
         if( mnemonic_symbol == b_symbol ){
             dummyword = 0xEA000000;
+        }else if( mnemonic_symbol == bl_symbol ){
+            dummyword = 0xEB000000;
         }else{
             dummyword = 0x1A000000;
         }
@@ -587,6 +591,23 @@ static void test_asm_b_firstpass(){
     assert(to_mnemonic_symbol("b",1) == unresolved_item.mnemonic_symbol);
     assert(expect_emitter_pos == unresolved_item.emitter_pos);
 }
+static void test_asm_bl_firstpass(){
+    char* input = "bl label";
+    int expect = 0xEB000000;
+
+    init_emitter(&g_emitter);
+    init_label_tree();
+    struct Unresolved_item unresolved_item;
+    assert(0 == get_unresolved_item(&unresolved_item));
+    int expect_emitter_pos = g_emitter.pos;
+    asm_line(input,&g_emitter);
+
+    assert(expect == g_emitter.words[0]);
+    assert(1 == get_unresolved_item(&unresolved_item));
+    assert(to_label_symbol("label",5) == unresolved_item.label_symbol);
+    assert(to_mnemonic_symbol("bl",2) == unresolved_item.mnemonic_symbol);
+    assert(expect_emitter_pos == unresolved_item.emitter_pos);
+}
 static void test_asm_file_b(){
 /*
     動作確認のためファイルに出力するだけの関数です。
@@ -726,6 +747,7 @@ static void asm_unittests(){
     test_asm_file();
     test_asm_file_init_emitter();
     test_asm_b_firstpass();
+    test_asm_bl_firstpass();
     test_asm_file_b();
     test_asm_raw_oneword();
     test_asm_raw_str();
