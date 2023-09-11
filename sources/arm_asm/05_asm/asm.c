@@ -841,6 +841,14 @@ static void test_asm_stmdb(){
 
     assert(expect == actual);
 }
+static void test_asm_lsr(){ 
+    char* input = "lsr r0,r1,r3";
+    int expect = 0xE1A00331; 
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
 static void test_asm_file_print_hex_mem(){
 /*
     動作確認のためファイルに出力するだけの関数です。
@@ -886,6 +894,7 @@ static void asm_unittests(){
     test_asm_ldr_r13_stack();
     test_asm_ldmia();
     test_asm_stmdb();
+    test_asm_lsr();
     test_asm_file_print_hex_mem();
 }
 
