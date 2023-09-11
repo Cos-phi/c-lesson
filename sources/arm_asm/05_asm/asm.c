@@ -83,6 +83,7 @@ int cmp_symbol;
 int add_symbol;
 int sub_symbol;
 int ldmia_symbol;
+int stmdb_symbol;
 
 void init_mnemonic_symbols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
@@ -99,6 +100,7 @@ void init_mnemonic_symbols(){
     add_symbol = to_mnemonic_symbol("add",3);
     sub_symbol = to_mnemonic_symbol("sub",3);
     ldmia_symbol = to_mnemonic_symbol("ldmia",5);
+    stmdb_symbol = to_mnemonic_symbol("stmdb",5);
 }
 
 
@@ -233,12 +235,15 @@ int asm_one(char* input){
         word |= Rn<<16;
         word |= immediate_value;
         return word;
-    }else if( mnemonic_symbol == ldmia_symbol){
+    }else if( mnemonic_symbol == ldmia_symbol || mnemonic_symbol == stmdb_symbol ){
     /*
-        ldimaのケース
-        e.g. ldmia r13!,{r0,r1,r3,r14} ※writeback,カンマ区切りのみサポートします e8bd400b
+        ldima/stmdbのケース
+        e.g. ldmia r13!,{r0,r1,r3,r14} ※writeback,カンマ区切りのみサポートします。
     */
         int word = 0xE8B00000;
+        if( mnemonic_symbol == stmdb_symbol ){
+            word = 0xE9200000;
+        }
         int Rn;
         input += parse_register(input, &Rn);
         word |= Rn<<16;
@@ -828,6 +833,14 @@ static void test_asm_ldmia(){
 
     assert(expect == actual);
 }
+static void test_asm_stmdb(){
+    char* input = "stmdb r13!,{r0,r1,r3,r14}";
+    int expect = 0xE92D400B; 
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -859,6 +872,7 @@ static void asm_unittests(){
     test_asm_sub();
     test_asm_ldr_r13_stack();
     test_asm_ldmia();
+    test_asm_stmdb();
 }
 
 static void unittests(){
