@@ -81,6 +81,7 @@ int bge_symbol;
 int bne_symbol;
 int cmp_symbol;
 int add_symbol;
+int sub_symbol;
 
 void init_mnemonic_symbols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
@@ -95,6 +96,7 @@ void init_mnemonic_symbols(){
     bne_symbol = to_mnemonic_symbol("bne",3);
     cmp_symbol = to_mnemonic_symbol("cmp",3);
     add_symbol = to_mnemonic_symbol("add",3);
+    sub_symbol = to_mnemonic_symbol("sub",3);
 }
 
 
@@ -205,12 +207,16 @@ int asm_one(char* input){
         }
         return word;
 
-    }else if( mnemonic_symbol == add_symbol ){
+    }else if( mnemonic_symbol == add_symbol || mnemonic_symbol == sub_symbol ){
     /*
-        addのケース
+        add/subのケース
         e.g. add r1, r1, #5
     */   
         int word = 0xE2800000;
+        if( mnemonic_symbol == sub_symbol ){
+            word = 0xE2400000;
+        }
+
         int Rd;
         int Rn;
         int immediate_value;
@@ -656,6 +662,23 @@ static void test_asm_bge_firstpass(){
     assert(to_mnemonic_symbol("bge",3) == unresolved_item.mnemonic_symbol);
     assert(expect_emitter_pos == unresolved_item.emitter_pos);
 }
+static void test_asm_bne_firstpass(){
+    char* input = "bne label";
+    int expect = 0x1A000000;
+
+    init_emitter(&g_emitter);
+    init_label_tree();
+    struct Unresolved_item unresolved_item;
+    assert(0 == get_unresolved_item(&unresolved_item));
+    int expect_emitter_pos = g_emitter.pos;
+    asm_line(input,&g_emitter);
+
+    assert(expect == g_emitter.words[0]);
+    assert(1 == get_unresolved_item(&unresolved_item));
+    assert(to_label_symbol("label",5) == unresolved_item.label_symbol);
+    assert(to_mnemonic_symbol("bne",3) == unresolved_item.mnemonic_symbol);
+    assert(expect_emitter_pos == unresolved_item.emitter_pos);
+}
 static void test_asm_file_b(){
 /*
     動作確認のためファイルに出力するだけの関数です。
@@ -746,26 +769,17 @@ static void test_asm_cmp2(){
 
     assert(expect == actual);
 }
-static void test_asm_bne_firstpass(){
-    char* input = "bne label";
-    int expect = 0x1A000000;
-
-    init_emitter(&g_emitter);
-    init_label_tree();
-    struct Unresolved_item unresolved_item;
-    assert(0 == get_unresolved_item(&unresolved_item));
-    int expect_emitter_pos = g_emitter.pos;
-    asm_line(input,&g_emitter);
-
-    assert(expect == g_emitter.words[0]);
-    assert(1 == get_unresolved_item(&unresolved_item));
-    assert(to_label_symbol("label",5) == unresolved_item.label_symbol);
-    assert(to_mnemonic_symbol("bne",3) == unresolved_item.mnemonic_symbol);
-    assert(expect_emitter_pos == unresolved_item.emitter_pos);
-}
 static void test_asm_add(){
     char* input = "add r1, r1, #1";
     int expect = 0xE2811001; 
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
+static void test_asm_sub(){
+    char* input = "sub r3, r3, #4";
+    int expect = 0xE2433004; 
 
     int actual = asm_one(input);
 
@@ -798,6 +812,7 @@ static void asm_unittests(){
     test_asm_bl_firstpass();
     test_asm_blt_firstpass();
     test_asm_bge_firstpass();
+    test_asm_bne_firstpass();
     test_asm_file_b();
     test_asm_raw_oneword();
     test_asm_raw_str();
@@ -806,8 +821,8 @@ static void asm_unittests(){
     test_asm_ldrb();
     test_asm_cmp();
     test_asm_cmp2();
-    test_asm_bne_firstpass();
     test_asm_add();
+    test_asm_sub();
     test_asm_ldr_r13_stack();
 }
 
