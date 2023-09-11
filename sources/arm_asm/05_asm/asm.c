@@ -841,6 +841,19 @@ static void test_asm_stmdb(){
 
     assert(expect == actual);
 }
+static void test_asm_file_print_hex_mem(){
+/*
+    動作確認のためファイルに出力するだけの関数です。
+    この関数内では、結果の判定を行いません。
+
+    input:  hello_loop.s相当のファイルhello_loop.ksを読み込み、
+    expect: hello_loop.sをARMアセンブラでアセンブルしたバイナリと、同等のバイナリを書き出す。
+*/
+    char* input_file = "test/test_input/print_hex_mem.ks";
+    char* output_file = "print_hex_mem_ks.bin";
+    asm_file(input_file,output_file);
+
+}
 static void asm_unittests(){
     test_asm_mov();
     test_asm_mov();
@@ -873,6 +886,7 @@ static void asm_unittests(){
     test_asm_ldr_r13_stack();
     test_asm_ldmia();
     test_asm_stmdb();
+    test_asm_file_print_hex_mem();
 }
 
 static void unittests(){
