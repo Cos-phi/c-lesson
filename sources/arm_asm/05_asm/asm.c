@@ -265,9 +265,23 @@ int asm_one(char* input){
     }else if( mnemonic_symbol == lsr_symbol ){
     /*
         lsrのケース
-        e.g. lsr r0,r1,r3
+        e.g. lsr r0,r1,r3 ※シフトの数をレジスタで指定するケースのみサポートします。
     */
-        int word = 0xE1A00331;
+        int word = 0xE1A00030;
+        int Rd;
+        int Rm;
+        int shift_register;
+        
+        input += parse_register(input, &Rd);
+        input += skip_comma(input);
+        input += parse_register(input, &Rm);
+        input += skip_comma(input);
+        input += parse_register(input, &shift_register);
+
+        word |= Rd<<12; 
+        word |= Rm;
+        word |= shift_register<<8;
+
         return word;
     }else{
         return 0;
