@@ -218,7 +218,7 @@ int asm_one(char* input){
     }else if( mnemonic_symbol == add_symbol || mnemonic_symbol == sub_symbol ){
     /*
         add/subのケース
-        e.g. add r1, r1, #5
+        e.g. add r1, r1, #5 ※引数が３つ(Rd,Rn,ImmVal)のときのみサポートします。
     */   
         int word = 0xE2800000;
         if( mnemonic_symbol == sub_symbol ){

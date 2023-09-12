@@ -21,7 +21,7 @@ _loop:
   add r0,r0,#7
 _print:
   bl putchar
-  sub r3,#4
+  sub r3,r3,#4
   cmp r3,#0
   bge _loop
   mov r0,#0x0D
