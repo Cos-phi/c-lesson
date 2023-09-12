@@ -85,6 +85,7 @@ int sub_symbol;
 int ldmia_symbol;
 int stmdb_symbol;
 int lsr_symbol;
+int and_symbol;
 
 void init_mnemonic_symbols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
@@ -103,6 +104,7 @@ void init_mnemonic_symbols(){
     ldmia_symbol = to_mnemonic_symbol("ldmia",5);
     stmdb_symbol = to_mnemonic_symbol("stmdb",5);
     lsr_symbol = to_mnemonic_symbol("lsr",3);
+    and_symbol = to_mnemonic_symbol("and",3);
 }
 
 
@@ -281,6 +283,25 @@ int asm_one(char* input){
         word |= Rd<<12; 
         word |= Rm;
         word |= shift_register<<8;
+
+        return word;
+    }else if( mnemonic_symbol == and_symbol ){
+    /*
+        andのケース
+        e.g. and r0,r0,#15 
+    */
+        int word = 0xE200000F;
+        int Rd;
+        int Rn;
+        int immediate_value;
+        input += parse_register(input, &Rd);
+        input += skip_comma(input); 
+        input += parse_register(input, &Rn);
+        input += skip_comma(input); 
+        input += parse_immediate_value(input, &immediate_value);
+        word |= Rd<<12;
+        word |= Rn<<16;
+        word |= immediate_value;
 
         return word;
     }else{
@@ -872,6 +893,14 @@ static void test_asm_lsr(){
 
     assert(expect == actual);
 }
+static void test_asm_and(){ 
+    char* input = "and r0,r0,#15";
+    int expect = 0xE200000F; 
+
+    int actual = asm_one(input);
+
+    assert(expect == actual);
+}
 static void test_asm_file_print_hex_mem(){
 /*
     動作確認のためファイルに出力するだけの関数です。
@@ -918,6 +947,7 @@ static void asm_unittests(){
     test_asm_ldmia();
     test_asm_stmdb();
     test_asm_lsr();
+    test_asm_and();
     test_asm_file_print_hex_mem();
 }
 
