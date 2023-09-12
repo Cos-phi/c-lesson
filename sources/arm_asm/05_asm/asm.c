@@ -84,6 +84,7 @@ int add_symbol;
 int sub_symbol;
 int ldmia_symbol;
 int stmdb_symbol;
+int lsr_symbol;
 
 void init_mnemonic_symbols(){
     mov_symbol = to_mnemonic_symbol("mov",3);
@@ -101,6 +102,7 @@ void init_mnemonic_symbols(){
     sub_symbol = to_mnemonic_symbol("sub",3);
     ldmia_symbol = to_mnemonic_symbol("ldmia",5);
     stmdb_symbol = to_mnemonic_symbol("stmdb",5);
+    lsr_symbol = to_mnemonic_symbol("lsr",3);
 }
 
 
@@ -259,6 +261,13 @@ int asm_one(char* input){
             }
             input += skip_comma(input);
         }
+        return word;
+    }else if( mnemonic_symbol == lsr_symbol ){
+    /*
+        lsrのケース
+        e.g. lsr r0,r1,r3
+    */
+        int word = 0xE1A00331;
         return word;
     }else{
         return 0;
