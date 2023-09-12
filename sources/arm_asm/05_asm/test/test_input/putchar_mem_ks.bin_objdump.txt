@@ -6,13 +6,13 @@ Disassembly of section .data:
 
 00000000 <.data>:
    0:	e3a0d302 	mov	sp, #134217728	; 0x8000000
-   4:	e59f006c 	ldr	r0, [pc, #108]	; 0x78
+   4:	e59f0070 	ldr	r0, [pc, #112]	; 0x7c
    8:	eb000007 	bl	0x2c
-   c:	e59f0060 	ldr	r0, [pc, #96]	; 0x74
+   c:	e59f0064 	ldr	r0, [pc, #100]	; 0x78
   10:	eb000005 	bl	0x2c
   14:	eafffffe 	b	0x14
   18:	e92d4002 	push	{r1, lr}
-  1c:	e59f104c 	ldr	r1, [pc, #76]	; 0x70
+  1c:	e59f1050 	ldr	r1, [pc, #80]	; 0x74
   20:	e5810000 	str	r0, [r1]
   24:	e8bd4002 	pop	{r1, lr}
   28:	e1a0f00e 	mov	pc, lr
@@ -29,10 +29,11 @@ Disassembly of section .data:
   54:	73726946 	cmnvc	r2, #1146880	; 0x118000
   58:	65742074 	ldrbvs	r2, [r4, #-116]!	; 0xffffff8c
   5c:	0a2e7478 	beq	0xb9d244
-  60:	6f636553 	svcvs	0x00636553
-  64:	7420646e 	strtvc	r6, [r0], #-1134	; 0xfffffb92
-  68:	21747865 	cmncs	r4, r5, ror #16
-  6c:	0000000a 	andeq	r0, r0, sl
-  70:	101f1000 	andsne	r1, pc, r0
-  74:	00010060 	andeq	r0, r1, r0, rrx
-  78:	00010054 	andeq	r0, r1, r4, asr r0
+  60:	00000000 	andeq	r0, r0, r0
+  64:	6f636553 	svcvs	0x00636553
+  68:	7420646e 	strtvc	r6, [r0], #-1134	; 0xfffffb92
+  6c:	21747865 	cmncs	r4, r5, ror #16
+  70:	0000000a 	andeq	r0, r0, sl
+  74:	101f1000 	andsne	r1, pc, r0
+  78:	00010064 	andeq	r0, r1, r4, rrx
+  7c:	00010054 	andeq	r0, r1, r4, asr r0

@@ -7,7 +7,7 @@ end:
   b end
 putchar:
   stmdb r13!,{r1,r14}
-  ldr r1,[r15,#0x4C]
+  ldr r1,[r15,#0x30]
   str r0, [r1]
   ldmia r13!,{r1,r14}
   mov r15, r14
@@ -23,9 +23,10 @@ _loop:
   bne _loop
   ldmia r13!,{r0,r1,r3,r14}
   mov r15, r14
+.raw 0x101f1000
 msg1: 
   .raw "First text.\n"
+  .raw 0x00000000
 msg2:
   .raw "Second text!\n"
-.raw 0x101f1000
 
