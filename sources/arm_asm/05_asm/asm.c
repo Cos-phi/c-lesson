@@ -421,6 +421,7 @@ void asm_line(char* input, struct Emitter* emitter){
             for(int i=0; i <= raw_value_words_index; i++){
                 emit_word(emitter,raw_value_words[i]);
             }
+            emit_word(emitter,0x00000000); //.raw strの末尾が分かるように、0x0を埋め込む
         }else{
         /*
             e.g. ".raw 0x123456" 

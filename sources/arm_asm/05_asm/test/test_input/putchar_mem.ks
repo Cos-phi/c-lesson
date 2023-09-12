@@ -26,7 +26,6 @@ _loop:
 .raw 0x101f1000
 msg1: 
   .raw "First text.\n"
-  .raw 0x00000000
 msg2:
   .raw "Second text!\n"
 
