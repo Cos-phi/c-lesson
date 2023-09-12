@@ -906,11 +906,25 @@ static void test_asm_file_print_hex_mem(){
     動作確認のためファイルに出力するだけの関数です。
     この関数内では、結果の判定を行いません。
 
-    input:  hello_loop.s相当のファイルhello_loop.ksを読み込み、
-    expect: hello_loop.sをARMアセンブラでアセンブルしたバイナリと、同等のバイナリを書き出す。
+    input:  print_hex_mem.s相当のファイルprint_hex_mem.ksを読み込み、
+    expect: print_hex_mem.sをARMアセンブラでアセンブルしたバイナリと、同等のバイナリを書き出す。
 */
     char* input_file = "test/test_input/print_hex_mem.ks";
     char* output_file = "print_hex_mem_ks.bin";
+    asm_file(input_file,output_file);
+
+}
+static void test_asm_file_putchar_mem(){
+/*
+    動作確認のためファイルに出力するだけの関数です。
+    この関数内では、結果の判定を行いません。
+
+    input:  putchar_mem.s相当のファイルputchar_mem.ksを読み込み、
+    expect: putchar_mem.sをARMアセンブラでアセンブルしたバイナリと、同等の機能をもつバイナリを書き出す。
+    ※アドレス埋め込み位置などの違いから、完全に同じにはなりません
+*/
+    char* input_file = "test/test_input/putchar_mem.ks";
+    char* output_file = "putchar_mem_ks.bin";
     asm_file(input_file,output_file);
 
 }
@@ -949,6 +963,7 @@ static void asm_unittests(){
     test_asm_lsr();
     test_asm_and();
     test_asm_file_print_hex_mem();
+    test_asm_file_putchar_mem();
 }
 
 static void unittests(){
