@@ -943,7 +943,9 @@ static void asm_unittests(){
     test_asm_ks();
     test_asm_file();
     test_asm_file_init_emitter();
+     test_asm_file_putchar_mem(); //これは出力がおかしい
     test_asm_b_firstpass();
+    //test_asm_file_putchar_mem(); //これは正しい
     test_asm_bl_firstpass();
     test_asm_blt_firstpass();
     test_asm_bge_firstpass();
@@ -964,7 +966,6 @@ static void asm_unittests(){
     test_asm_lsr();
     test_asm_and();
     test_asm_file_print_hex_mem();
-    test_asm_file_putchar_mem();
 }
 
 static void unittests(){
@@ -974,6 +975,7 @@ static void unittests(){
     parser_unittests();
 
     init_mnemonic_symbols();
+    
     asm_unittests();
 }
 
