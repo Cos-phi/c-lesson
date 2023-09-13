@@ -2,6 +2,9 @@
 #define STRING_BUFF_SIZE 1024
 
 int substreq(char* s1, struct Substring s2){
+    if( 0 == s2.len && '\0' != *s1 ){
+        return 0;
+    }
     if( 0 == strncmp(s1, s2.str, s2.len) ){
         return 1;
     }else{
@@ -344,6 +347,66 @@ int parse_one(char *str, struct Substring* out_subs){
 /*
     ユニットテスト
 */
+static void test_substreq(){
+    char* input1 = "test";
+    struct Substring input2;
+    input2.str = "test";
+    input2.len = 4;
+
+    int expect = 1;
+    
+    int actual = substreq(input1,input2);
+
+    assert(actual == expect);
+}
+static void test_substreq_err(){
+    char* input1 = "test";
+    struct Substring input2;
+    input2.str = "mue-";
+    input2.len = 4;
+
+    int expect = 0;
+    
+    int actual = substreq(input1,input2);
+
+    assert(actual == expect);
+}
+static void test_substreq_empty_substr(){
+    char* input1 = "";
+    struct Substring input2;
+    input2.str = "";
+    input2.len = 0;
+
+    int expect = 1;
+    
+    int actual = substreq(input1,input2);
+
+    assert(actual == expect);
+}
+static void test_substreq_err_empty_substr(){
+    char* input1 = "dummy";
+    struct Substring input2;
+    input2.str = "";
+    input2.len = 0;
+
+    int expect = 0;
+    
+    int actual = substreq(input1,input2);
+
+    assert(actual == expect);
+}
+static void test_substreq_err_empty_str(){
+    char* input1 = "";
+    struct Substring input2;
+    input2.str = "mue-";
+    input2.len = 4;
+
+    int expect = 0;
+    
+    int actual = substreq(input1,input2);
+
+    assert(actual == expect);
+}
 static void test_parse_one(){
     char* input = "mov r1, r2";
     char* expect_str = "mov";
@@ -427,11 +490,24 @@ static void test_parse_one_error(){
 
     assert(expect_pos == pos);
 }
-static void test_parse_one_nothing(){
+static void test_parse_one_spaces(){
     char* input = "    ";
     char* expect_str = "    ";
     int expect_len = 4;
     int expect_pos = 4;
+    
+    struct Substring actual_sub; 
+    int pos = parse_one(input, &actual_sub);
+
+    assert(expect_pos == pos);
+    assert(expect_len == actual_sub.len);
+    assert(substreq(expect_str, actual_sub));
+}
+static void test_parse_one_nothing(){
+    char* input = "";
+    char* expect_str = "";
+    int expect_len = 0;
+    int expect_pos = 0;
     
     struct Substring actual_sub; 
     int pos = parse_one(input, &actual_sub);
@@ -645,12 +721,18 @@ static void test_parse_string_escape_end_in_the_middle_after_bs(){
 
 
 void parser_unittests(){
+    test_substreq();
+    test_substreq_err();
+    test_substreq_empty_substr();
+    test_substreq_err_empty_substr();
+    test_substreq_err_empty_str();
     test_parse_one();
     test_parse_one_indent();
     test_parse_one_label();
     test_parse_one_error();
     test_parse_one_word();
     test_parse_one_word_and_comma();
+    test_parse_one_spaces();
     test_parse_one_nothing();
     test_parse_register();
     test_parse_register2();
