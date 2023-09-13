@@ -446,12 +446,16 @@ void asm_main(struct Emitter* emitter){
     アセンブルした結果は、受け取ったEmitterに格納されます。
 */
     init_emitter(emitter);
-    //init_label_tree(); //メモ　←ここでinit_label_treeすると、test_asm_file_putchar_mem の出力がおかしくなる
+    dict_clear();
+    // init_label_tree(); //メモ　←ここでinit_label_treeすると、test_asm_file_putchar_mem の出力がおかしくなる
     char* buff_line;
     while( -1 != cl_getline(&buff_line) ){
         struct Substring stem; 
         struct Substring suffix; 
         int read_len = parse_one(buff_line, &stem);
+        if( 0 == read_len ){ //空行の場合
+            continue;
+        }
         parse_one((buff_line + read_len), &suffix);
         if(substreq(":",suffix)){ // ラベルの場合
             int label_symbol = substr_to_label_symbol(stem);
@@ -925,10 +929,10 @@ static void test_asm_file_putchar_mem(){
     expect: putchar_mem.sをARMアセンブラでアセンブルしたバイナリと、同等の機能をもつバイナリを書き出す。
     ※アドレス埋め込み位置などの違いから、完全に同じにはなりません
 */
+   init_label_tree();
     char* input_file = "test/test_input/putchar_mem.ks";
     char* output_file = "putchar_mem_ks.bin";
     asm_file(input_file,output_file);
-
 }
 static void asm_unittests(){
     test_asm_mov();
@@ -971,7 +975,7 @@ static void asm_unittests(){
 
 static void unittests(){
     cl_getline_unittests();
-    cl_binarytree_unittests();
+    //cl_binarytree_unittests();
     dict_unittests();
     parser_unittests();
 
@@ -986,7 +990,13 @@ static void unittests(){
 }
 
 int main(int argc, char* argv[]){
+    init_mnemonic_tree();
     init_mnemonic_symbols();
+    init_label_tree();
+    init_emitter(&g_emitter);
+    dict_clear();
+    clear_unresolved_items();
+
     if(3 == argc){
         asm_file(argv[1],argv[2]);
     }

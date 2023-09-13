@@ -84,7 +84,9 @@ int to_mnemonic_symbol(char *str, int len) {
 int to_label_symbol(char *str, int len) {
 //  文字列を受け取って、label treeにおけるvalueを返します。
 //  ツリーになかった場合は追加してvalueを返します。
-    return to_symbol(str,len,&label_root,&label_id);
+    int label_symbol = to_symbol(str,len,&label_root,&label_id);
+    printf("label_symbol %d : %s\n",label_symbol,str);
+    return label_symbol;
 }
 
 void init_tree(struct Node* root_node){
