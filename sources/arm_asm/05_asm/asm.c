@@ -445,6 +445,8 @@ void asm_main(struct Emitter* emitter){
     cl_getlineにセットされた内容をアセンブルします。
     アセンブルした結果は、受け取ったEmitterに格納されます。
 */
+    init_emitter(emitter);
+    //init_label_tree(); //メモ　←ここでinit_label_treeすると、test_asm_file_putchar_mem の出力がおかしくなる
     char* buff_line;
     while( -1 != cl_getline(&buff_line) ){
         struct Substring stem; 
@@ -487,7 +489,6 @@ void asm_file(char* input_filename, char* output_filename){
     FILE* input_fp = fopen(input_filename,"r");
     assert(NULL != input_fp);
     cl_getline_set_file(input_fp);
-    init_emitter(&g_emitter);
     asm_main(&g_emitter);
     fclose(input_fp);  
     FILE* output_fp = fopen(output_filename,"wb");
@@ -943,9 +944,7 @@ static void asm_unittests(){
     test_asm_ks();
     test_asm_file();
     test_asm_file_init_emitter();
-     test_asm_file_putchar_mem(); //これは出力がおかしい
     test_asm_b_firstpass();
-    //test_asm_file_putchar_mem(); //これは正しい
     test_asm_bl_firstpass();
     test_asm_blt_firstpass();
     test_asm_bge_firstpass();
@@ -966,6 +965,8 @@ static void asm_unittests(){
     test_asm_lsr();
     test_asm_and();
     test_asm_file_print_hex_mem();
+    
+     test_asm_file_putchar_mem(); //めも　asm_mainで毎回すべて初期化するとおかしくなる
 }
 
 static void unittests(){
@@ -974,7 +975,12 @@ static void unittests(){
     dict_unittests();
     parser_unittests();
 
+    init_emitter(&g_emitter);
+    init_label_tree();
+    init_mnemonic_tree();
     init_mnemonic_symbols();
+    dict_clear();
+    clear_unresolved_items();
     
     asm_unittests();
 }
