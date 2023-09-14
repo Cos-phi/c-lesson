@@ -407,6 +407,18 @@ static void test_substreq_err_empty_str(){
 
     assert(actual == expect);
 }
+static void test_substreq_err_samebeginning(){
+    char* input1 = "msg1";
+    struct Substring input2;
+    input2.str = "msg";
+    input2.len = 3;
+
+    int expect = 0;
+    
+    int actual = substreq(input1,input2);
+
+    assert(actual == expect);
+}
 static void test_parse_one(){
     char* input = "mov r1, r2";
     char* expect_str = "mov";
@@ -726,6 +738,7 @@ void parser_unittests(){
     test_substreq_empty_substr();
     test_substreq_err_empty_substr();
     test_substreq_err_empty_str();
+    test_substreq_err_samebeginning();
     test_parse_one();
     test_parse_one_indent();
     test_parse_one_label();
