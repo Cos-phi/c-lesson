@@ -28,4 +28,3 @@ msg1:
   .raw "First text.\n"
 msg2:
   .raw "Second text!\n"
-

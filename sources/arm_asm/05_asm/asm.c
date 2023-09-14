@@ -459,9 +459,7 @@ void asm_main(struct Emitter* emitter){
         struct Substring stem; 
         struct Substring suffix; 
         int read_len = parse_one(buff_line, &stem);
-        if( 0 == read_len ){ //空行は無視して次の行へ
-            continue;
-        }
+        assert( 0 != read_len );
         parse_one((buff_line + read_len), &suffix);
         if(substreq(":",suffix)){ // ラベルの場合
             int label_symbol = substr_to_label_symbol(stem);

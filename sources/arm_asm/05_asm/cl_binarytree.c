@@ -36,6 +36,7 @@ int search_symbol(char *str, int len, struct Node **inout_node) {
 //  文字列と、ツリーのルートのノードのポインタを受け取って、ツリーに見つかったら1を、ツリーになかった場合は0を返します。
 //  ノードのポインタは、その文字列が 入っているノード・リーフ/入るべきバド に更新されます。
     struct Node* cur_node = *inout_node;
+    assert( 0 != len );
     while(NULL != cur_node->name){
         int cur_strcmp = strncmp(str,cur_node->name,len);
         if( 0 > cur_strcmp ){ 
@@ -226,32 +227,12 @@ static void test_func_to_label_symbol_toolongstr(){
     assert( value2 == to_label_symbol("mue",3));
     assert( value3 == to_label_symbol("meu",3));
 }
-static void test_func_to_mnemonic_symbol_emptystr(){
-    char* input1 = "aja";
-    char* input2 = "mue";
-    char* input3 = "";
-    /*
-    expect: to_mnemonic_symbolに同じ文字列を与えたとき、返り値のvalueが一致する
-    */  
-    init_mnemonic_tree();
-    int value1 = to_mnemonic_symbol(input1,3);
-    int value2 = to_mnemonic_symbol(input2,3);
-    int value3 = to_mnemonic_symbol(input3,0);
-
-    assert( 1 == to_mnemonic_symbol("aja",3));
-    assert( 2 == to_mnemonic_symbol("mue",3));
-    assert( 3 == to_mnemonic_symbol("",0));
-    assert( value1 == to_mnemonic_symbol("aja",3));
-    assert( value2 == to_mnemonic_symbol("mue",3));
-    assert( value3 == to_mnemonic_symbol("",0));
-}
 void cl_binarytree_unittests(){
     test_func_to_mnemonic_symbol();
     test_func_to_mnemonic_symbol_2();
     test_func_to_mnemonic_symbol_3();
     test_func_to_label_symbol();
     test_func_to_label_symbol_toolongstr();
-    test_func_to_mnemonic_symbol_emptystr();
     
     init_mnemonic_tree();
     init_label_tree();
