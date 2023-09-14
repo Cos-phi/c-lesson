@@ -5,7 +5,7 @@ int substreq(char* s1, struct Substring s2){
     if( 0 == s2.len && '\0' != *s1 ){
         return 0;
     }
-    if( 0 == strncmp(s1, s2.str, s2.len) ){
+    if( 0 == strncmp(s1, s2.str, s2.len) && '\0' == s1[s2.len] ){
         return 1;
     }else{
         return 0;
