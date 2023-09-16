@@ -19,6 +19,7 @@ struct Nodeで表現される3種類の要素で二分木を構成します。
 */
 struct Node {
     char *name;
+    int name_len;
     int value;
     struct Node *left;
     struct Node *right;
@@ -32,18 +33,19 @@ struct Node label_root;
 int mnemonic_id = MNEMONIC_ID_START;
 int label_id = LABEL_ID_START;
 
-int search_symbol(char *str, int len, struct Node **inout_node) {
+int search_symbol(char *str, int str_len, struct Node **inout_node) {
 //  文字列と、ツリーのルートのノードのポインタを受け取って、ツリーに見つかったら1を、ツリーになかった場合は0を返します。
 //  ノードのポインタは、その文字列が 入っているノード・リーフ/入るべきバド に更新されます。
     struct Node* cur_node = *inout_node;
-    assert( 0 != len );
+    assert( 0 != str_len );
     while(NULL != cur_node->name){
-        int cur_strcmp = strncmp(str,cur_node->name,len);
-        if( 0 > cur_strcmp ){ 
+        int cur_strcmp = strncmp(str,cur_node->name,str_len);
+        int cur_diff_len = str_len - cur_node->name_len;
+        if( (0 > cur_strcmp) || (0 == cur_strcmp && 0 > cur_diff_len) ){ 
             cur_node = cur_node->left;
-        }else if( 0 < cur_strcmp ){ 
+        }else if( (0 < cur_strcmp) || (0 == cur_strcmp && 0 < cur_diff_len)){ 
             cur_node = cur_node->right;
-        }else{ // 0 == cur_strcmp 
+        }else{ // 0 == cur_strcmp && 0 == cur_diff_len 
             *inout_node = cur_node;
             return 1;
         }
@@ -63,6 +65,7 @@ void create_leaf(char *str, int len, struct Node* new_leaf, int* id){
     new_leaf->name = (char*)malloc(sizeof(char)*(len+1));
     strncpy(new_leaf->name,str,len); 
     new_leaf->value = (*id)++;
+    new_leaf->name_len = len;
     create_bud(&(new_leaf->left));
     create_bud(&(new_leaf->right));
 }
@@ -238,14 +241,14 @@ static void test_func_to_label_symbol_samebeginnin(){
     init_label_tree();
     int value1 = to_label_symbol(input1,3); // len = 3 
     int value2 = to_label_symbol(input2,3);
-    int value3 = to_label_symbol(input3,3);
+    int value3 = to_label_symbol(input3,6);
 
     assert( 10000 == to_label_symbol("aja",3));
     assert( 10001 == to_label_symbol("meu",3));
-    assert( 10002 == to_label_symbol("meumeu",3));
+    assert( 10002 == to_label_symbol("meumeu",6));
     assert( value1 == to_label_symbol("aja",3));
-    assert( value2 == to_label_symbol("mue",3));
-    assert( value3 == to_label_symbol("meumeu",3));
+    assert( value2 == to_label_symbol("meu",3));
+    assert( value3 == to_label_symbol("meumeu",6));
 }
 void cl_binarytree_unittests(){
     test_func_to_mnemonic_symbol();

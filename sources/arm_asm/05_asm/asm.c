@@ -813,8 +813,8 @@ static void test_asm_ldr_label_firstpass(){
 
     assert(expect == g_emitter.words[0]);
     assert(1 == get_unresolved_item(&unresolved_item));
-    assert(to_label_symbol("message",5) == unresolved_item.label_symbol);
-    assert(to_mnemonic_symbol("ldr",1) == unresolved_item.mnemonic_symbol);
+    assert(to_label_symbol("message",7) == unresolved_item.label_symbol);
+    assert(to_mnemonic_symbol("ldr",3) == unresolved_item.mnemonic_symbol);
     assert(expect_emitter_pos == unresolved_item.emitter_pos);
 }
 static void test_asm_file_loop(){
