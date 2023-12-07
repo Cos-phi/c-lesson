@@ -6,12 +6,13 @@ void print_address(int address) {
 
 int func3 (int a4) {
     // TODO: print func2's local avriable a3 here.
-
+    printf("func3's a4 address = %x\n",(int) &a4);
     return a4*3;
 }
 
 int func2(int a2) {
     int a3 = 0;
+    printf("func2's a3 address = %x\n",(int) &a3);
     for(int i = 0; i < 10; i++) {
         a3+=i;
     }

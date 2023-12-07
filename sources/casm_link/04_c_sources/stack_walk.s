@@ -47,12 +47,22 @@ print_address:
 func3:
 	.fnstart
 @ %bb.0:
-	sub	sp, sp, #4
-	str	r0, [sp]
-	ldr	r0, [sp]
+	push	{r11, lr}
+	mov	r11, sp
+	sub	sp, sp, #8
+	str	r0, [sp, #4]
+	ldr	r0, .LCPI1_0
+	add	r1, sp, #4
+	bl	printf
+	ldr	r0, [sp, #4]
 	add	r0, r0, r0, lsl #1
-	add	sp, sp, #4
+	mov	sp, r11
+	pop	{r11, lr}
 	mov	pc, lr
+	.p2align	2
+@ %bb.1:
+.LCPI1_0:
+	.long	.L.str.1
 .Lfunc_end1:
 	.size	func3, .Lfunc_end1-func3
 	.cantunwind
@@ -65,13 +75,16 @@ func3:
 func2:
 	.fnstart
 @ %bb.0:
-	push	{r11, lr}
-	mov	r11, sp
+	push	{r4, r10, r11, lr}
+	add	r11, sp, #8
 	sub	sp, sp, #16
-	str	r0, [r11, #-4]
-	mov	r0, #0
-	str	r0, [sp, #8]
-	str	r0, [sp, #4]
+	str	r0, [sp, #12]
+	mov	r4, #0
+	str	r4, [sp, #8]
+	ldr	r0, .LCPI2_0
+	add	r1, sp, #8
+	bl	printf
+	str	r4, [sp, #4]
 	b	.LBB2_1
 .LBB2_1:                                @ =>This Inner Loop Header: Depth=1
 	ldr	r0, [sp, #4]
@@ -90,14 +103,18 @@ func2:
 	str	r0, [sp, #4]
 	b	.LBB2_1
 .LBB2_4:
-	ldr	r0, [r11, #-4]
+	ldr	r0, [sp, #12]
 	ldr	r1, [sp, #8]
 	add	r0, r0, r1
 	bl	func3
 	add	r0, r0, #2
-	mov	sp, r11
-	pop	{r11, lr}
+	sub	sp, r11, #8
+	pop	{r4, r10, r11, lr}
 	mov	pc, lr
+	.p2align	2
+@ %bb.5:
+.LCPI2_0:
+	.long	.L.str.2
 .Lfunc_end2:
 	.size	func2, .Lfunc_end2-func2
 	.cantunwind
@@ -150,7 +167,7 @@ main:
 	.p2align	2
 @ %bb.1:
 .LCPI4_0:
-	.long	.L.str.1
+	.long	.L.str.3
 .Lfunc_end4:
 	.size	main, .Lfunc_end4-main
 	.cantunwind
@@ -164,8 +181,18 @@ main:
 
 	.type	.L.str.1,%object                @ @.str.1
 .L.str.1:
+	.asciz	"func3's a4 address = %x\n"
+	.size	.L.str.1, 25
+
+	.type	.L.str.2,%object                @ @.str.2
+.L.str.2:
+	.asciz	"func2's a3 address = %x\n"
+	.size	.L.str.2, 25
+
+	.type	.L.str.3,%object                @ @.str.3
+.L.str.3:
 	.asciz	"result is %d\n"
-	.size	.L.str.1, 14
+	.size	.L.str.3, 14
 
 	.ident	"Debian clang version 11.0.1-2"
 	.section	".note.GNU-stack","",%progbits
