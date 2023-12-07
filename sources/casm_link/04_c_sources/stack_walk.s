@@ -51,8 +51,7 @@ func3:
 	mov	r11, sp
 	sub	sp, sp, #8
 	str	r0, [sp, #4]
-	add	r0, sp, #4
-	add	r0, r0, #4
+	ldr	r0, [sp, #8]
 	bl	print_address
 	ldr	r0, [sp, #4]
 	add	r0, r0, r0, lsl #1
