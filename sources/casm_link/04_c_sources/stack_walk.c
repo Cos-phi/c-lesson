@@ -6,7 +6,7 @@ void print_address(int address) {
 
 int func3 (int a4) {
     // TODO: print func2's local avriable a3 here.
-    print_address((int)&a4+4); // r11 のアドレス
+    print_address((int*)((int)&a4+4)); // r11 のアドレス
     return a4*3;
 }
 
