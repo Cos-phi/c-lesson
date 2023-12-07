@@ -1,18 +1,21 @@
 #include <stdio.h>
 
 void print_address(int address) {
-    printf("address: %x\n", address);
+    printf("address: 0x%x\n", address);
+}
+
+void print_one(int value) {
+    printf("value: %d\n", value);
 }
 
 int func3 (int a4) {
     // TODO: print func2's local avriable a3 here.
-    print_address(*(int*)((int)&a4+4)); // r11 の中身
+    print_one(*((int*)((*(int*)((int)&a4+4))-8))); // a3 の中身
     return a4*3;
 }
 
 int func2(int a2) {
     int a3 = 0;
-    //printf("func2's a3 address = %x\n",(int) &a3);
     for(int i = 0; i < 10; i++) {
         a3+=i;
     }
