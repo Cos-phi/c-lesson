@@ -10,9 +10,16 @@ void print_msg(char *str) {
 
 void func3 () {
     // TODO: get main_msg from here as target someway.
-    char *target;
-
+    char *target = "mue-";
+    print_address( (int)&target ); // target
+    print_address( *((int*)((int)&target+4)) );  // func2 r11 
+    print_address( *(int*)*((int*)((int)&target+4)) );  // func1 r11 
+    print_address( *(int*)*(int*)*(int*)((int)&target+4) );  // main r11 
+    print_address( (int)*(int*)*(int*)*(int*)((int)&target+4) -8 ); // main message
+    print_msg( (char*)(*(int*) ((int)*(int*)*(int*)*(int*)((int)&target+4)-8) ) ); // main message
+    
     printf("We are in func3\n");
+    print_msg(target);
 }
 
 void func2() {
