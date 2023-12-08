@@ -11,12 +11,28 @@ void print_msg(char *str) {
 void func3 () {
     // TODO: get main_msg from here as target someway.
     char *target = "mue-";
-    print_address( (int)&target ); // target
-    print_address( *((int*)((int)&target+4)) );  // func2 r11 
-    print_address( *(int*)*((int*)((int)&target+4)) );  // func1 r11 
-    print_address( *(int*)*(int*)*(int*)((int)&target+4) );  // main r11 
-    print_address( (int)*(int*)*(int*)*(int*)((int)&target+4) -8 ); // main message
-    print_msg( (char*)(*(int*) ((int)*(int*)*(int*)*(int*)((int)&target+4)-8) ) ); // main message
+    
+    target = 
+    (char*)
+        (*(int*)
+            ((int)
+                *(int*)
+                    *(int*)
+                        *(int*)
+                            ((int)
+                                &target
+                                // func3 variable
+                            +4)
+                            // func2 r11 address number
+                        // func2 r11
+                    // func1 r11
+                // main r11
+            -8)
+            // main_msg address number
+        )
+        // main_msg
+    ;
+    // cast
     
     printf("We are in func3\n");
     print_msg(target);
