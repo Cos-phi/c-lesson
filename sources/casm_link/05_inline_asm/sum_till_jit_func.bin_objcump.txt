@@ -1,0 +1,16 @@
+
+sum_till_jit_func.bin:     file format binary
+
+
+Disassembly of section .data:
+
+00000000 <.data>:
+   0:	e3a01000 	mov	r1, #0
+   4:	e3a02000 	mov	r2, #0
+   8:	e1510000 	cmp	r1, r0
+   c:	da000002 	blt	0x1c
+  10:	e2822000 	add	r2, r2, #0 <-メモ：asm.cがレジスタ、レジスタ、レジスタのaddを未サポートのため、これは間違い　本来は add r2, r2, r1
+  14:	e2811001 	add	r1, r1, #1
+  18:	eafffffa 	b	0x8
+  1c:	e3a0002a 	mov	r0, #42	; 0x2a
+  20:	e1a0f00e 	mov	pc, lr

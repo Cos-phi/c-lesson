@@ -137,15 +137,54 @@ jit_sum_till:
 	.fnstart
 @ %bb.0:
 	ldr	r0, .LCPI3_0
+	ldr	r1, [r0]
+	ldr	r2, .LCPI3_1
+	str	r2, [r1]
+	ldr	r1, [r0]
+	ldr	r2, .LCPI3_2
+	str	r2, [r1, #4]
+	ldr	r1, [r0]
+	ldr	r2, .LCPI3_3
+	str	r2, [r1, #8]
+	ldr	r1, [r0]
+	mov	r2, #2
+	orr	r2, r2, #-637534208
+	str	r2, [r1, #12]
+	ldr	r1, [r0]
+	ldr	r2, .LCPI3_4
+	str	r2, [r1, #16]
+	ldr	r1, [r0]
+	ldr	r2, .LCPI3_5
+	str	r2, [r1, #20]
+	ldr	r1, [r0]
+	ldr	r2, .LCPI3_6
+	str	r2, [r1, #24]
+	ldr	r1, [r0]
+	ldr	r2, .LCPI3_7
+	str	r2, [r1, #28]
 	ldr	r0, [r0]
-	ldr	r1, .LCPI3_1
-	str	r1, [r0]
+	ldr	r1, .LCPI3_8
+	str	r1, [r0, #32]
 	mov	pc, lr
 	.p2align	2
 @ %bb.1:
 .LCPI3_0:
 	.long	binary_buf
 .LCPI3_1:
+	.long	3818917888                      @ 0xe3a01000
+.LCPI3_2:
+	.long	3818921984                      @ 0xe3a02000
+.LCPI3_3:
+	.long	3780116481                      @ 0xe1500001
+.LCPI3_4:
+	.long	3766624257                      @ 0xe0822001
+.LCPI3_5:
+	.long	3800109057                      @ 0xe2811001
+.LCPI3_6:
+	.long	3942645754                      @ 0xeafffffa
+.LCPI3_7:
+	.long	3785359362                      @ 0xe1a00002
+.LCPI3_8:
 	.long	3785420814                      @ 0xe1a0f00e
 .Lfunc_end3:
 	.size	jit_sum_till, .Lfunc_end3-jit_sum_till
