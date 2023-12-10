@@ -152,7 +152,7 @@ int asm_one(char* input){
             immediate_op = 1;
             int immediate_value; 
             parse_immediate_value(input, &immediate_value);
-            assert( 0 < immediate_value );
+        assert( 0 <= immediate_value );
             operand2 |= immediate_value;
         }
         int word = 0xE1A00000;
