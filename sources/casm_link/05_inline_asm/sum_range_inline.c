@@ -13,7 +13,19 @@ int sum_range_inline(int beg, int end) {
     /*
     TODO: Fix code below to pass test.
     */
+    /*
+    r0 is begin, r1 is end.
+    Use r2 as store temp result.
+    Use r0 as loop counter.
+    */
     asm("mov r2, #0");
+    asm("loop:");
+    asm("cmp r0, r1");
+    asm("bgt end");
+    asm("add r2, r2, r0"); // sum+=i
+    asm("add r0, r0, #1"); // i++
+    asm("b loop");
+    asm("end:");
     asm("mov %0, r2" :"=r"(res));
 
     return res;
