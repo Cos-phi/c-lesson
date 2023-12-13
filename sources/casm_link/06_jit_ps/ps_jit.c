@@ -31,13 +31,27 @@ int* jit_script(char *input) {
     TODO: emit binary here
     */
     // dummy code to avoid crash.
-    binary_buf[0] = 0xe1a0f00e; // 0xe1a0f00e
+    binary_buf[0] = 0xe3a00003; // mov r0, #3
+    binary_buf[1] = 0xe1a0f00e; // mov r15, r14
 
     return binary_buf;
 }
 
+static void test_jit_hardcode_return_value(){
+    char* input_script = "dummy";
+    int input_num1 = 10;
+    int input_num2 = 42;
+    int expect = 3;
+
+    int (*funcvar)(int, int);
+    funcvar = (int(*)(int, int))jit_script("dummy");
+    int actual = funcvar(input_num1,input_num2);
+
+    assert_int_eq(expect,actual);
+}
 
 static void run_unit_tests() {
+    test_jit_hardcode_return_value();
     printf("all test done\n");
 }
 
