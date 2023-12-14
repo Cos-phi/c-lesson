@@ -39,18 +39,23 @@ int* jit_script(char *input) {
 
     struct Substr remain={input, strlen(input)};
     int val;
-    int r0, r1;
     while(!is_end(&remain)) {
         skip_space(&remain);
         if(is_number(remain.ptr)) {
             //stack_push(parse_number(remain.ptr));
+            int number = parse_number(remain.ptr);
+            /*
+            mov r2, #(number)
+            stmdb r13!, r2
+            */
+            
             skip_token(&remain);
             continue;
         }else if(is_register(remain.ptr)) {
             if(remain.ptr[1] == '1') {
-                val = r1;
+                //val = r1;
             } else {
-                val = r0;
+                //val = r0;
             }
             //stack_push(val);
             skip_token(&remain);
@@ -85,8 +90,10 @@ int* jit_script(char *input) {
 
 
     if( 0 == strcmp(input,"3") ){
-        binary_buf[buf_pos++] = 0xe3a00003; // mov r0, #3
+        binary_buf[buf_pos++] = 0xe3a02003; // mov r2, #3
+        binary_buf[buf_pos++] = 0xE92D0004; // strdb r13!, r2
     }
+    binary_buf[buf_pos++] = 0xE8BD0001;// ldmia r13!, r0
     binary_buf[buf_pos] = 0xe1a0f00e; // mov r15, r14
 
     return binary_buf;
@@ -117,7 +124,7 @@ static void test_jit_hardcode_return_value(){
 
 static void test_disasm_binary_buf(){
     char* input_script = "3";
-    char* expect_str = "mov r0, #0x3\nmov r15, r14\n";
+    char* expect_str = "mov r2, #0x3\nstmdb r13!,{r2}\nldmia r13!,{r0}\nmov r15, r14\n";
 
     jit_script(input_script);
     cl_enable_buffer_mode();
