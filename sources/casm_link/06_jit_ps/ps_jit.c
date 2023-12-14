@@ -37,8 +37,10 @@ int* jit_script(char *input) {
     TODO: emit binary here
     */
     if( 0 == strcmp(input,"3") ){
-        binary_buf[buf_pos++] = 0xe3a00003; // mov r0, #3
+        binary_buf[buf_pos++] = 0xe3a02003; // mov r2, #3
+        binary_buf[buf_pos++] = 0xE92D0004; // strdb r13!,{r2}
     }
+    binary_buf[buf_pos++] = 0xE8BD0001;// ldmia r13!, r0
     binary_buf[buf_pos] = 0xe1a0f00e; // mov r15, r14
 
     return binary_buf;
@@ -69,7 +71,7 @@ static void test_jit_hardcode_return_value(){
 
 static void test_disasm_binary_buf(){
     char* input_script = "3";
-    char* expect_str = "mov r0, #0x3\nmov r15, r14\n";
+    char* expect_str = "mov r2, #0x3\nstmdb r13!,{r2}\nldmia r13!,{r0}\nmov r15, r14\n";
 
     jit_script(input_script);
     cl_enable_buffer_mode();
@@ -78,6 +80,7 @@ static void test_disasm_binary_buf(){
 
     assert(0 == strcmp(actual_str,expect_str));
     cl_clear_output();
+    cl_disable_buffer_mode();
 }
 
 static void run_unit_tests() {
