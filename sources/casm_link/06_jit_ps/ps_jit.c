@@ -46,8 +46,11 @@ int* jit_script(char *input) {
             int number = parse_number(remain.ptr);
             /*
             mov r2, #(number)
-            stmdb r13!, r2
+            stmdb r13!, {r2}
             */
+            
+            binary_buf[buf_pos++] = 0xE3A02000 | number; // mov r2, #(number)
+            binary_buf[buf_pos++] = 0xE92D0004; // strdb r13!, r2
             
             skip_token(&remain);
             continue;
@@ -88,11 +91,6 @@ int* jit_script(char *input) {
         }
     }
 
-
-    if( 0 == strcmp(input,"3") ){
-        binary_buf[buf_pos++] = 0xe3a02003; // mov r2, #3
-        binary_buf[buf_pos++] = 0xE92D0004; // strdb r13!, r2
-    }
     binary_buf[buf_pos++] = 0xE8BD0001;// ldmia r13!, r0
     binary_buf[buf_pos] = 0xe1a0f00e; // mov r15, r14
 
