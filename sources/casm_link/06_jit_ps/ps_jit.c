@@ -37,6 +37,13 @@ int* jit_script(char *input) {
     return binary_buf;
 }
 
+void disasm_binary_buf(){
+    for(int i = 0; binary_buf[i] != 0xE1A0F00E; i++){
+        printf("0x%x\n",binary_buf[i]);
+    }
+    
+}
+
 static void test_jit_hardcode_return_value(){
     char* input_script = "dummy";
     int input_num1 = 10;
@@ -50,8 +57,17 @@ static void test_jit_hardcode_return_value(){
     assert_int_eq(expect,actual);
 }
 
+static void test_disasm_binary_buf(){
+    char* input_script = "dummy";
+    //expect: output "mov r0, r3"
+
+    jit_script("dummy");
+    disasm_binary_buf();
+}
+
 static void run_unit_tests() {
     test_jit_hardcode_return_value();
+    test_disasm_binary_buf();
     printf("all test done\n");
 }
 
