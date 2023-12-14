@@ -36,10 +36,10 @@ int* jit_script(char *input) {
     /*
     TODO: emit binary here
     */
-    if( 0 == strcmp(input,"3") ){
-        binary_buf[buf_pos++] = 0xe3a02003; // mov r2, #3
-        binary_buf[buf_pos++] = 0xE92D0004; // strdb r13!,{r2}
-    }
+    
+    binary_buf[buf_pos++] = 0xe3a02003; // mov r2, #3
+    binary_buf[buf_pos++] = 0xE92D0004; // strdb r13!,{r2}
+
     binary_buf[buf_pos++] = 0xE8BD0001;// ldmia r13!, r0
     binary_buf[buf_pos] = 0xe1a0f00e; // mov r15, r14
 
