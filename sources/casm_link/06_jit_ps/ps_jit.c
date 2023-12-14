@@ -33,34 +33,25 @@ void ensure_jit_buf() {
 int* jit_script(char *input) {
     ensure_jit_buf();
     int buf_pos = 0;
-    /*
-    TODO: emit binary here
-    */
 
     struct Substr remain={input, strlen(input)};
     int val;
     while(!is_end(&remain)) {
         skip_space(&remain);
         if(is_number(remain.ptr)) {
-            //stack_push(parse_number(remain.ptr));
             int number = parse_number(remain.ptr);
-            /*
-            mov r2, #(number)
-            stmdb r13!, {r2}
-            */
             
             binary_buf[buf_pos++] = 0xE3A02000 | number; // mov r2, #(number)
-            binary_buf[buf_pos++] = 0xE92D0004; // strdb r13!, r2
+            binary_buf[buf_pos++] = 0xE92D0004; // strdb r13!,{r2}
             
             skip_token(&remain);
             continue;
         }else if(is_register(remain.ptr)) {
             if(remain.ptr[1] == '1') {
-                //val = r1;
+                binary_buf[buf_pos++] = 0xE92D0002; // strdb r13!,{r1}
             } else {
-                //val = r0;
+                binary_buf[buf_pos++] = 0xE92D0001; // strdb r13!,{r0}
             }
-            //stack_push(val);
             skip_token(&remain);
             continue;
         } else {
@@ -70,23 +61,24 @@ int* jit_script(char *input) {
             val = parse_word(&remain);
             skip_token(&remain);
 
-            //arg2 = stack_pop();
-            //arg1 = stack_pop();
+            binary_buf[buf_pos++] = 0xE8BD000C; // ldmia r13!, {r2,r3}
 
             switch(val) {
                 case OP_ADD:
-                    //stack_push(arg1+arg2);
+                    binary_buf[buf_pos++] = 0xE0822003; // add r2,r2,r3 
                     break;
                 case OP_SUB:
-                    //stack_push(arg1-arg2);
+                    binary_buf[buf_pos++] = 0xE0422003; // sub r2,r2,r3
                     break;
                 case OP_MUL:
-                    //stack_push(arg1*arg2);                
+                    binary_buf[buf_pos++] = 0xE0020492; // mul r2,r2,r3              
                     break;
                 case OP_DIV:
-                    //stack_push(arg1/arg2);
+                    // div r2,r2,r3
+                    // TODO つくる
                     break;
             }
+            binary_buf[buf_pos++] = 0xE92D0004; // strdb r13!,r2
             continue;
         }
     }
@@ -131,6 +123,7 @@ static void test_disasm_binary_buf(){
 
     assert(0 == strcmp(actual_str,expect_str));
     cl_clear_output();
+    cl_disable_buffer_mode();
 }
 
 static void run_unit_tests() {
@@ -155,6 +148,8 @@ int main() {
      TODO: Make below test pass.
     */
     funcvar = (int(*)(int, int))jit_script("3 7 add r1 sub 4 mul");
+
+    disasm_binary_buf();
 
     res = funcvar(1, 5);
     assert_int_eq(20, res);
