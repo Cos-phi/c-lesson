@@ -32,12 +32,14 @@ void ensure_jit_buf() {
 
 int* jit_script(char *input) {
     ensure_jit_buf();
+    int buf_pos = 0;
     /*
     TODO: emit binary here
     */
-    // dummy code to avoid crash.
-    binary_buf[0] = 0xe3a00003; // mov r0, #3
-    binary_buf[3] = 0xe1a0f00e; // mov r15, r14
+    if( 0 == strcmp(input,"3") ){
+        binary_buf[buf_pos++] = 0xe3a00003; // mov r0, #3
+    }
+    binary_buf[buf_pos] = 0xe1a0f00e; // mov r15, r14
 
     return binary_buf;
 }
@@ -53,23 +55,23 @@ void disasm_binary_buf(){
 }
 
 static void test_jit_hardcode_return_value(){
-    char* input_script = "dummy";
-    int input_num1 = 10;
-    int input_num2 = 42;
+    char* input_script = "3";
+    int input_num1 = 10; //dummy num
+    int input_num2 = 42; //cummy num
     int expect = 3;
 
     int (*funcvar)(int, int);
-    funcvar = (int(*)(int, int))jit_script("dummy");
+    funcvar = (int(*)(int, int))jit_script(input_script);
     int actual = funcvar(input_num1,input_num2);
 
     assert_int_eq(expect,actual);
 }
 
 static void test_disasm_binary_buf(){
-    char* input_script = "dummy";
+    char* input_script = "3";
     char* expect_str = "mov r0, #0x3\nmov r15, r14\n";
 
-    jit_script("dummy");
+    jit_script(input_script);
     cl_enable_buffer_mode();
     disasm_binary_buf();
     char* actual_str = cl_get_all_result();
