@@ -518,7 +518,7 @@ void run_unit_tests_disasm(){
     test_disasm_bl2();
     test_disasm_mov3();
     test_4bitrotate();
-    printf("all test done(disasm)\n");
+    //printf("all test done(disasm)\n");
 }
 
 #if 0

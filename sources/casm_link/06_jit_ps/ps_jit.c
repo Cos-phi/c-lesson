@@ -8,6 +8,9 @@
 #include "disasm.h"
 #include "cl_utils.h"
 
+
+#define BINARY_BUF_SIZE 1024
+
 extern int eval(int r0, int r1, char *str);
 
 /*
@@ -23,7 +26,7 @@ int* allocate_executable_buf(int size) {
 
 void ensure_jit_buf() {
     if(binary_buf == NULL) {
-        binary_buf = allocate_executable_buf(1024);
+        binary_buf = allocate_executable_buf(BINARY_BUF_SIZE);
     }
 }
 
@@ -34,14 +37,17 @@ int* jit_script(char *input) {
     */
     // dummy code to avoid crash.
     binary_buf[0] = 0xe3a00003; // mov r0, #3
-    binary_buf[1] = 0xe1a0f00e; // mov r15, r14
+    binary_buf[3] = 0xe1a0f00e; // mov r15, r14
 
     return binary_buf;
 }
 
 void disasm_binary_buf(){
-    for(int i = 0; binary_buf[i] != 0xE1A0F00E; i++){
+    for(int i = 0; i < BINARY_BUF_SIZE; i++){
         print_asm(binary_buf[i]);
+        if(binary_buf[i] == 0xE1A0F00E){
+            break;
+        }
     }
     
 }
@@ -61,7 +67,7 @@ static void test_jit_hardcode_return_value(){
 
 static void test_disasm_binary_buf(){
     char* input_script = "dummy";
-    char* expect_str = "mov r0, #0x3\n";
+    char* expect_str = "mov r0, #0x3\nmov r15, r14\n";
 
     jit_script("dummy");
     cl_enable_buffer_mode();
