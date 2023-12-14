@@ -36,6 +36,54 @@ int* jit_script(char *input) {
     /*
     TODO: emit binary here
     */
+
+    struct Substr remain={input, strlen(input)};
+    int val;
+    int r0, r1;
+    while(!is_end(&remain)) {
+        skip_space(&remain);
+        if(is_number(remain.ptr)) {
+            //stack_push(parse_number(remain.ptr));
+            skip_token(&remain);
+            continue;
+        }else if(is_register(remain.ptr)) {
+            if(remain.ptr[1] == '1') {
+                val = r1;
+            } else {
+                val = r0;
+            }
+            //stack_push(val);
+            skip_token(&remain);
+            continue;
+        } else {
+            // must be op.
+            int arg1, arg2;
+
+            val = parse_word(&remain);
+            skip_token(&remain);
+
+            //arg2 = stack_pop();
+            //arg1 = stack_pop();
+
+            switch(val) {
+                case OP_ADD:
+                    //stack_push(arg1+arg2);
+                    break;
+                case OP_SUB:
+                    //stack_push(arg1-arg2);
+                    break;
+                case OP_MUL:
+                    //stack_push(arg1*arg2);                
+                    break;
+                case OP_DIV:
+                    //stack_push(arg1/arg2);
+                    break;
+            }
+            continue;
+        }
+    }
+
+
     if( 0 == strcmp(input,"3") ){
         binary_buf[buf_pos++] = 0xe3a00003; // mov r0, #3
     }
