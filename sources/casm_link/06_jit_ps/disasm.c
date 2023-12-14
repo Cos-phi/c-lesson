@@ -1,8 +1,5 @@
 #include "cl_utils.h"
-#include <errno.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <math.h>
+#include "disasm.h"
 #define MAX_WORD_NUM 256
 
 char* decode_immediatevalue(int word){
@@ -496,7 +493,7 @@ static void test_4bitrotate(){
     cl_clear_output();
 }
 
-static void unit_tests(){
+void run_unit_tests_disasm(){
     test_disasm_mov();
     test_disasm_mov_fail();
     test_disasm_b();
@@ -521,12 +518,15 @@ static void unit_tests(){
     test_disasm_bl2();
     test_disasm_mov3();
     test_4bitrotate();
+    printf("all test done(disasm)\n");
 }
 
+#if 0
 int main(int argc, char *argv[]){
-    unit_tests();
+    run_unit_tests_disasm();
     if(argc){
         read_binary_file(argv[1]);
     }
 }
+#endif
 

@@ -5,6 +5,8 @@
 
 #include "parser.h"
 #include "test_util.h"
+#include "disasm.h"
+#include "cl_utils.h"
 
 extern int eval(int r0, int r1, char *str);
 
@@ -39,7 +41,7 @@ int* jit_script(char *input) {
 
 void disasm_binary_buf(){
     for(int i = 0; binary_buf[i] != 0xE1A0F00E; i++){
-        printf("0x%x\n",binary_buf[i]);
+        print_asm(binary_buf[i]);
     }
     
 }
@@ -59,10 +61,15 @@ static void test_jit_hardcode_return_value(){
 
 static void test_disasm_binary_buf(){
     char* input_script = "dummy";
-    //expect: output "mov r0, r3"
+    char* expect_str = "mov r0, #0x3\n";
 
     jit_script("dummy");
+    cl_enable_buffer_mode();
     disasm_binary_buf();
+    char* actual_str = cl_get_all_result();
+
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
 }
 
 static void run_unit_tests() {
@@ -77,6 +84,8 @@ int main() {
     int (*funcvar)(int, int);
 
     run_unit_tests();
+    run_unit_tests_disasm();
+    
 
     res = eval(1, 5, "3 7 add r1 sub 4 mul");
     printf("res=%d\n", res);
