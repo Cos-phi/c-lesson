@@ -64,10 +64,9 @@ void emit_RETURN_R0(struct Emitter *emitter) {
 }
 
 int* jit_script(char *input) {
+    struct Substr remain={input, strlen(input)};
     struct Emitter emitter;
     init_emitter(&emitter);
-
-    struct Substr remain={input, strlen(input)};
     int val;
     while(!is_end(&remain)) {
         skip_space(&remain);
