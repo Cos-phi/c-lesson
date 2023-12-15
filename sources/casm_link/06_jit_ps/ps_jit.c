@@ -68,15 +68,24 @@ void emit_RETURN_R0(struct Emitter *emitter) {
 void emit_ADD_R2_R3(struct Emitter *emitter) {
     emitter->binary[emitter->pos++] = 0xE0822003; // add r2,r2,r3 
 }
+void emit_SUB_R2_R3(struct Emitter *emitter) {
+    emitter->binary[emitter->pos++] = 0xE0422003; // sub r2,r2,r3 
+}
 
 void compile_PUSH_NUM(struct Emitter *emitter,int num){
     emit_MOV_R2_Num(emitter,num);
     emit_PUSH_R2(emitter);
 }
 void compile_ADD(struct Emitter *emitter){
-    emit_POP_R2(emitter);
     emit_POP_R3(emitter);
+    emit_POP_R2(emitter);
     emit_ADD_R2_R3(emitter);
+    emit_PUSH_R2(emitter);
+}
+void compile_SUB(struct Emitter *emitter){
+    emit_POP_R3(emitter);
+    emit_POP_R2(emitter);
+    emit_SUB_R2_R3(emitter);
     emit_PUSH_R2(emitter);
 }
 
@@ -96,7 +105,7 @@ int compile_word(struct Emitter *emitter,struct Substr *word){
                 compile_ADD(emitter);
                 break;
             case OP_SUB:
-                //stack_push(arg1-arg2);
+                compile_SUB(emitter);
                 break;
             case OP_MUL:
                 //stack_push(arg1*arg2);                
@@ -177,7 +186,7 @@ static void test_jit_sub(){
     int (*funcvar)(int, int);
     funcvar = (int(*)(int, int))jit_script(input_script);
     int actual = funcvar(input_num1,input_num2);
-
+    
     assert_int_eq(expect,actual);
 }
 static void test_disasm_binary_buf(){
