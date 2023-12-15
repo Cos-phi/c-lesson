@@ -86,17 +86,14 @@ int* jit_script(char *input) {
     init_emitter(&emitter);
     while(!is_end(&remain)) {
         skip_space(&remain);
-
         if(is_number(remain.ptr)) {
             compile_PUSH_NUM(&emitter,parse_number(remain.ptr));
-            skip_token(&remain);
         }else if(is_register(remain.ptr)) {
             if(remain.ptr[1] == '1') {
                 // TODO:emit PUSH R1
             } else {
                 // TODO:emit PUSH R0;
             }
-            skip_token(&remain);
         } else {
             // must be op.
             switch( parse_word(&remain) ) {
@@ -113,8 +110,8 @@ int* jit_script(char *input) {
                     //stack_push(arg1/arg2);
                     break;
             }
-            skip_token(&remain);
         }
+        skip_token(&remain);
     }
     emit_POP_R0(&emitter);
     emit_RETURN_R0(&emitter);
