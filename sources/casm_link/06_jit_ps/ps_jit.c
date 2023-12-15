@@ -96,6 +96,18 @@ static void test_jit_hardcode_return_value(){
 
     assert_int_eq(expect,actual);
 }
+static void test_jit_hardcode_return_value_2(){
+    char* input_script = "24";
+    int input_num1 = 10; //dummy num
+    int input_num2 = 42; //dummy num
+    int expect = 24;
+
+    int (*funcvar)(int, int);
+    funcvar = (int(*)(int, int))jit_script(input_script);
+    int actual = funcvar(input_num1,input_num2);
+
+    assert_int_eq(expect,actual);
+}
 
 static void test_disasm_binary_buf(){
     char* input_script = "3";
@@ -113,6 +125,7 @@ static void test_disasm_binary_buf(){
 
 static void run_unit_tests() {
     test_jit_hardcode_return_value();
+    test_jit_hardcode_return_value_2();
     test_disasm_binary_buf();
     printf("all test done\n");
 }
