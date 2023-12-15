@@ -2,19 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/mman.h>
-
 #include "parser.h"
 #include "test_util.h"
 #include "disasm.h"
 #include "cl_utils.h"
 
-
 #define BINARY_BUF_SIZE 1024
 
 extern int eval(int r0, int r1, char *str);
-
-
-
 
 /*
 JIT
@@ -47,28 +42,28 @@ void init_emitter(struct Emitter* emitter){
     emitter->pos = 0;
 }
 
-void emit_MOV_R2_Num(struct Emitter *emitter,int num) {
+void emit_MOV_R2_Num(struct Emitter *emitter,int num){
     emitter->binary[emitter->pos++] = 0xe3a02000 | num; // mov r2, #num
 }
-void emit_PUSH_R2(struct Emitter *emitter) {
+void emit_PUSH_R2(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE92D0004; // strdb r13!,{r2}
 }
-void emit_POP_R0(struct Emitter *emitter) {
+void emit_POP_R0(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE8BD0001;// ldmia r13!, r0
 }
-void emit_POP_R2(struct Emitter *emitter) {
+void emit_POP_R2(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE8BD0004;// ldmia r13!, r2
 }
-void emit_POP_R3(struct Emitter *emitter) {
+void emit_POP_R3(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE8BD0008;// ldmia r13!, r2
 }
-void emit_RETURN_R0(struct Emitter *emitter) {
+void emit_RETURN_R0(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xe1a0f00e; // mov r15, r14
 }
-void emit_ADD_R2_R3(struct Emitter *emitter) {
+void emit_ADD_R2_R3(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE0822003; // add r2,r2,r3 
 }
-void emit_SUB_R2_R3(struct Emitter *emitter) {
+void emit_SUB_R2_R3(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE0422003; // sub r2,r2,r3 
 }
 
@@ -90,15 +85,15 @@ void compile_SUB(struct Emitter *emitter){
 }
 
 int compile_word(struct Emitter *emitter,struct Substr *word){
-    if(is_number(word->ptr)) {
+    if( is_number(word->ptr) ) {
         compile_PUSH_NUM(emitter,parse_number(word->ptr));
-    }else if(is_register(word->ptr)) {
-        if( '1' == word->ptr[1] ) {
+    }else if( is_register(word->ptr) ){
+        if( '1' == word->ptr[1] ){
             // TODO:emit PUSH R1
-        } else {
+        }else{
             // TODO:emit PUSH R0;
         }
-    } else {
+    }else{
         // must be op.
         switch( parse_word(word) ) {
             case OP_ADD:
@@ -121,7 +116,7 @@ int* jit_script(char *input) {
     struct Substr remain={input, strlen(input)};
     struct Emitter emitter;
     init_emitter(&emitter);
-    while(!is_end(&remain)) {
+    while( !is_end(&remain) ){
         skip_space(&remain);
         compile_word(&emitter,&remain);
         skip_token(&remain);
@@ -134,7 +129,7 @@ int* jit_script(char *input) {
 void disasm_binary_buf(){
     for(int i = 0; i < BINARY_BUF_SIZE; i++){
         print_asm(binary_buf[i]);
-        if(binary_buf[i] == 0xE1A0F00E){
+        if( binary_buf[i] == 0xE1A0F00E ){
             break;
         }
     }
