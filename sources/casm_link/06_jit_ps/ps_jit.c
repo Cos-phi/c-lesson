@@ -84,9 +84,9 @@ int* jit_script(char *input) {
     struct Substr remain={input, strlen(input)};
     struct Emitter emitter;
     init_emitter(&emitter);
-    int val;
     while(!is_end(&remain)) {
         skip_space(&remain);
+        
         if(is_number(remain.ptr)) {
             compile_PUSH_NUM(&emitter,parse_number(remain.ptr));
             skip_token(&remain);
@@ -101,9 +101,7 @@ int* jit_script(char *input) {
             continue;
         } else {
             // must be op.
-            val = parse_word(&remain);
-            skip_token(&remain);
-            switch(val) {
+            switch( parse_word(&remain) ) {
                 case OP_ADD:
                     compile_ADD(&emitter);
                     break;
@@ -117,6 +115,7 @@ int* jit_script(char *input) {
                     //stack_push(arg1/arg2);
                     break;
             }
+            skip_token(&remain);
             continue;
         }
     }
