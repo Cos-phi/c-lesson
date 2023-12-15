@@ -69,8 +69,14 @@ void emit_ADD_R2_R3(struct Emitter *emitter) {
     emitter->binary[emitter->pos++] = 0xE0822003; // add r2,r2,r3 
 }
 
-void compile_push_num(struct Emitter *emitter,int num){
+void compile_PUSH_NUM(struct Emitter *emitter,int num){
     emit_MOV_R2_Num(emitter,num);
+    emit_PUSH_R2(emitter);
+}
+void compile_ADD(struct Emitter *emitter){
+    emit_POP_R2(emitter);
+    emit_POP_R3(emitter);
+    emit_ADD_R2_R3(emitter);
     emit_PUSH_R2(emitter);
 }
 
@@ -82,7 +88,7 @@ int* jit_script(char *input) {
     while(!is_end(&remain)) {
         skip_space(&remain);
         if(is_number(remain.ptr)) {
-            compile_push_num(&emitter,parse_number(remain.ptr));
+            compile_PUSH_NUM(&emitter,parse_number(remain.ptr));
             skip_token(&remain);
             continue;
         }else if(is_register(remain.ptr)) {
@@ -99,10 +105,7 @@ int* jit_script(char *input) {
             skip_token(&remain);
             switch(val) {
                 case OP_ADD:
-                    emit_POP_R2(&emitter);
-                    emit_POP_R3(&emitter);
-                    emit_ADD_R2_R3(&emitter);
-                    emit_PUSH_R2(&emitter);
+                    compile_ADD(&emitter);
                     break;
                 case OP_SUB:
                     //stack_push(arg1-arg2);
