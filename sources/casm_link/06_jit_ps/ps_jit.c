@@ -50,17 +50,23 @@ void init_emitter(struct Emitter* emitter){
 void emit_MOV_R2_Num(struct Emitter *emitter,int num) {
     emitter->binary[emitter->pos++] = 0xe3a02000 | num; // mov r2, #num
 }
-
 void emit_PUSH_R2(struct Emitter *emitter) {
     emitter->binary[emitter->pos++] = 0xE92D0004; // strdb r13!,{r2}
 }
-
 void emit_POP_R0(struct Emitter *emitter) {
     emitter->binary[emitter->pos++] = 0xE8BD0001;// ldmia r13!, r0
 }
-
+void emit_POP_R2(struct Emitter *emitter) {
+    emitter->binary[emitter->pos++] = 0xE8BD0004;// ldmia r13!, r2
+}
+void emit_POP_R3(struct Emitter *emitter) {
+    emitter->binary[emitter->pos++] = 0xE8BD0008;// ldmia r13!, r2
+}
 void emit_RETURN_R0(struct Emitter *emitter) {
     emitter->binary[emitter->pos++] = 0xe1a0f00e; // mov r15, r14
+}
+void emit_ADD_R2_R3(struct Emitter *emitter) {
+    emitter->binary[emitter->pos++] = 0xE0822003; // add r2,r2,r3 
 }
 
 void compile_push_num(struct Emitter *emitter,int num){
@@ -91,10 +97,12 @@ int* jit_script(char *input) {
             // must be op.
             val = parse_word(&remain);
             skip_token(&remain);
-            //TODO: emit POP R2, POP R3
             switch(val) {
                 case OP_ADD:
-                    //TODO: emit: ADD R2 R2 R3, PUSH R2
+                    emit_POP_R2(&emitter);
+                    emit_POP_R3(&emitter);
+                    emit_ADD_R2_R3(&emitter);
+                    emit_PUSH_R2(&emitter);
                     break;
                 case OP_SUB:
                     //stack_push(arg1-arg2);
