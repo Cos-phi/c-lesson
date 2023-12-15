@@ -41,8 +41,8 @@ struct Emitter {
   int pos;
 };
 
-void emit_MOV_R2_Num3(struct Emitter *emitter, int binary) {
-    emitter->binary[emitter->pos++] = 0xe3a02003;
+void emit_MOV_R2_Num3(struct Emitter *emitter) {
+    emitter->binary[emitter->pos++] = 0xe3a02003; // mov r2, #3
 }
 
 void emit_PUSH_R2(struct Emitter *emitter) {
