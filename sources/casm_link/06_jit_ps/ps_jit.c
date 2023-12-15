@@ -80,37 +80,41 @@ void compile_ADD(struct Emitter *emitter){
     emit_PUSH_R2(emitter);
 }
 
+int compile_word(struct Emitter *emitter,struct Substr *word){
+    if(is_number(word->ptr)) {
+        compile_PUSH_NUM(emitter,parse_number(word->ptr));
+    }else if(is_register(word->ptr)) {
+        if( '1' == word->ptr[1] ) {
+            // TODO:emit PUSH R1
+        } else {
+            // TODO:emit PUSH R0;
+        }
+    } else {
+        // must be op.
+        switch( parse_word(word) ) {
+            case OP_ADD:
+                compile_ADD(emitter);
+                break;
+            case OP_SUB:
+                //stack_push(arg1-arg2);
+                break;
+            case OP_MUL:
+                //stack_push(arg1*arg2);                
+                break;
+            case OP_DIV:
+                //stack_push(arg1/arg2);
+                break;
+        }
+    }
+}
+
 int* jit_script(char *input) {
     struct Substr remain={input, strlen(input)};
     struct Emitter emitter;
     init_emitter(&emitter);
     while(!is_end(&remain)) {
         skip_space(&remain);
-        if(is_number(remain.ptr)) {
-            compile_PUSH_NUM(&emitter,parse_number(remain.ptr));
-        }else if(is_register(remain.ptr)) {
-            if(remain.ptr[1] == '1') {
-                // TODO:emit PUSH R1
-            } else {
-                // TODO:emit PUSH R0;
-            }
-        } else {
-            // must be op.
-            switch( parse_word(&remain) ) {
-                case OP_ADD:
-                    compile_ADD(&emitter);
-                    break;
-                case OP_SUB:
-                    //stack_push(arg1-arg2);
-                    break;
-                case OP_MUL:
-                    //stack_push(arg1*arg2);                
-                    break;
-                case OP_DIV:
-                    //stack_push(arg1/arg2);
-                    break;
-            }
-        }
+        compile_word(&emitter,&remain);
         skip_token(&remain);
     }
     emit_POP_R0(&emitter);
