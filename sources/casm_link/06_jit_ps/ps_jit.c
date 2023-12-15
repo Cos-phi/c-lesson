@@ -47,7 +47,7 @@ void init_emitter(struct Emitter* emitter){
     emitter->pos = 0;
 }
 
-void emit_SET_R2_Num(struct Emitter *emitter,int num) {
+void emit_MOV_R2_Num(struct Emitter *emitter,int num) {
     emitter->binary[emitter->pos++] = 0xe3a02000 | num; // mov r2, #num
 }
 
@@ -63,6 +63,11 @@ void emit_RETURN_R0(struct Emitter *emitter) {
     emitter->binary[emitter->pos++] = 0xe1a0f00e; // mov r15, r14
 }
 
+void compile_push_num(struct Emitter *emitter,int num){
+    emit_MOV_R2_Num(emitter,num);
+    emit_PUSH_R2(emitter);
+}
+
 int* jit_script(char *input) {
     struct Substr remain={input, strlen(input)};
     struct Emitter emitter;
@@ -71,8 +76,7 @@ int* jit_script(char *input) {
     while(!is_end(&remain)) {
         skip_space(&remain);
         if(is_number(remain.ptr)) {
-            emit_SET_R2_Num(&emitter,3);
-            emit_PUSH_R2(&emitter);
+            compile_push_num(&emitter,parse_number(remain.ptr));
             skip_token(&remain);
             continue;
         }else if(is_register(remain.ptr)) {
