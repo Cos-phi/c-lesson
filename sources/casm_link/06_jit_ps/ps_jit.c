@@ -64,7 +64,6 @@ void emit_RETURN(struct Emitter *emitter) {
 
 int* jit_script(char *input) {
     ensure_jit_buf();
-    int buf_pos = 0;
 
     struct Emitter emitter;
     init_emitter(&emitter);
