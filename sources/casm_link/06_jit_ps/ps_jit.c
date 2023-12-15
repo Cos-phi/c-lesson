@@ -41,6 +41,8 @@ struct Emitter {
   int pos;
 };
 
+
+
 void emit_MOV_R2_Num3(struct Emitter *emitter) {
     emitter->binary[emitter->pos++] = 0xe3a02003; // mov r2, #3
 }
@@ -63,14 +65,14 @@ int* jit_script(char *input) {
     /*
     TODO: emit binary here
     */
-    
-    binary_buf[buf_pos++] = 0xe3a02003; // mov r2, #3
-    binary_buf[buf_pos++] = 0xE92D0004; // strdb r13!,{r2}
-
-    binary_buf[buf_pos++] = 0xE8BD0001;// ldmia r13!, r0
-    binary_buf[buf_pos] = 0xe1a0f00e; // mov r15, r14
-
-    return binary_buf;
+    struct Emitter emitter;
+    emitter.pos = 0;
+    emitter.binary = binary_buf;
+    emit_MOV_R2_Num3(&emitter);
+    emit_PUSH_R2(&emitter);
+    emit_POP_R0(&emitter);
+    emit_RETURN(&emitter);
+    return emitter.binary;
 }
 
 void disasm_binary_buf(){
