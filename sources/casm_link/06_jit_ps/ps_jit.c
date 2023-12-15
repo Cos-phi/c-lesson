@@ -13,6 +13,9 @@
 
 extern int eval(int r0, int r1, char *str);
 
+
+
+
 /*
 JIT
 */
@@ -28,6 +31,30 @@ void ensure_jit_buf() {
     if(binary_buf == NULL) {
         binary_buf = allocate_executable_buf(BINARY_BUF_SIZE);
     }
+}
+
+/*
+Emitter
+*/
+struct Emitter {
+  int *binary;
+  int pos;
+};
+
+void emit_MOV_R2_Num3(struct Emitter *emitter, int binary) {
+    emitter->binary[emitter->pos++] = 0xe3a02003;
+}
+
+void emit_PUSH_R2(struct Emitter *emitter) {
+    emitter->binary[emitter->pos++] = 0xE92D0004; // strdb r13!,{r2}
+}
+
+void emit_POP_R0(struct Emitter *emitter) {
+    emitter->binary[emitter->pos++] = 0xE8BD0001;// ldmia r13!, r0
+}
+
+void emit_RETURN(struct Emitter *emitter) {
+    emitter->binary[emitter->pos++] = 0xe1a0f00e; // mov r15, r14
 }
 
 int* jit_script(char *input) {
@@ -59,7 +86,7 @@ void disasm_binary_buf(){
 static void test_jit_hardcode_return_value(){
     char* input_script = "3";
     int input_num1 = 10; //dummy num
-    int input_num2 = 42; //cummy num
+    int input_num2 = 42; //dummy num
     int expect = 3;
 
     int (*funcvar)(int, int);
