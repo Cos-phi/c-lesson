@@ -77,26 +77,20 @@ int* jit_script(char *input) {
             continue;
         }else if(is_register(remain.ptr)) {
             if(remain.ptr[1] == '1') {
-                //val = r1;
+                // TODO:emit PUSH R1
             } else {
-                //val = r0;
+                // TODO:emit PUSH R0;
             }
-            //stack_push(val);
             skip_token(&remain);
             continue;
         } else {
             // must be op.
-            int arg1, arg2;
-
             val = parse_word(&remain);
             skip_token(&remain);
-
-            //arg2 = stack_pop();
-            //arg1 = stack_pop();
-
+            //TODO: emit POP R2, POP R3
             switch(val) {
                 case OP_ADD:
-                    //stack_push(arg1+arg2);
+                    //TODO: emit: ADD R2 R2 R3, PUSH R2
                     break;
                 case OP_SUB:
                     //stack_push(arg1-arg2);
