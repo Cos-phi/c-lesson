@@ -46,8 +46,8 @@ void init_emitter(struct Emitter* emitter){
     emitter->pos = 0;
 }
 
-void emit_MOV_R2_Num3(struct Emitter *emitter) {
-    emitter->binary[emitter->pos++] = 0xe3a02003; // mov r2, #3
+void emit_MOV_R2_Num(struct Emitter *emitter,int num) {
+    emitter->binary[emitter->pos++] = 0xe3a02000 | num; // mov r2, #num
 }
 
 void emit_PUSH_R2(struct Emitter *emitter) {
@@ -68,7 +68,7 @@ int* jit_script(char *input) {
 
     struct Emitter emitter;
     init_emitter(&emitter);
-    emit_MOV_R2_Num3(&emitter);
+    emit_MOV_R2_Num(&emitter,3);
     emit_PUSH_R2(&emitter);
     emit_POP_R0(&emitter);
     emit_RETURN(&emitter);
