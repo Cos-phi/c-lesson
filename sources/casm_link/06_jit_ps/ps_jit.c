@@ -41,7 +41,10 @@ struct Emitter {
   int pos;
 };
 
-
+void init_emitter(struct Emitter* emitter){
+    emitter->binary = binary_buf;
+    emitter->pos = 0;
+}
 
 void emit_MOV_R2_Num3(struct Emitter *emitter) {
     emitter->binary[emitter->pos++] = 0xe3a02003; // mov r2, #3
@@ -62,12 +65,9 @@ void emit_RETURN(struct Emitter *emitter) {
 int* jit_script(char *input) {
     ensure_jit_buf();
     int buf_pos = 0;
-    /*
-    TODO: emit binary here
-    */
+
     struct Emitter emitter;
-    emitter.pos = 0;
-    emitter.binary = binary_buf;
+    init_emitter(&emitter);
     emit_MOV_R2_Num3(&emitter);
     emit_PUSH_R2(&emitter);
     emit_POP_R0(&emitter);
