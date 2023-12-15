@@ -47,7 +47,7 @@ void init_emitter(struct Emitter* emitter){
     emitter->pos = 0;
 }
 
-void emit_MOV_R2_Num(struct Emitter *emitter,int num) {
+void emit_SET_R2_Num(struct Emitter *emitter,int num) {
     emitter->binary[emitter->pos++] = 0xe3a02000 | num; // mov r2, #num
 }
 
@@ -59,18 +59,17 @@ void emit_POP_R0(struct Emitter *emitter) {
     emitter->binary[emitter->pos++] = 0xE8BD0001;// ldmia r13!, r0
 }
 
-void emit_RETURN(struct Emitter *emitter) {
+void emit_RETURN_R0(struct Emitter *emitter) {
     emitter->binary[emitter->pos++] = 0xe1a0f00e; // mov r15, r14
 }
 
 int* jit_script(char *input) {
-
     struct Emitter emitter;
     init_emitter(&emitter);
-    emit_MOV_R2_Num(&emitter,3);
+    emit_SET_R2_Num(&emitter,3);
     emit_PUSH_R2(&emitter);
     emit_POP_R0(&emitter);
-    emit_RETURN(&emitter);
+    emit_RETURN_R0(&emitter);
     return emitter.binary;
 }
 
