@@ -184,6 +184,18 @@ static void test_jit_sub(){
     
     assert_int_eq(expect,actual);
 }
+static void test_jit_mul(){
+    char* input_script = "4 7 mul";
+    int input_num1 = 10; //dummy num
+    int input_num2 = 42; //dummy num
+    int expect = 28;
+
+    int (*funcvar)(int, int);
+    funcvar = (int(*)(int, int))jit_script(input_script);
+    int actual = funcvar(input_num1,input_num2);
+    
+    assert_int_eq(expect,actual);
+}
 static void test_disasm_binary_buf(){
     char* input_script = "3";
     char* expect_str = "mov r2, #0x3\nstmdb r13!,{r2}\nldmia r13!,{r0}\nmov r15, r14\n";
@@ -203,6 +215,7 @@ static void run_unit_tests() {
     test_jit_return_one_value_2();
     test_jit_add();
     test_jit_sub();
+    test_jit_mul();
     test_disasm_binary_buf();
     printf("all test done\n");
 }
