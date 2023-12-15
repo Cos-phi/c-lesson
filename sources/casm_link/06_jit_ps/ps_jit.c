@@ -66,6 +66,9 @@ void emit_ADD_R2_R3(struct Emitter *emitter){
 void emit_SUB_R2_R3(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE0422003; // sub r2,r2,r3 
 }
+void emit_MUL_R2_R3(struct Emitter *emitter){
+    emitter->binary[emitter->pos++] = 0xE0020293; // mul r2,r2,r3 
+}
 
 void compile_PUSH_NUM(struct Emitter *emitter,int num){
     emit_MOV_R2_Num(emitter,num);
@@ -81,6 +84,12 @@ void compile_SUB(struct Emitter *emitter){
     emit_POP_R3(emitter);
     emit_POP_R2(emitter);
     emit_SUB_R2_R3(emitter);
+    emit_PUSH_R2(emitter);
+}
+void compile_MUL(struct Emitter *emitter){
+    emit_POP_R3(emitter);
+    emit_POP_R2(emitter);
+    emit_MUL_R2_R3(emitter);
     emit_PUSH_R2(emitter);
 }
 
@@ -103,7 +112,7 @@ int compile_word(struct Emitter *emitter,struct Substr *word){
                 compile_SUB(emitter);
                 break;
             case OP_MUL:
-                //stack_push(arg1*arg2);                
+                compile_MUL(emitter);                
                 break;
             case OP_DIV:
                 //stack_push(arg1/arg2);
