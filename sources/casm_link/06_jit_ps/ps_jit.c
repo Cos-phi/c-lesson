@@ -66,19 +66,14 @@ void emit_RETURN_R0(struct Emitter *emitter) {
 int* jit_script(char *input) {
     struct Emitter emitter;
     init_emitter(&emitter);
-    emit_SET_R2_Num(&emitter,3);
-    emit_PUSH_R2(&emitter);
-    emit_POP_R0(&emitter);
-    emit_RETURN_R0(&emitter);
-    return emitter.binary;
-
 
     struct Substr remain={input, strlen(input)};
     int val;
     while(!is_end(&remain)) {
         skip_space(&remain);
         if(is_number(remain.ptr)) {
-            //stack_push(parse_number(remain.ptr));
+            emit_SET_R2_Num(&emitter,3);
+            emit_PUSH_R2(&emitter);
             skip_token(&remain);
             continue;
         }else if(is_register(remain.ptr)) {
@@ -117,6 +112,9 @@ int* jit_script(char *input) {
             continue;
         }
     }
+    emit_POP_R0(&emitter);
+    emit_RETURN_R0(&emitter);
+    return emitter.binary;
 }
 
 void disasm_binary_buf(){
