@@ -42,41 +42,45 @@ void init_emitter(struct Emitter* emitter){
     emitter->pos = 0;
 }
 
+void emit_word(struct Emitter* emitter, int word){
+    emitter->binary[emitter->pos++] = word;
+}
+
 void emit_MOV_R2_Num(struct Emitter *emitter,int num){
-    emitter->binary[emitter->pos++] = 0xe3a02000 | (0x000000FF & num); // mov r2, #num
+    emit_word(emitter,0xe3a02000 | (0x000000FF & num)); // mov r2, #num
 }
 void emit_MVN_R2_Num(struct Emitter *emitter,int num){
-    emitter->binary[emitter->pos++] = 0xe3c02000 | (0x000000FF & num); // mvn r2, #num
+    emit_word(emitter,0xe3c02000 | (0x000000FF & num)); // mvn r2, #num
 }
 void emit_PUSH_R0(struct Emitter *emitter){
-    emitter->binary[emitter->pos++] = 0xE92D0001; // strdb r13!,{r0}
+    emit_word(emitter, 0xE92D0001); // strdb r13!,{r0}
 }
 void emit_PUSH_R1(struct Emitter *emitter){
-    emitter->binary[emitter->pos++] = 0xE92D0002; // strdb r13!,{r1}
+    emit_word(emitter, 0xE92D0002); // strdb r13!,{r1}
 }
 void emit_PUSH_R2(struct Emitter *emitter){
-    emitter->binary[emitter->pos++] = 0xE92D0004; // strdb r13!,{r2}
+    emit_word(emitter, 0xE92D0004); // strdb r13!,{r2}
 }
 void emit_POP_R0(struct Emitter *emitter){
-    emitter->binary[emitter->pos++] = 0xE8BD0001;// ldmia r13!, r0
+    emit_word(emitter, 0xE8BD0001);// ldmia r13!, r0
 }
 void emit_POP_R2(struct Emitter *emitter){
-    emitter->binary[emitter->pos++] = 0xE8BD0004;// ldmia r13!, r2
+    emit_word(emitter, 0xE8BD0004);// ldmia r13!, r2
 }
 void emit_POP_R3(struct Emitter *emitter){
-    emitter->binary[emitter->pos++] = 0xE8BD0008;// ldmia r13!, r2
+    emit_word(emitter, 0xE8BD0008);// ldmia r13!, r2
 }
 void emit_RETURN_R0(struct Emitter *emitter){
-    emitter->binary[emitter->pos++] = 0xe1a0f00e; // mov r15, r14
+    emit_word(emitter, 0xe1a0f00e); // mov r15, r14
 }
 void emit_ADD_R2_R3(struct Emitter *emitter){
-    emitter->binary[emitter->pos++] = 0xE0822003; // add r2,r2,r3 
+    emit_word(emitter, 0xE0822003); // add r2,r2,r3 
 }
 void emit_SUB_R2_R3(struct Emitter *emitter){
-    emitter->binary[emitter->pos++] = 0xE0422003; // sub r2,r2,r3 
+    emit_word(emitter, 0xE0422003); // sub r2,r2,r3 
 }
 void emit_MUL_R2_R3(struct Emitter *emitter){
-    emitter->binary[emitter->pos++] = 0xE0020293; // mul r2,r2,r3 
+    emit_word(emitter, 0xE0020293); // mul r2,r2,r3 
 }
 void emit_DIV_R2_R3(struct Emitter *emitter){
     /*
@@ -104,27 +108,27 @@ void emit_DIV_R2_R3(struct Emitter *emitter){
     }
     */
 
-    emitter->binary[emitter->pos++] = 0xe3a04000; // mov r4, #0
-    emitter->binary[emitter->pos++] = 0xe3a05000; // mov r5, #0
-    emitter->binary[emitter->pos++] = 0xe0060393; // mul r6, r3, r3
-    emitter->binary[emitter->pos++] = 0xe2844001; // add r4, r4, #1 (loop:)
-    emitter->binary[emitter->pos++] = 0xe2455001; // sub r5, r5, #1
-    emitter->binary[emitter->pos++] = 0xe0070394; // mul r7, r4, r3
-    emitter->binary[emitter->pos++] = 0xe0427007; // sub r7, r2, r7
-    emitter->binary[emitter->pos++] = 0xe0080797; // mul r8, r7, r7
-    emitter->binary[emitter->pos++] = 0xe1580006; // cmp r8, r6
-    emitter->binary[emitter->pos++] = 0xba000005; // blt positive
-    emitter->binary[emitter->pos++] = 0xe0070395; // mul r7, r5, r3
-    emitter->binary[emitter->pos++] = 0xe0427007; // sub r7, r2, r7
-    emitter->binary[emitter->pos++] = 0xe0080797; // mul r8, r7, r7
-    emitter->binary[emitter->pos++] = 0xe1580006; // cmp r8, r6
-    emitter->binary[emitter->pos++] = 0xba000002; // blt negative
-    emitter->binary[emitter->pos++] = 0xeafffff2; // b loop
-    emitter->binary[emitter->pos++] = 0xe1a09004; // mov r9, r4 (positive:)
-    emitter->binary[emitter->pos++] = 0xea000001; // b end
-    emitter->binary[emitter->pos++] = 0xe1a09005; // mov r9, r5 (negative:)
-    emitter->binary[emitter->pos++] = 0xeaffffff; // b end
-    emitter->binary[emitter->pos++] = 0xe1a02009; // mov r2, r9 (end:)
+    emit_word(emitter, 0xe3a04000); // mov r4, #0
+    emit_word(emitter, 0xe3a05000); // mov r5, #0
+    emit_word(emitter, 0xe0060393); // mul r6, r3, r3
+    emit_word(emitter, 0xe2844001); // add r4, r4, #1 (loop:)
+    emit_word(emitter, 0xe2455001); // sub r5, r5, #1
+    emit_word(emitter, 0xe0070394); // mul r7, r4, r3
+    emit_word(emitter, 0xe0427007); // sub r7, r2, r7
+    emit_word(emitter, 0xe0080797); // mul r8, r7, r7
+    emit_word(emitter, 0xe1580006); // cmp r8, r6
+    emit_word(emitter, 0xba000005); // blt positive
+    emit_word(emitter, 0xe0070395); // mul r7, r5, r3
+    emit_word(emitter, 0xe0427007); // sub r7, r2, r7
+    emit_word(emitter, 0xe0080797); // mul r8, r7, r7
+    emit_word(emitter, 0xe1580006); // cmp r8, r6
+    emit_word(emitter, 0xba000002); // blt negative
+    emit_word(emitter, 0xeafffff2); // b loop
+    emit_word(emitter, 0xe1a09004); // mov r9, r4 (positive:)
+    emit_word(emitter, 0xea000001); // b end
+    emit_word(emitter, 0xe1a09005); // mov r9, r5 (negative:)
+    emit_word(emitter, 0xeaffffff); // b end
+    emit_word(emitter, 0xe1a02009); // mov r2, r9 (end:)
 }
 
 void compile_PUSH_NUM(struct Emitter *emitter,int num){
@@ -354,8 +358,8 @@ int main() {
     */
     funcvar = (int(*)(int, int))jit_script("3 7 add r1 sub 4 mul");
     
-    cl_disable_buffer_mode();
-    disasm_binary_buf();   
+    //cl_disable_buffer_mode();
+    //disasm_binary_buf();   
     res = funcvar(1, 5);
     assert_int_eq(20, res);
 
