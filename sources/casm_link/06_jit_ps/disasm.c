@@ -26,8 +26,8 @@ int print_asm(int word){
     }else if( 0xE202200F == word ){ // and
         cl_printf("and r2, r2, #15\n");
         return 1;
-    }else if( 0xE2433004 == word ){ // sub
-        cl_printf("sub r3, r3, #4\n");
+    }else if( 0xE0422003 == word ){ // sub
+        cl_printf("sub r2, r2, r3\n");
         return 1;
     }else if( 0xE3500000 == (word & 0xfff00000) ){ // cmp
         int first_operand_register = (word & 0x000f0000) >> 16;
@@ -441,9 +441,9 @@ static void test_disasm_add2(){
 }
 
 static void test_disasm_sub(){
-    int input = 0xE2433004; 
+    int input = 0xE0422003; 
     int expect = 1;
-    char* expect_str = "sub r3, r3, #4\n";
+    char* expect_str = "sub r2, r2, r3\n";
 
     cl_enable_buffer_mode();
     int actual = print_asm(input);
@@ -521,7 +521,7 @@ void run_unit_tests_disasm(){
     //printf("all test done(disasm)\n");
 }
 
-#if 0
+#if 1
 int main(int argc, char *argv[]){
     run_unit_tests_disasm();
     if(argc){

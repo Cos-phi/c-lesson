@@ -337,7 +337,7 @@ static void run_unit_tests() {
     printf("all test done\n");
 }
 
-#if 1
+#if 0
 int main() {
     int res;
     int (*funcvar)(int, int);
@@ -353,7 +353,9 @@ int main() {
      TODO: Make below test pass.
     */
     funcvar = (int(*)(int, int))jit_script("3 7 add r1 sub 4 mul");
-
+    
+    cl_disable_buffer_mode();
+    disasm_binary_buf();   
     res = funcvar(1, 5);
     assert_int_eq(20, res);
 
