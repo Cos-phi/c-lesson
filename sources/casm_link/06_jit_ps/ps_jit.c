@@ -77,7 +77,7 @@ void emit_MUL_R2_R3(struct Emitter *emitter){
 }
 void emit_DIV_R2_R3(struct Emitter *emitter){
     /*
-    正負の２つの商の候補（r4,r5）について、
+    被除数(r2)、除数(r3)、正負の２つの商の候補（r4,r5）について、
      r4 = 0, 1, 2, 3,..
      r5 = 0,-1,-2,-3,..
     と動かしていって
@@ -127,6 +127,10 @@ void emit_DIV_R2_R3(struct Emitter *emitter){
 void compile_PUSH_NUM(struct Emitter *emitter,int num){
     emit_MOV_R2_Num(emitter,num);
     emit_PUSH_R2(emitter);
+}
+void compile_RETURN(struct Emitter *emitter){
+    emit_POP_R0(emitter);
+    emit_RETURN_R0(emitter);
 }
 void compile_ADD(struct Emitter *emitter){
     emit_POP_R3(emitter);
@@ -190,15 +194,14 @@ int* jit_script(char *input) {
         compile_word(&emitter,&remain);
         skip_token(&remain);
     }
-    emit_POP_R0(&emitter);
-    emit_RETURN_R0(&emitter);
+    compile_RETURN(&emitter);
     return emitter.binary;
 }
 
 void disasm_binary_buf(){
     for(int i = 0; i < BINARY_BUF_SIZE; i++){
         print_asm(binary_buf[i]);
-        if( binary_buf[i] == 0xE1A0F00E ){
+        if( binary_buf[i] == 0xE1A0F00E ){ // mov r15, r14
             break;
         }
     }
@@ -279,8 +282,8 @@ static void test_jit_div(){
 }
 static void test_jit_arg(){
     char* input_script = "r0 r1 add";
-    int input_num1 = 10; //dummy num
-    int input_num2 = 42; //dummy num
+    int input_num1 = 10; //arg 1
+    int input_num2 = 42; //arg 2
     int expect = 52;
 
     int (*funcvar)(int, int);
