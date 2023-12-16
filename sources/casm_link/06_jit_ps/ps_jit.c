@@ -335,10 +335,10 @@ int main() {
     funcvar = (int(*)(int, int))jit_script("3 7 add r1 sub 4 mul");
 
     res = funcvar(1, 5);
-    //assert_int_eq(20, res);
+    assert_int_eq(20, res);
 
     res = funcvar(1, 4);
-    //assert_int_eq(24, res);
+    assert_int_eq(24, res);
 
     return 0;
 }
