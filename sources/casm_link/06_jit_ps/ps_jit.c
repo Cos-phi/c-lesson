@@ -186,16 +186,16 @@ int compile_token(struct Emitter *emitter,struct Substr *token){
 }
 
 int* jit_script(char *input) {
-    struct Substr remain={input, strlen(input)};
-    struct Emitter emitter;
-    init_emitter(&emitter);
-    while( !is_end(&remain) ){
-        skip_space(&remain);
-        compile_token(&emitter,&remain);
-        skip_token(&remain);
+    struct Substr remain_str = {input, strlen(input)};
+    struct Emitter binary_emitter;
+    init_emitter(&binary_emitter);
+    while( !is_end(&remain_str) ){
+        skip_space(&remain_str);
+        compile_token(&binary_emitter,&remain_str);
+        skip_token(&remain_str);
     }
-    compile_RETURN(&emitter);
-    return emitter.binary;
+    compile_RETURN(&binary_emitter);
+    return binary_emitter.binary;
 }
 
 void disasm_binary_buf(){
