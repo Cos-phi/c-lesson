@@ -330,7 +330,7 @@ static void run_unit_tests() {
     printf("all test done\n");
 }
 
-
+#if 0
 int main() {
     int res;
     int (*funcvar)(int, int);
@@ -355,4 +355,5 @@ int main() {
 
     return 0;
 }
+#endif
 

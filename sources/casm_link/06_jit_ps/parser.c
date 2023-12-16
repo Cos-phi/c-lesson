@@ -19,17 +19,26 @@ int is_number_char(char c) {
     return c >= '0' && c <= '9';
 }
 
+int is_minus_char(char c) {
+    return c == '-';
+}
+
 int is_number(char *str) {
-    return is_number_char(str[0]);
+    return is_number_char(str[0]) || ( is_minus_char(str[0]) && is_number_char(str[1]) );
 }
 
 int parse_number(char *str) {
     int res = 0;
+    int sign = 1;
+    if(is_minus_char(*str)){
+        sign = -1;
+        *str++;
+    }
     while(is_number_char(*str)) {
         res *= 10;
         res += (*str++)-'0';
     }
-    return res;
+    return res*sign;
 }
 
 int is_register(char *str) {
@@ -132,6 +141,7 @@ void test_skip_space() {
 
 void test_is_XXX() {
     assert_true(is_number("123"));
+    assert_true(is_number("-123"));
     assert_false(is_number("a123"));
 
     assert_false(is_register("a123"));
@@ -214,7 +224,7 @@ static void run_unit_tests() {
     printf("all test done\n");
 }
 
-#if 0
+#if 1
 int main() {
     run_unit_tests();
     return 0;
