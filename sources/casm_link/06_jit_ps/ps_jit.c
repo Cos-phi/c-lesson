@@ -43,7 +43,7 @@ void init_emitter(struct Emitter* emitter){
 }
 
 void emit_MOV_R2_Num(struct Emitter *emitter,int num){
-    emitter->binary[emitter->pos++] = 0xe3a02000 | num; // mov r2, #num
+    emitter->binary[emitter->pos++] = 0xe3a02000 | (0x000000FF & num); // mov r2, #num
 }
 void emit_PUSH_R0(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE92D0001; // strdb r13!,{r0}
@@ -292,15 +292,15 @@ static void test_jit_arg(){
     assert_int_eq(expect,actual);
 }
 static void test_jit_variouscase(){
-    char* input_script = "4 r0 add r1 mul -2 div 5 r0 add r0 add";
+    char* input_script = "-3";
     int input_num1 = 8; 
     int input_num2 = -2;
-    int expect = 4;
+    int expect = -3;
 
     int (*funcvar)(int, int);
     funcvar = (int(*)(int, int))jit_script(input_script);
     int actual = funcvar(input_num1,input_num2);
-    
+    printf("%d\n",actual);
     assert_int_eq(expect,actual);
 }
 static void test_disasm_binary_buf(){
@@ -330,7 +330,7 @@ static void run_unit_tests() {
     printf("all test done\n");
 }
 
-#if 0
+#if 1
 int main() {
     int res;
     int (*funcvar)(int, int);

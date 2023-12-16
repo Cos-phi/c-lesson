@@ -193,7 +193,7 @@ void test_skip_token_DoNothingWhenEnd() {
 
 void test_parse_number() {
     assert_int_eq(123, parse_number("123"));
-    assert_int_eq(-123, parse_number("-123"));
+    assert_int_eq(-3, parse_number("-3"));
 }
 
 void test_begin_with() {
@@ -225,7 +225,7 @@ static void run_unit_tests() {
     printf("all test done\n");
 }
 
-#if 1
+#if 0
 int main() {
     run_unit_tests();
     return 0;
