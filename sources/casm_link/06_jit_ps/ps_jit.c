@@ -157,18 +157,18 @@ void compile_DIV(struct Emitter *emitter){
     emit_PUSH_R2(emitter);
 }
 
-int compile_word(struct Emitter *emitter,struct Substr *word){
-    if( is_number(word->ptr) ) {
-        compile_PUSH_NUM(emitter,parse_number(word->ptr));
-    }else if( is_register(word->ptr) ){
-        if( '1' == word->ptr[1] ){
+int compile_token(struct Emitter *emitter,struct Substr *token){
+    if( is_number(token->ptr) ) {
+        compile_PUSH_NUM(emitter,parse_number(token->ptr));
+    }else if( is_register(token->ptr) ){
+        if( '1' == token->ptr[1] ){
             emit_PUSH_R1(emitter);
         }else{
             emit_PUSH_R0(emitter);
         }
     }else{
         // must be op.
-        switch( parse_word(word) ) {
+        switch( parse_word(token) ) {
             case OP_ADD:
                 compile_ADD(emitter);
                 break;
@@ -191,7 +191,7 @@ int* jit_script(char *input) {
     init_emitter(&emitter);
     while( !is_end(&remain) ){
         skip_space(&remain);
-        compile_word(&emitter,&remain);
+        compile_token(&emitter,&remain);
         skip_token(&remain);
     }
     compile_RETURN(&emitter);
@@ -201,7 +201,7 @@ int* jit_script(char *input) {
 void disasm_binary_buf(){
     for(int i = 0; i < BINARY_BUF_SIZE; i++){
         print_asm(binary_buf[i]);
-        if( binary_buf[i] == 0xE1A0F00E ){ // mov r15, r14
+        if( binary_buf[i] == 0xE1A0F00E ){ // mov r15, r14 (RETURN)
             break;
         }
     }
