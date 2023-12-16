@@ -25,10 +25,10 @@ int div_inline(int a, int b) {
     asm("mov r3, r1");
     asm("mov r4, #0"); // int ansp = 0
     asm("mov r5, #0"); // int ansn = 0
+    asm("mul r6, r3, r3"); // r6 = r3*r3   
     asm("loop:");
     asm("add r4, r4, #1"); // ansp++    
     asm("sub r5, r5, #1"); // ansn--
-    asm("mul r6, r3, r3"); // r6 = r3*r3   
     
     asm("mul r7, r4, r3"); //       r3*ansp
     asm("sub r7, r2, r7"); //       r2-r3*ansp 
