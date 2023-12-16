@@ -299,10 +299,10 @@ static void test_jit_arg(){
     assert_int_eq(expect,actual);
 }
 static void test_jit_variouscase(){
-    char* input_script = "-24 r0 div";
+    char* input_script = "-24 r0 div r1 add r0 mul";
     int input_num1 = -8; 
     int input_num2 = 2;
-    int expect = 3;
+    int expect = -40;
 
     int (*funcvar)(int, int);
     funcvar = (int(*)(int, int))jit_script(input_script);
