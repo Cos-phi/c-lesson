@@ -68,24 +68,32 @@ int* allocate_executable_buf(int size) {
                  MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 }
 
-void jit_sum_till() {
-    /* TODO:
-    Place binary to binary_buf here.
-    Hint: put almost the same binary as sum_till_inline.
-    Compile and use arm-linux-gnueabi-objdump -S ./a.out to check binary.
+void jit_div() {
+    binary_buf[ 1] = 0xe1a02000; // 	mov	r2, r0
+    binary_buf[ 2] = 0xe1a03001; // 	mov	r3, r1
+    binary_buf[ 3] = 0xe3a04000; // 	mov	r4, #0
+    binary_buf[ 4] = 0xe3a05000; // 	mov	r5, #0
+    binary_buf[ 5] = 0xe0060393; // 	mul	r6, r3, r3
+    binary_buf[ 6] = 0xe2844001; // 	add	r4, r4, #1
+    binary_buf[ 7] = 0xe2455001; // 	sub	r5, r5, #1
+    binary_buf[ 8] = 0xe0070394; // 	mul	r7, r4, r3
+    binary_buf[ 9] = 0xe0427007; // 	sub	r7, r2, r7
+    binary_buf[10] = 0xe0080797; // 	mul	r8, r7, r7
+    binary_buf[11] = 0xe1580006; // 	cmp	r8, r6
+    binary_buf[12] = 0xba000005; // 	blt	0x9b4
+    binary_buf[13] = 0xe0070395; // 	mul	r7, r5, r3
+    binary_buf[14] = 0xe0427007; // 	sub	r7, r2, r7
+    binary_buf[15] = 0xe0080797; // 	mul	r8, r7, r7
+    binary_buf[16] = 0xe1580006; // 	cmp	r8, r6
+    binary_buf[17] = 0xba000002; // 	blt	0x9bc
+    binary_buf[18] = 0xeafffff2; // 	b	0x980
+    binary_buf[19] = 0xe1a09004; // 	mov	r9, r4
+    binary_buf[20] = 0xea000001; // 	b	0x9c4
+    binary_buf[21] = 0xe1a09005; // 	mov	r9, r5
+    binary_buf[22] = 0xeaffffff; // 	b	0x9c4
+    binary_buf[23] = 0xe1a00009; // 	mov	r0, r9
+    binary_buf[24] = 0xe1a0f00e; //     mov	pc, lr (mov r15, r14)5678910
 
-    */
-    // dummy implementation 
-    
-    binary_buf[0] = 0xe3a01000; //0x00 mov	r1, #0
-    binary_buf[1] = 0xe3a02000; //0x04 mov	r2, #0
-    binary_buf[2] = 0xe1500001; //0x08 cmp	r0, r1 (label loop:)
-    binary_buf[3] = 0xda000002; //0x0c blt	0x1c (b end)
-    binary_buf[4] = 0xe0822001; //0x10 add	r2, r2, r1
-    binary_buf[5] = 0xe2811001; //0x14 add	r1, r1, #1
-    binary_buf[6] = 0xeafffffa; //0x18 b	0x8 (b loop)
-    binary_buf[7] = 0xe1a00002; //0x1c mov	r0, r2 (label end:)
-    binary_buf[8] = 0xe1a0f00e; //0x20 mov	pc, lr (mov r15, r14)
 }
 
 void main(){
@@ -99,13 +107,13 @@ void main(){
     assert(-6 == div_inline(-42,7));
     assert(12 == div_inline(-49,-4));
 
-    int res;
-    int (*funcvar)(int);
+    int (*funcvar)(int,int);
     binary_buf = allocate_executable_buf(1024);
+    jit_div();
+    funcvar = (int(*)(int,int))binary_buf;
 
-    jit_sum_till();
-
-    funcvar = (int(*)(int))binary_buf;
-    res = funcvar(10);
-    assert(res == 45);
+    assert( 6 == funcvar(44, 7));
+    assert(-6 == funcvar(42,-7));
+    assert(-6 == funcvar(-42,7));
+    assert(12 == funcvar(-49,-4));
 }
