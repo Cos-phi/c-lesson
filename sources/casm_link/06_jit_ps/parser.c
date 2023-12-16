@@ -193,6 +193,7 @@ void test_skip_token_DoNothingWhenEnd() {
 
 void test_parse_number() {
     assert_int_eq(123, parse_number("123"));
+    assert_int_eq(-123, parse_number("-123"));
 }
 
 void test_begin_with() {
