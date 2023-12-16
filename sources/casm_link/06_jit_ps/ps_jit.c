@@ -205,7 +205,6 @@ void disasm_binary_buf(){
             break;
         }
     }
-    
 }
 
 static void test_jit_return_one_value(){
