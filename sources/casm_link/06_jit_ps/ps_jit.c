@@ -45,6 +45,9 @@ void init_emitter(struct Emitter* emitter){
 void emit_MOV_R2_Num(struct Emitter *emitter,int num){
     emitter->binary[emitter->pos++] = 0xe3a02000 | (0x000000FF & num); // mov r2, #num
 }
+void emit_MVN_R2_Num(struct Emitter *emitter,int num){
+    emitter->binary[emitter->pos++] = 0xe3c02000 | (0x000000FF & num); // mvn r2, #num
+}
 void emit_PUSH_R0(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE92D0001; // strdb r13!,{r0}
 }
@@ -125,7 +128,11 @@ void emit_DIV_R2_R3(struct Emitter *emitter){
 }
 
 void compile_PUSH_NUM(struct Emitter *emitter,int num){
-    emit_MOV_R2_Num(emitter,num);
+    if(num >= 0){
+        emit_MOV_R2_Num(emitter,num);
+    }else{
+        emit_MVN_R2_Num(emitter,-1*(num+1));
+    }
     emit_PUSH_R2(emitter);
 }
 void compile_RETURN(struct Emitter *emitter){
@@ -292,15 +299,15 @@ static void test_jit_arg(){
     assert_int_eq(expect,actual);
 }
 static void test_jit_variouscase(){
-    char* input_script = "-3";
-    int input_num1 = 8; 
-    int input_num2 = -2;
-    int expect = -3;
+    char* input_script = "-24 r0 div";
+    int input_num1 = -8; 
+    int input_num2 = 2;
+    int expect = 3;
 
     int (*funcvar)(int, int);
     funcvar = (int(*)(int, int))jit_script(input_script);
     int actual = funcvar(input_num1,input_num2);
-    printf("%d\n",actual);
+    
     assert_int_eq(expect,actual);
 }
 static void test_disasm_binary_buf(){
