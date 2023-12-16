@@ -29,6 +29,9 @@ int print_asm(int word){
     }else if( 0xE0422003 == word ){ // sub
         cl_printf("sub r2, r2, r3\n");
         return 1;
+    }else if( 0xE0020293 == word ){
+        cl_printf("mul r2, r2, r3\n");
+        return 1;
     }else if( 0xE3500000 == (word & 0xfff00000) ){ // cmp
         int first_operand_register = (word & 0x000f0000) >> 16;
         int immediate_value = word & 0x000000ff;
@@ -454,6 +457,20 @@ static void test_disasm_sub(){
     cl_clear_output();
 }
 
+static void test_disasm_mul(){
+    int input = 0xE0020293; 
+    int expect = 1;
+    char* expect_str = "mul r2, r2, r3\n";
+
+    cl_enable_buffer_mode();
+    int actual = print_asm(input);
+    char* actual_str = cl_get_all_result();
+
+    assert(expect == actual);
+    assert(0 == strcmp(actual_str,expect_str));
+    cl_clear_output();
+}
+
 static void test_disasm_bl2(){
     int input = 0xEBFFFFF6; 
     int expect = 1;
@@ -515,6 +532,7 @@ void run_unit_tests_disasm(){
     test_disasm_and();
     test_disasm_add2();
     test_disasm_sub();
+    test_disasm_mul();
     test_disasm_bl2();
     test_disasm_mov3();
     test_4bitrotate();
