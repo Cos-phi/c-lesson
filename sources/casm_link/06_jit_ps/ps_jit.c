@@ -45,6 +45,12 @@ void init_emitter(struct Emitter* emitter){
 void emit_MOV_R2_Num(struct Emitter *emitter,int num){
     emitter->binary[emitter->pos++] = 0xe3a02000 | num; // mov r2, #num
 }
+void emit_PUSH_R0(struct Emitter *emitter){
+    emitter->binary[emitter->pos++] = 0xE92D0001; // strdb r13!,{r0}
+}
+void emit_PUSH_R1(struct Emitter *emitter){
+    emitter->binary[emitter->pos++] = 0xE92D0002; // strdb r13!,{r1}
+}
 void emit_PUSH_R2(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE92D0004; // strdb r13!,{r2}
 }
@@ -152,9 +158,9 @@ int compile_word(struct Emitter *emitter,struct Substr *word){
         compile_PUSH_NUM(emitter,parse_number(word->ptr));
     }else if( is_register(word->ptr) ){
         if( '1' == word->ptr[1] ){
-            // TODO:emit PUSH R1
+            emit_PUSH_R1(emitter);
         }else{
-            // TODO:emit PUSH R0;
+            emit_PUSH_R0(emitter);
         }
     }else{
         // must be op.
