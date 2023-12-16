@@ -69,6 +69,54 @@ void emit_SUB_R2_R3(struct Emitter *emitter){
 void emit_MUL_R2_R3(struct Emitter *emitter){
     emitter->binary[emitter->pos++] = 0xE0020293; // mul r2,r2,r3 
 }
+void emit_DIV_R2_R3(struct Emitter *emitter){
+    /*
+    正負の２つの商の候補（r4,r5）を用意します
+     r4 = 0, 1, 2, 3,..
+     r5 = 0,-1,-2,-3,..
+    と動かしていって
+    どちらかの候補(r4 or r5)と除数(r3)の積の絶対値が、被除数(r2)の絶対値を超えたとき、その一つ前の候補値が、商になります。
+    絶対値の比較は、それぞれの2乗を比較することで行っています。
+
+    int div(int r2, int r3){
+        int ansp = 0; //r4 (anser positve)
+        int ansn = 0; //r5 (anser negative)
+        while(1){
+            ansp++;
+            if( (r2-r3*ansp)*(r2-r3*ansp) < r3*r3 ) { 
+                return ansp;
+            }
+            
+            ansn--;
+            if( (r2-r3*ansn)*(r2-r3*ansn) < r3*r3 ){ 
+                return ansn;
+            }
+        }
+    }
+    */
+
+    emitter->binary[emitter->pos++] = 0xe3a04000; // mov r4, #0
+    emitter->binary[emitter->pos++] = 0xe3a05000; // mov r5, #0
+    emitter->binary[emitter->pos++] = 0xe0060393; // mul r6, r3, r3
+    emitter->binary[emitter->pos++] = 0xe2844001; // add r4, r4, #1 (loop:)
+    emitter->binary[emitter->pos++] = 0xe2455001; // sub r5, r5, #1
+    emitter->binary[emitter->pos++] = 0xe0070394; // mul r7, r4, r3
+    emitter->binary[emitter->pos++] = 0xe0427007; // sub r7, r2, r7
+    emitter->binary[emitter->pos++] = 0xe0080797; // mul r8, r7, r7
+    emitter->binary[emitter->pos++] = 0xe1580006; // cmp r8, r6
+    emitter->binary[emitter->pos++] = 0xba000005; // blt positive
+    emitter->binary[emitter->pos++] = 0xe0070395; // mul r7, r5, r3
+    emitter->binary[emitter->pos++] = 0xe0427007; // sub r7, r2, r7
+    emitter->binary[emitter->pos++] = 0xe0080797; // mul r8, r7, r7
+    emitter->binary[emitter->pos++] = 0xe1580006; // cmp r8, r6
+    emitter->binary[emitter->pos++] = 0xba000002; // blt negative
+    emitter->binary[emitter->pos++] = 0xeafffff2; // b loop
+    emitter->binary[emitter->pos++] = 0xe1a09004; // mov r9, r4 (positive:)
+    emitter->binary[emitter->pos++] = 0xea000001; // b end
+    emitter->binary[emitter->pos++] = 0xe1a09005; // mov r9, r5 (negative:)
+    emitter->binary[emitter->pos++] = 0xeaffffff; // b end
+    emitter->binary[emitter->pos++] = 0xe1a02009; // mov r2, r9 (end:)
+}
 
 void compile_PUSH_NUM(struct Emitter *emitter,int num){
     emit_MOV_R2_Num(emitter,num);
@@ -90,6 +138,12 @@ void compile_MUL(struct Emitter *emitter){
     emit_POP_R3(emitter);
     emit_POP_R2(emitter);
     emit_MUL_R2_R3(emitter);
+    emit_PUSH_R2(emitter);
+}
+void compile_DIV(struct Emitter *emitter){
+    emit_POP_R3(emitter);
+    emit_POP_R2(emitter);
+    emit_DIV_R2_R3(emitter);
     emit_PUSH_R2(emitter);
 }
 
@@ -115,7 +169,7 @@ int compile_word(struct Emitter *emitter,struct Substr *word){
                 compile_MUL(emitter);                
                 break;
             case OP_DIV:
-                //stack_push(arg1/arg2);
+                compile_DIV(emitter);   
                 break;
         }
     }
