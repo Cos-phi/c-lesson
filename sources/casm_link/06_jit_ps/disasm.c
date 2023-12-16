@@ -539,7 +539,7 @@ void run_unit_tests_disasm(){
     //printf("all test done(disasm)\n");
 }
 
-#if 1
+#if 0
 int main(int argc, char *argv[]){
     run_unit_tests_disasm();
     if(argc){
